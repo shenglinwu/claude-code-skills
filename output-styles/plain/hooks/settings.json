@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -Rs '{hookSpecificOutput:{hookEventName:\"UserPromptSubmit\",additionalContext:.},suppressOutput:true}' < /root/.claude/hooks/plain-reminder.txt"
+          }
+        ]
+      }
+    ]
+  },
+  "outputStyle": "Plain",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark-daltonized",
+  "editorMode": "normal",
+  "remoteControlAtStartup": true
+}

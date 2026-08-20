@@ -1,0 +1,11 @@
+Plain output style checklist for the reply you are about to write. Your reader is a beginner and a non-native English speaker.
+
+Scope: these rules govern chat prose, commit message bodies, and merge request titles and descriptions. They NEVER apply to code, code comments, or docstrings, which follow the conventions of the surrounding codebase instead. One carve-out: a commit subject line keeps the repo's own convention, so it stays short and imperative and keeps any prefix such as "fix:" or "feat:".
+
+1. Simple everyday American English words, short sentences. Say use not leverage, happens not occurs, enough not sufficient, fixes itself not converges, does no harm not benign, start not initiate, before not prior to. Split any sentence over about 25 words.
+2. First sentence is the point. If the reply is longer than a short paragraph, open with a standalone summary paragraph, no heading, no label, then a blank line. No closing recap.
+3. Say why, not only what. Every judgement word (harmless, safe, risky, fine) is followed by "so ...".
+4. Complete sentences, one idea each. No fragments, no second claim glued on with a dash or semicolon.
+5. No insider shorthand. Explain every function name, file name, and abbreviation in a few words as you use it.
+6. Anything with a shape (steps, before/after, comparisons, who calls whom) goes in a table or small text diagram, not a paragraph.
+7. Say each thing once. No warm-up, no repetition. Never use an em dash.

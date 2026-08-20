@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NICo Bootstrap — How the 3 per-tray endpoints get learned</title>
+<style>
+  body {
+    margin: 0;
+    padding: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #fafafa;
+    color: #1a1a1a;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 20px; }
+  .scale-banner {
+    background: #e0f2fe;
+    border: 1px solid #7dd3fc;
+    color: #075985;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .scale-banner b { color: #0369a1; }
+  svg { width: 100%; height: auto; display: block; background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; }
+  h2 { font-size: 15px; font-weight: 600; margin: 22px 0 10px; }
+  .flows { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 36px; font-size: 13px; line-height: 1.5; }
+  .flow { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; }
+  .flow .num {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 12px; color: #fff;
+    flex-shrink: 0;
+  }
+  .flow.pre   .num { background: #c9a66b; }
+  .flow.dhcp  .num { background: #0ea5e9; }
+  .flow.scout .num { background: #c9a66b; }
+  .flow.lldp  .num { background: #3f7c8a; }
+  .flow.reg   .num { background: #9b5bb6; }
+  .flow.live  .num { background: #659157; }
+  .flow b { font-weight: 600; }
+  .flow code { font-size: 12px; color: #475569; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
+  .legend-cats { margin-top: 8px; font-size: 12px; color: #555; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+  .legend-cats span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-cats i { width: 18px; height: 3px; display: inline-block; border-radius: 2px; }
+  .result-box {
+    margin-top: 28px;
+    background: #eef2ea;
+    border: 1px solid #a9c29e;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .result-box h3 { margin: 0 0 8px; font-size: 14px; color: #3e5a33; }
+  .result-box pre {
+    background: #fff;
+    border: 1px solid #cdd9c6;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #3e5a33;
+    margin: 0;
+    overflow-x: auto;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>NICo bootstrap — how the three per-tray endpoints get learned</h1>
+  <div class="sub">Sequence from operator pre-staging through DPU self-registration to steady-state lifecycle management.</div>
+
+  <div class="scale-banner">
+    <b>The puzzle this solves:</b> Each compute tray has three independent admin-net endpoints (host BMC, DPU BMC, DPU OOB), each on a separate piece of silicon with its own MAC and IP. NICo has to discover all three <em>and</em> figure out they belong to the same physical tray. Two endpoints are <b>configured into existence</b> by NICo's DHCP from a pre-staged inventory; the third <b>self-registers</b> via <code>forge-scout</code>; LLDP topology data is what stitches them together.
+  </div>
+
+  <svg viewBox="0 0 1280 1380" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Sequence diagram showing how NICo bootstraps a tray, learning the host BMC IP, DPU BMC IP, and DPU OOB IP through pre-staged DHCP reservations and forge-scout self-registration.">
+    <defs>
+      <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#c9a66b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#3f7c8a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#9b5bb6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#659157" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <style>
+        .label-th { font: 600 14px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1a1a; }
+        .label-ts { font: 12px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #333; }
+        .label-tn { font: 11px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #555; }
+        .label-ph { font: 700 13px -apple-system, sans-serif; fill: #1e293b; letter-spacing: 0.4px; }
+        .label-msg { font: 600 11px -apple-system, sans-serif; fill: #1f2937; }
+        .label-state { font: italic 600 11px -apple-system, sans-serif; fill: #6e3d85; }
+
+        .lane-header { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1; }
+        .lane-header.operator { fill: #f7f1e4; stroke: #d9be8a; }
+        .lane-header.nico     { fill: #e0f2fe; stroke: #0ea5e9; }
+        .lane-header.bmc-h    { fill: #fbe6db; stroke: #e78a5c; }
+        .lane-header.bmc-d    { fill: #f0e3e8; stroke: #b690a0; }
+        .lane-header.dpu      { fill: #dceaee; stroke: #3f7c8a; }
+        .lane-header.tor      { fill: #efe4f4; stroke: #9b5bb6; }
+
+        .lifeline { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3,3; fill: none; }
+        .activation { fill: #ffffff; stroke: #64748b; stroke-width: 1; }
+
+        .phase-band-0 { fill: #f7f1e4; }
+        .phase-band-1 { fill: #fbe6db; }
+        .phase-band-2 { fill: #dceaee; }
+        .phase-band-3 { fill: #f3ecf7; }
+        .phase-band-4 { fill: #eef2ea; }
+
+        .arr-amber  { stroke: #c9a66b; stroke-width: 1.7; fill: none; }
+        .arr-blue   { stroke: #0ea5e9; stroke-width: 1.7; fill: none; }
+        .arr-teal   { stroke: #3f7c8a; stroke-width: 1.7; fill: none; stroke-dasharray: 5,4; }
+        .arr-purple { stroke: #9b5bb6; stroke-width: 1.7; fill: none; }
+        .arr-green  { stroke: #659157; stroke-width: 1.7; fill: none; }
+
+        .num-circle { stroke: #fff; stroke-width: 1.5; }
+        .num-text   { font: 700 11px -apple-system, sans-serif; fill: #fff; text-anchor: middle; }
+      </style>
+    </defs>
+
+    <!-- ============== PHASE BACKGROUND BANDS ============== -->
+    <rect class="phase-band-0" x="20" y="140" width="1240" height="130" rx="8"/>
+    <rect class="phase-band-1" x="20" y="290" width="1240" height="240" rx="8"/>
+    <rect class="phase-band-2" x="20" y="550" width="1240" height="240" rx="8"/>
+    <rect class="phase-band-3" x="20" y="810" width="1240" height="220" rx="8"/>
+    <rect class="phase-band-4" x="20" y="1050" width="1240" height="220" rx="8"/>
+
+    <text class="label-ph" x="40" y="160">PHASE 0  ·  Pre-staging  (before any hardware powers on)</text>
+    <text class="label-ph" x="40" y="310">PHASE 1  ·  BMCs power on  (host BMC + DPU BMC come up first; standby power)</text>
+    <text class="label-ph" x="40" y="570">PHASE 2  ·  DPU powers on, PXE boots forge-scout</text>
+    <text class="label-ph" x="40" y="830">PHASE 3  ·  forge-scout reports identity + LLDP, NICo correlates the three IPs</text>
+    <text class="label-ph" x="40" y="1070">PHASE 4  ·  Steady state — dpu-agent takes over</text>
+
+    <!-- ============== LANE HEADERS ============== -->
+    <rect class="lane-header operator" x="30" y="30" width="140" height="90" rx="8"/>
+    <text class="label-th" x="100" y="65" text-anchor="middle">Operator</text>
+    <text class="label-tn" x="100" y="85" text-anchor="middle">human, before</text>
+    <text class="label-tn" x="100" y="100" text-anchor="middle">site cutover</text>
+
+    <rect class="lane-header nico" x="190" y="30" width="280" height="90" rx="8"/>
+    <text class="label-th" x="330" y="60" text-anchor="middle">NICo (management server)</text>
+    <text class="label-tn" x="330" y="80" text-anchor="middle">DHCP/iPXE  ·  API server  ·  Postgres</text>
+    <text class="label-tn" x="330" y="98" text-anchor="middle">site-wide, one instance</text>
+
+    <rect class="lane-header bmc-h" x="490" y="30" width="140" height="90" rx="8"/>
+    <text class="label-th" x="560" y="60" text-anchor="middle">Host BMC</text>
+    <text class="label-tn" x="560" y="80" text-anchor="middle">AST-class MCU</text>
+    <text class="label-tn" x="560" y="98" text-anchor="middle">Redfish endpoint</text>
+
+    <rect class="lane-header bmc-d" x="650" y="30" width="140" height="90" rx="8"/>
+    <text class="label-th" x="720" y="60" text-anchor="middle">DPU BMC</text>
+    <text class="label-tn" x="720" y="80" text-anchor="middle">on BlueField card</text>
+    <text class="label-tn" x="720" y="98" text-anchor="middle">Redfish endpoint</text>
+
+    <rect class="lane-header dpu" x="810" y="30" width="270" height="90" rx="8"/>
+    <text class="label-th" x="945" y="60" text-anchor="middle">BlueField-3 DPU</text>
+    <text class="label-tn" x="945" y="80" text-anchor="middle">DOCA OS  ·  Arm cores</text>
+    <text class="label-tn" x="945" y="98" text-anchor="middle">forge-scout → dpu-agent</text>
+
+    <rect class="lane-header tor" x="1100" y="30" width="140" height="90" rx="8"/>
+    <text class="label-th" x="1170" y="60" text-anchor="middle">ToR switch</text>
+    <text class="label-tn" x="1170" y="80" text-anchor="middle">Spectrum-X</text>
+    <text class="label-tn" x="1170" y="98" text-anchor="middle">LLDP source</text>
+
+    <!-- ============== LIFELINES ============== -->
+    <line class="lifeline" x1="100"  y1="125" x2="100"  y2="1280"/>
+    <line class="lifeline" x1="330"  y1="125" x2="330"  y2="1280"/>
+    <line class="lifeline" x1="560"  y1="125" x2="560"  y2="1280"/>
+    <line class="lifeline" x1="720"  y1="125" x2="720"  y2="1280"/>
+    <line class="lifeline" x1="945"  y1="125" x2="945"  y2="1280"/>
+    <line class="lifeline" x1="1170" y1="125" x2="1170" y2="1280"/>
+
+    <!-- ============== PHASE 0 — Pre-staging ============== -->
+    <!-- 1: Operator → NICo (import inventory) -->
+    <path class="arr-amber" d="M 110 200 L 320 200" marker-end="url(#arrow-amber)"/>
+    <text class="label-msg" x="215" y="190" text-anchor="middle">import rack inventory file (BMC MACs)</text>
+    <circle cx="215" cy="200" r="11" fill="#c9a66b" class="num-circle"/>
+    <text class="num-text" x="215" y="204">1</text>
+
+    <!-- 2: NICo internal action -->
+    <rect class="activation" x="320" y="225" width="20" height="30"/>
+    <text class="label-msg" x="350" y="244" text-anchor="start">load DHCP reservations + create ManagedHost stubs in Postgres</text>
+    <circle cx="365" cy="240" r="11" fill="#c9a66b" class="num-circle"/>
+    <text class="num-text" x="365" y="244">2</text>
+
+    <!-- ============== PHASE 1 — BMCs come up ============== -->
+    <!-- 3: Host BMC → NICo (DHCPDISCOVER) -->
+    <path class="arr-blue" d="M 550 350 L 340 350" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="445" y="340" text-anchor="middle">DHCPDISCOVER (broadcast, mac=aa:bb:..:07:01)</text>
+    <circle cx="445" cy="350" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="445" y="354">3</text>
+
+    <!-- 4: NICo → Host BMC (DHCPOFFER+ACK) -->
+    <path class="arr-blue" d="M 340 385 L 550 385" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="445" y="375" text-anchor="middle">DHCPOFFER + ACK  →  10.10.2.71  (matched reservation)</text>
+    <circle cx="445" cy="385" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="445" y="389">4</text>
+
+    <!-- 5: NICo → Host BMC (Redfish crawl) -->
+    <path class="arr-blue" d="M 340 430 L 550 430" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="445" y="420" text-anchor="middle">GET /redfish/v1/Systems  ·  /Chassis  ·  /Managers</text>
+    <circle cx="445" cy="430" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="445" y="434">5</text>
+
+    <!-- 6: Host BMC → NICo (Redfish response) -->
+    <path class="arr-blue" d="M 550 460 L 340 460" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="445" y="450" text-anchor="middle">200 OK: serial=SN-12345, model, firmware, inventory</text>
+    <circle cx="445" cy="460" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="445" y="464">6</text>
+
+    <!-- 7: Same flow happens for DPU BMC (parallel) -->
+    <path class="arr-blue" d="M 710 505 C 600 505, 450 505, 340 505" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="525" y="495" text-anchor="middle">(parallel) DPU BMC repeats the same DHCP + Redfish flow  →  10.10.2.72</text>
+    <circle cx="525" cy="505" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="525" y="509">7</text>
+
+    <!-- ============== PHASE 2 — DPU PXE boot ============== -->
+    <!-- 8: DPU → NICo (DHCPDISCOVER, PXE) -->
+    <path class="arr-blue" d="M 935 615 L 340 615" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="635" y="605" text-anchor="middle">DHCPDISCOVER (PXEClient option set, mac=aa:bb:..:07:03)</text>
+    <circle cx="635" cy="615" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="635" y="619">8</text>
+
+    <!-- 9: NICo → DPU (DHCPOFFER + iPXE URL) -->
+    <path class="arr-blue" d="M 340 650 L 935 650" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="635" y="640" text-anchor="middle">DHCPOFFER  →  10.10.2.73  +  next-server / boot-file = iPXE chain URL</text>
+    <circle cx="635" cy="650" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="635" y="654">9</text>
+
+    <!-- 10: DPU → NICo (HTTP fetch) -->
+    <path class="arr-blue" d="M 935 695 L 340 695" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="635" y="685" text-anchor="middle">UEFI HTTP Boot: fetch iPXE script + forge-scout image</text>
+    <circle cx="635" cy="695" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="635" y="699">10</text>
+
+    <!-- 11: NICo → DPU (image) -->
+    <path class="arr-blue" d="M 340 730 L 935 730" marker-end="url(#arrow-blue)"/>
+    <text class="label-msg" x="635" y="720" text-anchor="middle">200 OK: forge-scout init container</text>
+    <circle cx="635" cy="730" r="11" fill="#0ea5e9" class="num-circle"/>
+    <text class="num-text" x="635" y="734">11</text>
+
+    <!-- DPU activation/state note -->
+    <rect class="activation" x="935" y="755" width="20" height="25"/>
+    <text class="label-state" x="965" y="772" text-anchor="start">forge-scout running on DPU's Arm cores</text>
+
+    <!-- ============== PHASE 3 — forge-scout reports + correlation ============== -->
+    <!-- 12: DPU → ToR (LLDP query) -->
+    <path class="arr-teal" d="M 955 875 L 1160 875" marker-end="url(#arrow-teal)"/>
+    <text class="label-msg" x="1057" y="865" text-anchor="middle">read LLDP on mgmt NIC</text>
+    <circle cx="1057" cy="875" r="11" fill="#3f7c8a" class="num-circle"/>
+    <text class="num-text" x="1057" y="879">12</text>
+
+    <!-- 13: ToR → DPU (LLDP response) -->
+    <path class="arr-teal" d="M 1160 905 L 955 905" marker-end="url(#arrow-teal)"/>
+    <text class="label-msg" x="1057" y="895" text-anchor="middle">neighbor: tor-rack2-leaf1, port Eth7</text>
+    <circle cx="1057" cy="905" r="11" fill="#3f7c8a" class="num-circle"/>
+    <text class="num-text" x="1057" y="909">13</text>
+
+    <!-- 14: DPU → NICo (gRPC register) -->
+    <path class="arr-purple" d="M 935 950 L 340 950" marker-end="url(#arrow-purple)"/>
+    <text class="label-msg" x="635" y="940" text-anchor="middle">gRPC RegisterDPU(mac, oob_ip, lldp_neighbor, bf_serial)</text>
+    <circle cx="635" cy="950" r="11" fill="#9b5bb6" class="num-circle"/>
+    <text class="num-text" x="635" y="954">14</text>
+
+    <!-- 15: NICo internal correlation -->
+    <rect class="activation" x="320" y="980" width="20" height="40"/>
+    <text class="label-msg" x="350" y="995" text-anchor="start">correlate LLDP neighbor → rack 2 / slot 7</text>
+    <text class="label-msg" x="350" y="1012" text-anchor="start">link host BMC + DPU BMC + DPU OOB IPs into one ManagedHost row</text>
+    <circle cx="365" cy="1004" r="11" fill="#9b5bb6" class="num-circle"/>
+    <text class="num-text" x="365" y="1008">15</text>
+
+    <!-- ============== PHASE 4 — Steady state ============== -->
+    <!-- 16: NICo → DPU (push dpu-agent image) -->
+    <path class="arr-green" d="M 340 1115 L 935 1115" marker-end="url(#arrow-green)"/>
+    <text class="label-msg" x="635" y="1105" text-anchor="middle">push dpu-agent image, signal reboot into steady-state OS</text>
+    <circle cx="635" cy="1115" r="11" fill="#659157" class="num-circle"/>
+    <text class="num-text" x="635" y="1119">16</text>
+
+    <!-- DPU state change -->
+    <rect class="activation" x="935" y="1140" width="20" height="25"/>
+    <text class="label-state" x="965" y="1157" text-anchor="start">DPU now running steady-state DOCA OS + dpu-agent daemon</text>
+
+    <!-- 17: dpu-agent → NICo (long-lived gRPC) -->
+    <path class="arr-green" d="M 935 1205 L 340 1205" marker-end="url(#arrow-green)"/>
+    <text class="label-msg" x="635" y="1195" text-anchor="middle">gRPC long-lived connection to NICo API (config pull, status push)</text>
+    <circle cx="635" cy="1205" r="11" fill="#659157" class="num-circle"/>
+    <text class="num-text" x="635" y="1209">17</text>
+
+    <!-- Final state -->
+    <text class="label-msg" x="635" y="1245" text-anchor="middle" style="fill:#4a6b3d; font-weight:600;">✓ NICo can now drive lifecycle ops: power, firmware, tenant assignment, network programming</text>
+  </svg>
+
+  <div class="legend-cats">
+    <span><i style="background:#c9a66b;"></i>Pre-staging / scout</span>
+    <span><i style="background:#0ea5e9;"></i>DHCP / iPXE / Redfish (admin Ethernet)</span>
+    <span><i style="background:#3f7c8a;"></i>LLDP (in-band on the link)</span>
+    <span><i style="background:#9b5bb6;"></i>Self-registration / correlation</span>
+    <span><i style="background:#659157;"></i>Steady-state lifecycle</span>
+  </div>
+
+  <h2>Numbered messages</h2>
+  <div class="flows">
+
+    <div class="flow pre">
+      <span class="num">1</span>
+      <div><b>Operator → NICo</b> · import rack inventory<br>
+      Operator loads the L11 factory inventory file: a list of MACs for every BMC and DPU in the rack (18 host BMCs + 18 DPU BMCs + 9 switch-tray BMCs per NVL72), plus the rack/slot labels.</div>
+    </div>
+
+    <div class="flow pre">
+      <span class="num">2</span>
+      <div><b>NICo internal</b> · prepare DHCP + DB<br>
+      For each MAC, NICo creates a DHCP reservation in its DHCP service and an empty <code>ManagedHost</code> stub in Postgres. At this point NICo expects specific MACs at specific IPs but hasn't talked to any of them.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">3</span>
+      <div><b>Host BMC → NICo</b> · <code>DHCPDISCOVER</code><br>
+      BMC has standby power and comes up first. Sends a normal DHCP broadcast.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">4</span>
+      <div><b>NICo → Host BMC</b> · <code>DHCPOFFER + ACK</code><br>
+      MAC matches a reservation, so NICo hands out the pre-allocated IP (e.g. <code>10.10.2.71</code>). The BMC now has its admin-net identity.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">5</span>
+      <div><b>NICo → Host BMC</b> · <code>Redfish crawl</code><br>
+      NICo immediately walks the Redfish tree to confirm hardware identity: serial, model, firmware versions, sensor inventory.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">6</span>
+      <div><b>Host BMC → NICo</b> · <code>200 OK</code><br>
+      Redfish returns the inventory. NICo updates the Postgres row with serial, model, firmware. The host BMC endpoint is now <em>known</em> and <em>verified</em>.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">7</span>
+      <div><b>(parallel) DPU BMC ⇄ NICo</b> · same DHCP + Redfish flow<br>
+      The DPU BMC is a separate MCU on the BlueField-3 card with its own MAC. It runs steps 3–6 in parallel and ends up at <code>10.10.2.72</code> with its own Redfish identity confirmed.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">8</span>
+      <div><b>DPU → NICo</b> · <code>DHCPDISCOVER (PXEClient)</code><br>
+      The DPU BMC has now powered up the DPU's Arm cores. UEFI on the DPU broadcasts DHCP with the PXEClient option set, indicating it wants to network-boot.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">9</span>
+      <div><b>NICo → DPU</b> · <code>DHCPOFFER</code> + iPXE URL<br>
+      NICo replies with the DPU's reserved OOB IP (<code>10.10.2.73</code>) plus a <code>next-server</code>/<code>boot-file</code> pointing to an iPXE chain-load URL.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">10</span>
+      <div><b>DPU → NICo</b> · UEFI HTTP Boot<br>
+      DPU UEFI fetches the iPXE script. The script then chain-loads the <code>forge-scout</code> init container image.</div>
+    </div>
+
+    <div class="flow dhcp">
+      <span class="num">11</span>
+      <div><b>NICo → DPU</b> · <code>200 OK</code> + image<br>
+      NICo serves the forge-scout image. The DPU loads it into RAM and starts executing — no persistent install yet.</div>
+    </div>
+
+    <div class="flow lldp">
+      <span class="num">12</span>
+      <div><b>DPU forge-scout → ToR</b> · LLDP query<br>
+      forge-scout reads LLDP frames the ToR is broadcasting on the mgmt-net link. This is in-band on that single Ethernet link, never crosses the wider network.</div>
+    </div>
+
+    <div class="flow lldp">
+      <span class="num">13</span>
+      <div><b>ToR → DPU</b> · LLDP TLV<br>
+      ToR identifies itself: chassis name (e.g. <code>tor-rack2-leaf1</code>) and port (e.g. <code>Eth7</code>). This is how forge-scout knows which physical port — and therefore which rack/slot — it's plugged into.</div>
+    </div>
+
+    <div class="flow reg">
+      <span class="num">14</span>
+      <div><b>DPU forge-scout → NICo</b> · <code>gRPC RegisterDPU</code><br>
+      The phone-home call. Payload: DPU MAC, OOB IP, LLDP neighbor, BlueField serial, board-level info. This is the DPU self-registering — unlike the BMCs, which were configured into existence.</div>
+    </div>
+
+    <div class="flow reg">
+      <span class="num">15</span>
+      <div><b>NICo internal</b> · correlation<br>
+      The magic step. NICo looks up the LLDP neighbor in its topology database (<code>tor-rack2-leaf1</code>/<code>Eth7</code> → rack 2, slot 7) and links the three independent admin IPs — host BMC, DPU BMC, DPU OOB — into a single <code>ManagedHost</code> row keyed on rack+slot.</div>
+    </div>
+
+    <div class="flow live">
+      <span class="num">16</span>
+      <div><b>NICo → DPU</b> · push <code>dpu-agent</code><br>
+      forge-scout's job is done. NICo provisions the steady-state DOCA OS image with the <code>dpu-agent</code> daemon installed, and tells the DPU to reboot into it.</div>
+    </div>
+
+    <div class="flow live">
+      <span class="num">17</span>
+      <div><b>dpu-agent → NICo</b> · long-lived <code>gRPC</code><br>
+      After reboot, <code>dpu-agent</code> opens a persistent gRPC connection back to NICo's API server and stays connected for the life of the host. NICo sends configuration through this channel; the agent reports status back.</div>
+    </div>
+
+  </div>
+
+  <div class="result-box">
+    <h3>Result: the ManagedHost row in Postgres</h3>
+    <pre>ManagedHost {
+  rack:           2
+  slot:           7
+  serial:         SN-12345
+  host_bmc_ip:    10.10.2.71   (mac aa:bb:cc:00:07:01)   ← DHCP-reserved (step 4)
+  dpu_bmc_ip:     10.10.2.72   (mac aa:bb:cc:00:07:02)   ← DHCP-reserved (step 7)
+  dpu_oob_ip:     10.10.2.73   (mac aa:bb:cc:00:07:03)   ← self-registered (step 14)
+  lldp_neighbor:  tor-rack2-leaf1 / Eth7                  ← discovered via forge-scout
+  state:          READY
+  dpu_agent:      connected
+}</pre>
+  </div>
+
+</div>
+</body>
+</html>
