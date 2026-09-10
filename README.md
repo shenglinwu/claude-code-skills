@@ -13,6 +13,7 @@ A **skill** is a folder of instructions that Claude Code loads when the task mat
 | `skills/prompt-clarity/` | prompt-clarity (`pc`) | Rewrites only the unclear wording of your prompt, then asks whether to run it. |
 | `skills/prompt-optimization/` | prompt-optimization (`po`) | Does a fuller prompt rewrite (success criteria, structure, scope), then asks whether to run it. |
 | `output-styles/plain/` | Plain | Makes Claude answer in simple, short, everyday English for a non-native reader. |
+| `output-styles/eli5/` | eli5 | Makes Claude explain everything as if you know nothing about the topic, with big pictures and very few words. |
 
 Each folder has its own `README.md` with the details.
 
@@ -25,9 +26,9 @@ Each folder has its own `README.md` with the details.
                                 │
         ┌───────────────────────┼────────────────────────┐
         │                       │                        │
-   Plain style            prompt-clarity /          arch-flow-explainer
-   (how replies           prompt-optimization       (builds the HTML
-    are written)          (rewrite the task          diagram)
+   Plain or eli5          prompt-clarity /          arch-flow-explainer
+   style (how replies     prompt-optimization       (builds the HTML
+   are written)           (rewrite the task          diagram)
                            before running it)              │
                                                            │ takes its
                                                            │ colors from
@@ -35,7 +36,7 @@ Each folder has its own `README.md` with the details.
                                                     cortex-palette
 ```
 
-The Plain output style is always on once you select it. The two prompt skills run only when you ask for them. The `cortex-palette` skill feeds colors to any visual skill, including `arch-flow-explainer`.
+An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `cortex-palette` skill feeds colors to any visual skill, including `arch-flow-explainer`.
 
 ## Install
 
@@ -48,16 +49,19 @@ ln -s "$PWD/skills/cortex-palette"       ~/.claude/skills/cortex-palette
 ln -s "$PWD/skills/prompt-clarity"       ~/.claude/skills/prompt-clarity
 ln -s "$PWD/skills/prompt-optimization"  ~/.claude/skills/prompt-optimization
 
-# output style: the file itself, not the folder
+# output styles: the file itself, not the folder
 ln -s "$PWD/output-styles/plain/Plain.md" ~/.claude/output-styles/Plain.md
+ln -s "$PWD/output-styles/eli5/eli5.md"   ~/.claude/output-styles/eli5.md
 
-# the reminder text used by the Plain style hook
+# the checklists and the hook script that sends the active style's checklist
 ln -s "$PWD/output-styles/plain/hooks/plain-reminder.txt" ~/.claude/hooks/plain-reminder.txt
+ln -s "$PWD/output-styles/eli5/hooks/eli5-reminder.txt"   ~/.claude/hooks/eli5-reminder.txt
+ln -s "$PWD/output-styles/eli5/hooks/style-reminder.sh"   ~/.claude/hooks/style-reminder.sh
 ```
 
-Use `cp -r` instead of `ln -s` if you prefer real copies over links. After that, start a new Claude Code session so the files are picked up, and run `/output-style Plain` once to turn the writing style on.
+Use `cp -r` instead of `ln -s` if you prefer real copies over links. After that, start a new Claude Code session so the files are picked up, and pick Plain or eli5 in `/config` once to turn a writing style on.
 
-The Plain style also needs a hook entry in `~/.claude/settings.json`. See `output-styles/plain/README.md` for the exact block to merge in.
+Both styles share one hook entry in `~/.claude/settings.json`. See `output-styles/eli5/README.md` for the exact block to merge in and for how the script picks the right checklist.
 
 ## Machine-specific paths to check
 
@@ -68,7 +72,7 @@ Two skills contain absolute paths that only exist on the author's machine. Fix t
 | `skills/prompt-clarity/SKILL.md` | `/root/.claude/skills/prompt-clarity/clarity-prompt.md` | The instruction file the subagent reads. |
 | `skills/prompt-clarity/SKILL.md` | `/mnt/c/Program Files/Vim/vim92/gvim.exe` | The editor opened by the "Edit for next prompt" choice. |
 | `skills/prompt-optimization/SKILL.md` | `/mnt/c/Program Files/Vim/vim92/gvim.exe` | Same editor, same choice. |
-| `output-styles/plain/hooks/settings.json` | `/root/.claude/hooks/plain-reminder.txt` | The checklist text injected before every reply. |
+| `output-styles/plain/hooks/settings.json` | `/root/.claude/hooks/style-reminder.sh` | The hook script that injects the active style's checklist before every reply. |
 
 The Vim path is a Windows program reached from WSL, which is Linux running inside Windows. On a plain Linux or Mac machine, replace it with your own editor command.
 
@@ -78,12 +82,18 @@ The Vim path is a Windows program reached from WSL, which is Linux running insid
 claude-code-skills/
 ├── README.md                       ← you are here
 ├── output-styles/
-│   └── plain/
+│   ├── plain/
+│   │   ├── README.md
+│   │   ├── Plain.md                ← the style itself
+│   │   └── hooks/
+│   │       ├── settings.json       ← sample ~/.claude/settings.json
+│   │       └── plain-reminder.txt  ← checklist sent while Plain is active
+│   └── eli5/
 │       ├── README.md
-│       ├── Plain.md                ← the style itself
+│       ├── eli5.md                 ← the style itself
 │       └── hooks/
-│           ├── settings.json       ← sample ~/.claude/settings.json
-│           └── plain-reminder.txt  ← checklist injected on every prompt
+│           ├── eli5-reminder.txt   ← checklist sent while eli5 is active
+│           └── style-reminder.sh   ← hook script shared by both styles
 └── skills/
     ├── arch-flow-explainer/
     │   ├── README.md

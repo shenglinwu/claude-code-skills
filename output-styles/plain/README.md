@@ -45,7 +45,7 @@ Good:
 | File | What it is |
 | --- | --- |
 | `Plain.md` | The style itself. This is the file Claude Code loads. |
-| `hooks/plain-reminder.txt` | A short version of the seven rules, pushed in front of every single reply. |
+| `hooks/plain-reminder.txt` | A short version of the seven rules, pushed in front of every reply while Plain is active. |
 | `hooks/settings.json` | A sample `~/.claude/settings.json` showing the hook wiring, plus the author's other preferences. |
 
 ## Why there is a hook as well
@@ -56,8 +56,9 @@ The style file is read once when the session starts. Over a long session, and es
 you send a message
         │
         ▼
-UserPromptSubmit hook runs
-        │  reads ~/.claude/hooks/plain-reminder.txt
+UserPromptSubmit hook runs ~/.claude/hooks/style-reminder.sh
+        │  finds the active output style in the settings files
+        │  the style is "Plain", so it reads ~/.claude/hooks/plain-reminder.txt
         │  wraps it as JSON with the jq command
         ▼
 the checklist is added to Claude's context
@@ -66,11 +67,13 @@ the checklist is added to Claude's context
 Claude writes the reply
 ```
 
-`jq` is a small command line program for building and reading JSON. Here it takes the plain text file and wraps it in the JSON shape the hook must return. `suppressOutput: true` keeps that text off your screen, so you never see the checklist itself.
+The script lives in `output-styles/eli5/hooks/`, because the eli5 style uses it too. It sends only the active style's checklist, so the Plain and eli5 rules never reach Claude at the same time. See `output-styles/eli5/README.md` for how it finds the active style.
+
+`jq` is a small command line program for building and reading JSON. Here the script uses it to read the settings files and to wrap the checklist in the JSON shape the hook must return. `suppressOutput: true` keeps that text off your screen, so you never see the checklist itself.
 
 ## Install
 
-Three pieces have to be in place. The paths below are for a machine where the home configuration folder is `/root/.claude`. Adjust them if yours is elsewhere.
+Four pieces have to be in place. The paths below are for a machine where the home configuration folder is `/root/.claude`. Adjust them if yours is elsewhere.
 
 ```bash
 # 1. the style file
@@ -78,9 +81,12 @@ ln -s "$PWD/output-styles/plain/Plain.md" ~/.claude/output-styles/Plain.md
 
 # 2. the reminder text used by the hook
 ln -s "$PWD/output-styles/plain/hooks/plain-reminder.txt" ~/.claude/hooks/plain-reminder.txt
+
+# 3. the hook script, shared with the eli5 style
+ln -s "$PWD/output-styles/eli5/hooks/style-reminder.sh" ~/.claude/hooks/style-reminder.sh
 ```
 
-3. Merge this block into `~/.claude/settings.json`. Do not copy the whole sample file over your own settings, because it also carries the author's theme, editor mode, and other personal choices.
+4. Merge this block into `~/.claude/settings.json`. Do not copy the whole sample file over your own settings, because it also carries the author's theme, editor mode, and other personal choices.
 
 ```json
 {
@@ -90,7 +96,7 @@ ln -s "$PWD/output-styles/plain/hooks/plain-reminder.txt" ~/.claude/hooks/plain-
         "hooks": [
           {
             "type": "command",
-            "command": "jq -Rs '{hookSpecificOutput:{hookEventName:\"UserPromptSubmit\",additionalContext:.},suppressOutput:true}' < /root/.claude/hooks/plain-reminder.txt"
+            "command": "/root/.claude/hooks/style-reminder.sh"
           }
         ]
       }
@@ -100,7 +106,7 @@ ln -s "$PWD/output-styles/plain/hooks/plain-reminder.txt" ~/.claude/hooks/plain-
 }
 ```
 
-The `outputStyle` line turns the style on for every session. If you prefer to switch it on by hand instead, leave that line out and run `/output-style Plain` when you want it.
+The `outputStyle` line turns the style on for every session. If you prefer to switch it on by hand instead, leave that line out and pick Plain in `/config` when you want it.
 
 Start a new Claude Code session after any of these changes.
 

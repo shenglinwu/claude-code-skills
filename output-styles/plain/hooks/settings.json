@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -Rs '{hookSpecificOutput:{hookEventName:\"UserPromptSubmit\",additionalContext:.},suppressOutput:true}' < /root/.claude/hooks/plain-reminder.txt"
+            "command": "/root/.claude/hooks/style-reminder.sh"
           }
         ]
       }
