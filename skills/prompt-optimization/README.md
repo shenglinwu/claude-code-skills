@@ -31,28 +31,37 @@ The size of the edit has to match the size of the problem. Rewriting a prompt th
 | Verdict | What the prompt looks like | What the skill does |
 | --- | --- | --- |
 | Sound | Intent, success criteria, and output format are already clear | Return it unchanged, or make one or two small fixes. No restructuring. |
-| Fixable gaps | Intent is clear but something is missing | Patch only the gap. Keep the author's wording everywhere else. |
-| Genuinely unclear | Ambiguous, contradictory, or a wall of text | A full rewrite is justified. |
+| Fixable | Intent is clear, but something is missing, or something is left over from older models (shouting, "think step by step", hype, scripted steps) | Fix only that. Keep the author's wording everywhere else. |
+| Unclear | Ambiguous, contradictory, or a wall of text | A full rewrite is justified. |
 
-The skill also works out where the prompt is heading, because that changes which fixes apply: a one-shot answer, a document or creative piece, or an agent task such as changing code across several steps.
+The skill also works out where the prompt is heading, because that changes which fixes apply: a one-shot answer, a document or creative piece, an agent task such as changing code across several steps, or a brief for another model (a subagent brief or a system prompt).
 
-## Step 2: the eleven techniques
+## Step 2: the fourteen techniques
+
+The skill assumes the reader is a current frontier model: one that follows instructions closely and literally, thinks and plans on its own, and can carry a long task through alone. So a good prompt says plainly what is wanted, supplies what only the author knows, and drops anything written to push a weaker model.
 
 | # | Technique | The short version |
 | --- | --- | --- |
-| 1 | Explicit success criteria | Say what a good result looks like in checkable terms: scope, audience, length, format. |
-| 2 | Motivation over mandate | Add a short "why" to a rule, so the model follows the spirit and not just the letter. |
-| 3 | Specificity | Replace "good", "proper", "clean" with real criteria. Say what to produce, not what to avoid. |
-| 4 | Structure and ordering | Separate parts with tags or headings. Long reference material goes first, the actual question goes last. |
-| 5 | Right degree of freedom | For open or agent work, state the outcome and the hard limits, then leave the method alone. Script exact steps only when the steps truly must be fixed. |
-| 6 | Surface missing context, never invent it | Insert a marker like `[specify: deployment target]` instead of guessing the stack or the scale. |
-| 7 | Escape hatch for facts | Allow the answer "the information is not available" instead of a guess. This is the single strongest guard against invented facts. |
-| 8 | Examples that match | Models copy every detail of an example, including the accidental ones. Fix any example that does not match the wanted behavior. |
-| 9 | No thinking scaffolding | Never add "think step by step" or `<thinking>` blocks. Modern models already reason on their own, so this is noise that can fight the harness. Existing boilerplate of this kind gets removed. |
-| 10 | Agent tasks: define done | Add a finish test ("done when `pytest tests/x` passes"), a check step ("run the tests and show the output"), and a boundary ("only touch files under `src/api/`"). |
-| 11 | Role framing only when it matters | Add a role when the audience or the lens really changes the answer. Skip "you are a world-class expert", because it adds nothing on modern models. |
+| | **Add what is missing** | |
+| 1 | Success criteria | Say what a good result looks like in checkable terms: scope, audience, format. For length, describe the reader. Use a number only if the author gave one. |
+| 2 | Purpose | Keep the author's "who is this for" and "why" near the top, so the model can make the small calls the prompt did not cover. |
+| 3 | Surface missing context, never invent it | Insert a marker like `[specify: deployment target]` instead of guessing the stack or the scale. |
+| 4 | Room to say "I don't know" | Allow the answer "the information is not available" instead of a guess. For facts that change quickly, ask for a check against a current source. |
+| | **Take out what no longer helps** | |
+| 5 | Thinking scaffolds | Remove "think step by step", `<thinking>` blocks, and "think harder". A demand to show the full reasoning becomes a request for a short explanation, because the newest models can decline to reproduce raw reasoning. |
+| 6 | Pressure and hedges | Capitals, `MUST`, and "don't be lazy" become plain statements, because a shouted rule gets applied too widely. "Try to" on a real requirement becomes the requirement. |
+| 7 | Hype and padding | Skip "you are a world-class expert" and "be accurate and clear". Keep a role only when the audience or the lens changes the answer. |
+| 8 | Scripted steps for judgment work | Replace "first read, then list, then write" with the outcome, the limits, and how to check it. Keep exact steps only where the order is the requirement. |
+| 9 | Style prohibitions | Say what to produce instead of what to avoid. Real limits (scope, safety, business rules) stay as limits. |
+| | **Shape it for the reader** | |
+| 10 | Structure | Long reference material goes first inside tags, the actual question goes last. Everything else is plain prose, because the model mirrors the prompt's formatting. |
+| 11 | Examples | Models copy every detail of an example. Fix the author's examples if they do not match. Never write a new one; describe the format instead. |
+| | **Fit it to where it is going** | |
+| 12 | Agent tasks | Define done with a real check, keep the change to what was asked, keep a question a question, and ask for a report that leads with the outcome. |
+| 13 | Briefs for another model | The other model knows only what the brief says: the goal, what is already known, the limits, and what to send back. |
+| 14 | Visual and frontend work | Words like "nice" or "modern" do not steer the model. Ask the author for a direction with a marker. |
 
-Technique 7 has one trap worth knowing. A rule like "include the deadline if one was given" must not become filler such as "Deadline: none stated". Your conditional already covered the missing case, so turning it into mandatory text changes your format.
+Technique 4 has one trap worth knowing. A rule like "include the deadline if one was given" must not become filler such as "Deadline: none stated". Your conditional already covered the missing case, so turning it into mandatory text changes your format.
 
 ## The four choices in step 3
 
@@ -65,7 +74,7 @@ Technique 7 has one trap worth knowing. A rule like "include the deadline if one
 
 ## What always survives untouched
 
-Technical terms, proper names, exact format contracts, conditional phrasing of the form "if X then Y", and every example or template you supplied. When two readings are both possible, the skill keeps your wording rather than picking one.
+Technical terms, proper names, numbers, exact format contracts, conditional phrasing of the form "if X then Y", every example or template you supplied, and anything Claude Code itself acts on (slash commands, `@` mentions, file paths, mode keywords). When two readings are both possible, the skill keeps your wording rather than picking one.
 
 ## Install and machine-specific path
 
