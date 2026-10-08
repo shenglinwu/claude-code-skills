@@ -18,16 +18,15 @@ An output style replaces the part of Claude's instructions that decides how it t
 
 Code follows the habits of the code around it, because matching the file matters more than matching your reading preference. A commit subject line keeps the repository's own convention, so it stays short, starts with a verb, and keeps any prefix such as `fix:` or `feat:`.
 
-## The six rules
+## The five rules
 
 | # | Rule | What it means |
 | --- | --- | --- |
 | 1 | Assume you know nothing | Every term, tool, file name, and function name gets a few everyday words or a place in the picture, even names from earlier in the conversation. |
 | 2 | Picture first, words second | Anything with a shape (parts that connect, steps, before and after, choices) starts with a text diagram or a Markdown table. It has about 7 boxes at most, with one to three words per label. |
 | 3 | Very few words | Each picture gets a caption of one or two short sentences. The one reason that matters stays, written as "this happens, so that happens". |
-| 4 | One everyday comparison | A new idea is tied to something a child knows, such as a mailbox or a phone book. The same comparison is kept all the way through. |
-| 5 | Big explanations get a page | A "how does X work" question, or any answer that needs more than one picture, becomes an HTML artifact built like a picture book. The terminal gets the link and a two or three line summary. |
-| 6 | Lead with the answer | The first line is the thing you would repeat to someone else. No warm-up, no recap, and nothing said twice. |
+| 4 | Big explanations get a page | A "how does X work" question, or any answer that needs more than one picture, becomes an HTML artifact built like a picture book. The terminal gets the link and a two or three line summary. |
+| 5 | Lead with the answer | The first line is the thing you would repeat to someone else. No warm-up, no recap, and nothing said twice. |
 
 An HTML artifact is a web page that Claude Code publishes for you on claude.ai. Only big explanations get one, because a page for every short status update would be slow and noisy.
 
@@ -56,7 +55,7 @@ Your computer asks the phone book once and then remembers the number, so your ne
 | File | What it is |
 | --- | --- |
 | `eli5.md` | The style itself. This is the file Claude Code loads. |
-| `hooks/eli5-reminder.txt` | A short version of the six rules, sent in front of every reply while eli5 is active. |
+| `hooks/eli5-reminder.txt` | A short version of the five rules, sent in front of every reply while eli5 is active. |
 | `hooks/style-reminder.sh` | The hook script. It finds the active style and sends that style's checklist. The Plain style uses it too. |
 
 ## Why there is a hook as well
@@ -129,4 +128,4 @@ Start a new Claude Code session after any of these changes.
 
 ## Keeping the two files in step
 
-`eli5.md` and `eli5-reminder.txt` say the same six rules, one in full and one in short form. When you change one, change the other in the same commit, or Claude will get two slightly different sets of rules and follow whichever it read last.
+`eli5.md` and `eli5-reminder.txt` say the same five rules, one in full and one in short form. When you change one, change the other in the same commit, or Claude will get two slightly different sets of rules and follow whichever it read last.
