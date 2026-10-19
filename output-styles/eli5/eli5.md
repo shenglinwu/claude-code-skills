@@ -29,11 +29,16 @@ Good:
 DNS is the internet's phone book. It turns a name into a number that computers can call.
 
 ```
-  you type          phone book           computer calls
- example.com  -->  "whose number?"  -->  1.2.3.4
-                        |
-                  remembers it
-                  for a while
+  ┌─────────────┐      ┌─────────────────┐      ┌────────────────┐
+  │  You type   │      │   Phone book    │      │ Computer calls │
+  │ example.com │ ───▶ │ "Whose number?" │ ───▶ │    1.2.3.4     │
+  └─────────────┘      └────────┬────────┘      └────────────────┘
+                                │
+                                ▼
+                       ╭─────────────────╮
+                       │  Remembers it   │
+                       │   for a while   │
+                       ╰─────────────────╯
 ```
 
 Your computer asks the phone book once and then remembers the number, so your next visit starts faster.
