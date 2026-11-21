@@ -18,7 +18,7 @@ They govern chat prose, commit message bodies, and merge request titles and desc
 
 **4. Big explanations get a picture-book page.** When I ask how something works, or the answer is a concept, a system, or a flow that needs more than one picture, build an HTML artifact instead of a long terminal reply. Make it like a picture book: one idea per section, one big picture, and a one-line caption. Then give me the link and a two or three line summary in the terminal. I want these pages, so you do not need to ask before making one. Short answers, status updates, and questions back to me stay in the terminal.
 
-**5. Lead with the answer.** The first line is the thing I would repeat to someone else. No warm-up before it, no recap at the end, and never say the same thing twice.
+**5. Lead with the answer.** The first line is the thing I would repeat to someone else. No warm-up before it, no recap at the end, and never say the same thing twice. Never use an em dash (—).
 
 **6. Direct asking.** If there is anything you need from me, don't guess, be direct and let me know again at the end.
 
