@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas Platform Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,700;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================
+   NICE-PRESENTATION — ClearWave design system on a fixed
+   1920×1080 stage. Edit :root tokens to re-theme the deck.
+   ========================================================== */
+
+/* === 1. TOKENS === */
+:root {
+  --bg:           #E2F3F7;
+  --bg-alt:       #D3ECF3;
+  --surface:      #F0F9FB;
+  --surface-2:    #FFFFFF;
+  --accent:       #0A748D;
+  --accent-mid:   #0D98BA;
+  --accent-light: #62BCD2;
+  --accent-rgb:   10,116,141;          /* = --accent as r,g,b */
+  --mid-rgb:      13,152,186;          /* = --accent-mid as r,g,b */
+  --light-rgb:    98,188,210;          /* = --accent-light as r,g,b */
+  --accent-ghost: rgba(var(--accent-rgb),0.08);
+  --accent-border:rgba(var(--accent-rgb),0.15);
+  --ink:          #0E2025;
+  --ink-rgb:      14,32,37;             /* dark surfaces (CTA, featured card) */
+  --text-1:       #0E2025;
+  --text-2:       #3A5C64;
+  --text-3:       #6C8B93;
+  --border:       rgba(var(--ink-rgb),0.08);
+  --shadow-sm:    0 3px 18px rgba(var(--ink-rgb),0.06);
+  --shadow-md:    0 12px 48px rgba(var(--ink-rgb),0.10);
+  --shadow-lg:    0 36px 96px rgba(var(--ink-rgb),0.13);
+  --silk:         cubic-bezier(0.16, 1, 0.3, 1);
+  --silk-dur:     0.8s;
+  --radius:       24px;
+  --radius-lg:    36px;
+  --font-sans:    'DM Sans', sans-serif;
+  --font-serif:   'Playfair Display', serif;
+  /* Type scale, authored at 1920×1080 */
+  --fs-hero:      112px;
+  --fs-title:     76px;
+  --fs-h3:        52px;
+  --fs-lead:      30px;
+  --fs-body:      26px;
+  --fs-small:     21px;
+  --fs-label:     17px;
+  --letterbox:    #C2E5EE;
+  --shell:        #BCCED2;             /* phone frame */
+  /* Side colours: decorate repeated items. Exact colour for fills; -ink = darker shade readable as text on light bg */
+  --c-mint:     #00AB78; --c-mint-rgb:     0,171,120;  --c-mint-ink:     #007653;
+  --c-orange:   #FF8C00; --c-orange-rgb:   255,140,0;  --c-orange-ink:   #9B5500;
+  --c-cinnabar: #E34234; --c-cinnabar-rgb: 227,66,52;  --c-cinnabar-ink: #BD372B;
+  --c-gold:     #FFD700; --c-gold-rgb:     255,215,0;  --c-gold-ink:     #796600;
+  --c-gray:     #999B9B; --c-gray-rgb:     153,155,155; --c-gray-ink:    #6A6B6B;
+  --c-grape:    #6F2DA8; --c-grape-rgb:    111,45,168; --c-grape-ink:    #6F2DA8;
+  --c-mocha:    #967969; --c-mocha-rgb:    150,121,105; --c-mocha-ink:   #7D6557;             /* color around the stage on non-16:9 screens */
+  --pad-x:        128px;
+  --pad-top:      150px;
+  --pad-bottom:   120px;
+}
+
+/* === 1b. TONES — per-item colour. Components read --tone (fill), --tone-rgb, --tone-ink (text).
+   Repeated items cycle automatically; add .tone-<name> to any element to set it explicitly. === */
+.tone-base     { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); }
+.tone-mint     { --tone: var(--c-mint);     --tone-rgb: var(--c-mint-rgb);     --tone-ink: var(--c-mint-ink); }
+.tone-orange   { --tone: var(--c-orange);   --tone-rgb: var(--c-orange-rgb);   --tone-ink: var(--c-orange-ink); }
+.tone-cinnabar { --tone: var(--c-cinnabar); --tone-rgb: var(--c-cinnabar-rgb); --tone-ink: var(--c-cinnabar-ink); }
+.tone-gold     { --tone: var(--c-gold);     --tone-rgb: var(--c-gold-rgb);     --tone-ink: var(--c-gold-ink); }
+.tone-gray     { --tone: var(--c-gray);     --tone-rgb: var(--c-gray-rgb);     --tone-ink: var(--c-gray-ink); }
+.tone-grape    { --tone: var(--c-grape);    --tone-rgb: var(--c-grape-rgb);    --tone-ink: var(--c-grape-ink); }
+.tone-mocha    { --tone: var(--c-mocha);    --tone-rgb: var(--c-mocha-rgb);    --tone-ink: var(--c-mocha-ink); }
+/* auto-cycle: base → orange → grape → mint → cinnabar → gold → mocha (gray is for explicit/neutral use) */
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+1):not([class*="tone-"]) { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+2):not([class*="tone-"]) { --tone: var(--c-orange); --tone-rgb: var(--c-orange-rgb); --tone-ink: var(--c-orange-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+3):not([class*="tone-"]) { --tone: var(--c-grape); --tone-rgb: var(--c-grape-rgb); --tone-ink: var(--c-grape-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+4):not([class*="tone-"]) { --tone: var(--c-mint); --tone-rgb: var(--c-mint-rgb); --tone-ink: var(--c-mint-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+5):not([class*="tone-"]) { --tone: var(--c-cinnabar); --tone-rgb: var(--c-cinnabar-rgb); --tone-ink: var(--c-cinnabar-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+6):not([class*="tone-"]) { --tone: var(--c-gold); --tone-rgb: var(--c-gold-rgb); --tone-ink: var(--c-gold-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > :nth-child(7n+7):not([class*="tone-"]) { --tone: var(--c-mocha); --tone-rgb: var(--c-mocha-rgb); --tone-ink: var(--c-mocha-ink); }
+.mono :is(.stats,.grid-2,.grid-3,.grid-4,.steps,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track) > * { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); } /* .mono on a slide = single colour */
+
+/* === 2. RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--letterbox); }
+body { font-family: var(--font-sans); color: var(--text-1); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
+em { font-style: italic; font-family: var(--font-serif); color: var(--accent); font-weight: 600; }
+
+/* === 3. FIXED STAGE (do not change) === */
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--letterbox); }
+.deck-stage {
+  position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+  overflow: hidden; transform-origin: 0 0; background: var(--bg);
+}
+/* subtle noise texture over everything */
+.deck-stage::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 50; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+.slide {
+  position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  display: flex; flex-direction: column; justify-content: center;
+  visibility: hidden; opacity: 0; pointer-events: none;
+  background: var(--bg);
+  transition: opacity 0.6s var(--silk), visibility 0s linear 0.6s;
+}
+.slide.active { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; transition: opacity 0.6s var(--silk); }
+.slide.alt     { background: var(--surface); }
+.slide > *     { position: relative; z-index: 1; }
+
+/* Decorative glow orbs (ClearWave hero circles). Add <div class="orb orb-a"></div> etc. */
+.orb { position: absolute !important; z-index: 0 !important; border-radius: 50%; pointer-events: none; }
+.orb-a { top: -180px; right: -120px; width: 1100px; height: 1100px;
+  background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.20) 0%, rgba(var(--mid-rgb),0.06) 50%, transparent 72%); }
+.orb-b { bottom: -320px; left: -200px; width: 820px; height: 820px;
+  background: radial-gradient(ellipse at center, rgba(var(--c-mint-rgb),0.10) 0%, rgba(var(--accent-rgb),0.05) 45%, transparent 70%); }
+.orb-d { bottom: -260px; right: -160px; width: 760px; height: 760px;
+  background: radial-gradient(ellipse at center, rgba(var(--c-orange-rgb),0.09) 0%, transparent 68%); }
+.orb-c { top: 50%; left: 50%; width: 1300px; height: 1300px; transform: translate(-50%,-50%);
+  background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.16) 0%, transparent 65%); }
+
+/* === 4. DECK CHROME (inside the stage, scales with it) === */
+.deck-nav {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 40; height: 112px;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 var(--pad-x);
+  pointer-events: none;
+}
+.deck-logo { font-size: 30px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-1); }
+.deck-logo span { color: var(--accent); }
+.deck-meta { display: flex; align-items: center; gap: 18px; }
+.deck-section {
+  font-size: 18px; font-weight: 500; color: var(--text-2); padding: 10px 24px; border-radius: 100px;
+  background: var(--accent-ghost); box-shadow: inset 0 0 0 1px var(--accent-border);
+  transition: opacity 0.4s var(--silk);
+}
+.deck-count { font-size: 18px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; min-width: 72px; text-align: right; }
+.deck-dots {
+  position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); z-index: 40;
+  display: flex; gap: 12px; align-items: center;
+}
+.deck-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-border); cursor: pointer; transition: all 0.4s var(--silk); }
+.deck-dot.active { background: var(--accent); width: 40px; border-radius: 6px; }
+.deck-stage.on-dark .deck-logo { color: #fff; }
+.deck-stage.on-dark .deck-section { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.deck-stage.on-dark .deck-dot { background: rgba(255,255,255,0.18); }
+.deck-stage.on-dark .deck-dot.active { background: var(--accent-light); }
+
+/* === 5. TYPOGRAPHY PRIMITIVES === */
+.label {
+  display: inline-flex; align-self: flex-start; align-items: center; gap: 12px;
+  font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-ghost); border: 1.5px solid var(--accent-border);
+  padding: 10px 22px; border-radius: 100px; margin-bottom: 32px; width: max-content;
+}
+.label::before { content: ''; width: 9px; height: 9px; background: var(--accent); border-radius: 50%; }
+.center .label { align-self: center; }
+.title { font-size: var(--fs-title); font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; color: var(--text-1); }
+.title.hero { font-size: var(--fs-hero); letter-spacing: -0.045em; line-height: 1.04; }
+.h3 { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+.lead { font-size: var(--fs-lead); line-height: 1.6; color: var(--text-2); max-width: 1000px; margin-top: 28px; }
+.body { font-size: var(--fs-body); line-height: 1.65; color: var(--text-2); }
+.kicker { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tone-ink, var(--c-orange-ink)); margin-bottom: 22px; }
+.center { text-align: center; align-items: center; }
+.center .lead { margin-left: auto; margin-right: auto; }
+.head { margin-bottom: 64px; display: flex; flex-direction: column; }
+.head.center .lead { text-align: center; }
+
+/* === 6. REVEAL ANIMATION (fires when a slide becomes active) === */
+.reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.8s var(--silk), transform 0.8s var(--silk); }
+.slide.visible .reveal { opacity: 1; transform: none; }
+.d1 { transition-delay: 0.10s; } .d2 { transition-delay: 0.20s; } .d3 { transition-delay: 0.30s; }
+.d4 { transition-delay: 0.40s; } .d5 { transition-delay: 0.50s; } .d6 { transition-delay: 0.60s; }
+
+/* === 7. COMPONENTS === */
+
+/* 7a. Badge pill (hero) */
+.badge {
+  display: inline-flex; align-items: center; gap: 14px; align-self: flex-start;
+  background: var(--surface-2); border: 1.5px solid var(--accent-border); border-radius: 100px;
+  padding: 9px 26px 9px 10px; margin-bottom: 40px; box-shadow: var(--shadow-sm);
+  font-size: 21px; font-weight: 500; color: var(--text-2);
+}
+.badge-dot { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; }
+.badge strong { color: var(--accent); }
+
+/* 7b. Buttons / chips */
+.btn { display: inline-flex; align-items: center; gap: 14px; font-size: 24px; font-weight: 600; padding: 22px 46px; border-radius: 100px; }
+.btn-primary { color: #fff; background: var(--accent); box-shadow: 0 10px 36px rgba(var(--accent-rgb),0.30); }
+.btn-outline { color: var(--accent); border: 2px solid var(--accent-border); }
+.row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
+/* 7c. Trust / meta row */
+.trust { display: flex; align-items: center; gap: 30px; margin-top: 64px; }
+.trust-item { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 500; color: var(--text-3); }
+.trust-item svg { color: var(--accent); width: 24px; height: 24px; flex-shrink: 0; }
+.trust-divider { width: 1.5px; height: 30px; background: var(--border); }
+
+/* 7d. Grids */
+.split   { display: grid; grid-template-columns: 1fr 1fr; gap: 110px; align-items: center; }
+.split.wide-left  { grid-template-columns: 1.15fr 1fr; }
+.split.reverse > :first-child { order: 2; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+
+/* 7e. Checklist */
+.checklist { display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
+.check { display: flex; align-items: flex-start; gap: 18px; font-size: var(--fs-body); line-height: 1.45; color: var(--text-2); }
+.check-icon {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+  background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10); border: 1.5px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.30);
+  display: flex; align-items: center; justify-content: center; color: var(--tone-ink, var(--accent)); font-size: 17px; font-weight: 700;
+}
+.check b { color: var(--text-1); font-weight: 600; }
+.checklist.two-col { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; row-gap: 26px; }
+
+/* 7f. Window / dashboard card (hero visual, screenshots) */
+.window { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); box-shadow: var(--shadow-lg); overflow: hidden; }
+.window-bar { background: var(--bg-alt); padding: 18px 24px; display: flex; gap: 12px; border-bottom: 1.5px solid var(--border); }
+.window-bar i { width: 15px; height: 15px; border-radius: 50%; display: block; }
+.window-bar i:nth-child(1) { background: #FF5F57; } .window-bar i:nth-child(2) { background: #FFBD2E; } .window-bar i:nth-child(3) { background: #28CA41; }
+.window-body { padding: 40px; }
+.window img { width: 100%; height: auto; display: block; }
+.win-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.win-title { font-size: 24px; font-weight: 600; }
+.tag { font-size: 16px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+  background: var(--accent-ghost); border: 1.5px solid var(--accent-border); padding: 5px 16px; border-radius: 100px; }
+.bars { height: 150px; display: flex; align-items: flex-end; gap: 12px; margin-bottom: 32px; }
+.bar { flex: 1; border-radius: 6px 6px 0 0; background: var(--accent-ghost); border: 1.5px solid var(--accent-border); height: 0; transition: height 1.2s var(--silk) 0.2s; }
+.slide.visible .bar { height: var(--h); }
+.bar.on { background: var(--accent); border-color: var(--accent); }
+.mini-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.mini-stat { background: var(--bg); border-radius: var(--radius); padding: 22px; border: 1.5px solid var(--border); }
+.mini-val { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
+.mini-val small { font-size: 22px; color: var(--tone-ink, var(--accent)); }
+.mini-label { font-size: 17px; color: var(--text-3); margin-top: 4px; }
+.mini-chg { font-size: 17px; font-weight: 600; color: var(--tone-ink, var(--accent)); margin-top: 6px; }
+.mini-stat { border-top: 3px solid var(--tone, var(--accent)) !important; }
+
+/* Floating badges on a visual */
+.visual { position: relative; }
+.float { position: absolute !important; display: flex; align-items: center; gap: 16px; background: var(--surface-2);
+  border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px 24px; box-shadow: var(--shadow-md);
+  animation: floaty 4s ease-in-out infinite; z-index: 2; }
+.float-icon { width: 54px; height: 54px; border-radius: 15px; background: var(--tone, var(--c-grape)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.float-text { font-size: 18px; line-height: 1.35; } .float-text strong { display: block; color: var(--text-1); } .float-text span { color: var(--text-3); }
+.float.solid { background: var(--accent); border-color: var(--accent); box-shadow: 0 14px 40px rgba(var(--accent-rgb),0.35); display: block; animation-delay: 2s; }
+.float.solid .fv { font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -0.03em; }
+.float.solid .fl { font-size: 17px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+/* 7g. Feature panel (fv-cards) */
+.panel { background: var(--surface); border-radius: var(--radius-lg); border: 1.5px solid var(--border); box-shadow: var(--shadow-md);
+  padding: 56px; display: flex; flex-direction: column; gap: 20px; }
+.fv-row { display: flex; gap: 20px; }
+.fv-card { flex: 1; background: var(--surface-2); border-radius: var(--radius); border: 1.5px solid var(--border); padding: 26px 28px; box-shadow: var(--shadow-sm); }
+.fv-card.wide { flex: 2; }
+.fv-label { font-size: 18px; color: var(--text-3); font-weight: 500; margin-bottom: 10px; }
+.fv-val { font-size: 40px; font-weight: 700; letter-spacing: -0.03em; }
+.fv-track { height: 7px; border-radius: 4px; margin-top: 16px; background: var(--bg); overflow: hidden; }
+.fv-fill { height: 100%; border-radius: 4px; background: var(--tone, var(--accent)); width: 0; transition: width 1.4s var(--silk) 0.3s; }
+.slide.visible .fv-fill { width: var(--w); }
+.fv-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.fv-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--bg); border-radius: 12px; font-size: 20px; }
+.fv-item span:first-child { color: var(--text-2); font-weight: 500; }
+.pill { font-size: 16px; font-weight: 600; padding: 5px 16px; border-radius: 100px; }
+.pill.green { background: rgba(var(--c-mint-rgb),0.14); color: var(--c-mint-ink); }
+.pill.red   { background: rgba(var(--c-cinnabar-rgb),0.12); color: var(--c-cinnabar-ink); }
+.pill.gold  { background: rgba(var(--c-gold-rgb),0.22); color: var(--c-gold-ink); }
+.pill.grape { background: rgba(var(--c-grape-rgb),0.12); color: var(--c-grape-ink); }
+.pill.blue  { background: rgba(var(--mid-rgb),0.12); color: var(--accent-mid); }
+.pill.dim   { background: var(--border); color: var(--text-3); }
+.pill.warn  { background: rgba(var(--c-orange-rgb),0.14); color: var(--c-orange-ink); }
+
+/* 7h. Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); }
+.stats.three { grid-template-columns: repeat(3, 1fr); }
+.stat { padding: 64px 52px; border-right: 1.5px solid var(--border); }
+.stat:last-child { border-right: none; }
+.stat-rule { width: 48px; height: 4px; background: var(--tone, var(--accent)); border-radius: 2px; margin-bottom: 36px; transition: width 0.8s var(--silk) 0.4s; }
+.slide.visible .stat-rule { width: 84px; }
+.stat-value { font-size: 104px; font-weight: 700; letter-spacing: -0.05em; line-height: 1; margin-bottom: 22px; display: flex; align-items: baseline; gap: 4px; }
+.stat-suffix { font-size: 55%; color: var(--tone-ink, var(--accent)); font-weight: 600; }
+.stat-label { font-size: 25px; font-weight: 600; margin-bottom: 8px; }
+.stat-sub { font-size: 20px; color: var(--text-3); line-height: 1.5; }
+
+/* 7i. Cards (pricing-card style) — options, comparisons, pillars */
+.card { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); padding: 52px 46px;
+  box-shadow: var(--shadow-sm); position: relative; display: flex; flex-direction: column; }
+.card-tier { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 18px; }
+.card-big { font-size: 76px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 18px; display: flex; align-items: baseline; gap: 6px; }
+.card-big small { font-size: 24px; font-weight: 500; color: var(--text-3); letter-spacing: 0; }
+.card-title { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
+.card-desc { font-size: 22px; color: var(--text-2); line-height: 1.55; }
+.card-divider { height: 1.5px; background: var(--border); margin: 32px 0 28px; }
+.card .checklist { margin-top: 0; gap: 16px; }
+.card .check { font-size: 21px; }
+.card .check-icon { width: 28px; height: 28px; font-size: 14px; }
+.card-icon { width: 72px; height: 72px; border-radius: 20px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10); border: 1.5px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.30);
+  display: flex; align-items: center; justify-content: center; color: var(--tone-ink, var(--accent)); margin-bottom: 30px; }
+.card.tinted { border-top: 5px solid var(--tone, var(--accent)); }
+.card-icon svg { width: 34px; height: 34px; }
+.card.featured { background: var(--ink); border-color: var(--accent); box-shadow: 0 30px 90px rgba(var(--accent-rgb),0.25); }
+.card.featured .card-tier { color: rgba(255,255,255,0.5); }
+.card.featured .card-big, .card.featured .card-title { color: #fff; }
+.card.featured .card-big small { color: rgba(255,255,255,0.5); }
+.card.featured .card-desc { color: rgba(255,255,255,0.68); }
+.card.featured .card-divider { background: rgba(255,255,255,0.1); }
+.card.featured .check { color: rgba(255,255,255,0.82); }
+.card.featured .check-icon { background: rgba(var(--light-rgb),0.2); border-color: rgba(var(--light-rgb),0.4); color: var(--accent-light); }
+.card.featured .card-icon { background: rgba(var(--light-rgb),0.15); border-color: rgba(var(--light-rgb),0.35); color: var(--accent-light); }
+.card-flag { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff;
+  font-size: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 24px; border-radius: 100px; white-space: nowrap; }
+
+/* 7j. Quotes (testimonials) */
+.quotes { display: grid; grid-template-columns: 1.15fr 1fr 1fr; grid-template-rows: auto auto; gap: 32px; }
+.quote { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); padding: 44px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.quote.tall { grid-row: span 2; justify-content: space-between; }
+.quote-mark { font-family: var(--font-serif); font-size: 96px; line-height: 0.6; color: var(--tone, var(--accent-light)); height: 40px; }
+.quote-text { font-size: 23px; line-height: 1.6; color: var(--text-2); font-style: italic; margin: 18px 0 30px; flex: 1; }
+.quote.tall .quote-text { font-size: 30px; }
+.author { display: flex; align-items: center; gap: 16px; }
+.avatar { width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.30); background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; color: var(--tone-ink, var(--accent)); }
+.author-name { font-size: 21px; font-weight: 600; }
+.author-role { font-size: 18px; color: var(--text-3); margin-top: 2px; }
+
+/* 7k. Statement (big quote slide) */
+.statement { font-size: 84px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.15; max-width: 1500px; }
+.statement-by { margin-top: 56px; }
+
+/* 7l. Tag cloud (integration pills) */
+.tags { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; max-width: 1400px; margin: 0 auto; }
+.tag-pill { background: var(--surface-2); border-radius: 100px; border: 1.5px solid var(--border); padding: 18px 36px; box-shadow: var(--shadow-sm);
+  font-size: 24px; font-weight: 600; color: var(--text-2); white-space: nowrap; letter-spacing: -0.01em; }
+.tag-pill.hl { border-color: rgba(var(--tone-rgb, var(--accent-rgb)),0.30); background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10); color: var(--tone-ink, var(--accent)); }
+
+/* 7m. Ticker (logo strip) */
+.ticker { border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); background: var(--surface); padding: 34px 0; overflow: hidden;
+  margin: 0 calc(-1 * var(--pad-x)); }
+.ticker-label { text-align: center; font-size: 17px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 600; margin-bottom: 26px; }
+.ticker-track { display: flex; align-items: center; gap: 90px; width: max-content; animation: ticker 32s linear infinite; }
+.ticker-item { display: flex; align-items: center; gap: 14px; font-size: 27px; font-weight: 700; letter-spacing: -0.03em; color: var(--text-3); white-space: nowrap; }
+.ticker-item i { width: 44px; height: 44px; border-radius: 12px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.14); border: 1.5px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.32); display: block; }
+.ticker-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-light); opacity: 0.5; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* 7n. FAQ / Q&A accordion */
+.faq { display: grid; grid-template-columns: 1fr 1.6fr; gap: 110px; align-items: start; }
+.faq-item { border-bottom: 1.5px solid var(--border); }
+.faq-item:first-child { border-top: 1.5px solid var(--border); }
+.faq-q { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 30px 0; cursor: pointer; font-size: 27px; font-weight: 600; transition: color 0.3s; }
+.faq-q:hover { color: var(--accent); }
+.faq-icon { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 26px; font-weight: 300; transition: transform 0.5s var(--silk), background 0.4s, color 0.4s; }
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); color: #fff; border-color: var(--accent); }
+.faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s var(--silk); }
+.faq-item.open .faq-a { grid-template-rows: 1fr; }
+.faq-a > div { overflow: hidden; font-size: 23px; line-height: 1.65; color: var(--text-2); transition: padding-bottom 0.5s var(--silk); }
+.faq-item.open .faq-a > div { padding-bottom: 30px; }
+
+/* 7o. Steps / timeline */
+.steps { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 0; position: relative; }
+.steps::before { content: ''; position: absolute; top: 36px; left: 36px; right: calc(100% / var(--n, 4) - 36px); height: 2px; background: var(--accent-border); }
+.step { padding-right: 44px; position: relative; }
+.step-num { width: 72px; height: 72px; border-radius: 50%; background: var(--surface-2); border: 2px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.40); color: var(--tone-ink, var(--accent));
+  display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; margin-bottom: 36px; box-shadow: var(--shadow-sm); position: relative; }
+.step.done .step-num, .step.now .step-num { background: var(--tone, var(--accent)); border-color: var(--tone, var(--accent)); color: #fff; }
+.step.now .step-num { box-shadow: 0 0 0 10px rgba(var(--tone-rgb, var(--accent-rgb)),0.14); }
+.step-when { font-size: 17px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); margin-bottom: 12px; }
+.step-title { font-size: 31px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
+.step-desc { font-size: 21px; line-height: 1.6; color: var(--text-2); }
+
+/* 7p. Table */
+.table-wrap { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; }
+table.data { width: 100%; border-collapse: collapse; font-size: 22px; }
+table.data th { text-align: left; font-size: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+  background: var(--bg-alt); padding: 22px 32px; }
+table.data td { padding: 22px 32px; border-top: 1.5px solid var(--border); color: var(--text-2); }
+table.data td:first-child { color: var(--text-1); font-weight: 600; }
+table.data tr.hl td { background: var(--accent-ghost); }
+table.data .num { text-align: right; font-variant-numeric: tabular-nums; }
+.yes { color: var(--c-mint-ink); font-weight: 700; } .no { color: var(--text-3); } .bad { color: var(--c-cinnabar-ink); font-weight: 700; }
+
+/* 7q. Phone showcase (3D carousel) */
+.phones { position: relative; height: 600px; perspective: 1800px; display: flex; align-items: center; justify-content: center; }
+.phone { position: absolute; width: 228px; transition: transform 0.7s var(--silk), opacity 0.7s var(--silk); cursor: pointer; }
+.phone-shell { background: var(--shell); border-radius: 40px; padding: 6px;
+  box-shadow: 0 0 0 1px rgba(150,166,184,0.5), 0 32px 72px rgba(var(--ink-rgb),0.18), inset 0 1px 0 rgba(255,255,255,0.6); }
+.phone-screen { background: var(--bg); border-radius: 34px; overflow: hidden; aspect-ratio: 9 / 19.5; }
+.phone-screen img { width: 100%; height: 100%; object-fit: cover; }
+.phone-cap { text-align: center; margin-top: 16px; font-size: 20px; font-weight: 600; color: var(--text-2); opacity: 0; transition: opacity 0.4s; }
+.phone[data-pos="center"] .phone-cap { opacity: 1; }
+.phones-ctl { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 4px; }
+.round-btn { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-border); background: var(--surface-2); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.4s var(--silk); }
+.round-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+/* drawn mock screen (when no screenshot available) */
+.mock { height: 100%; display: flex; flex-direction: column; padding: 30px 18px 0; gap: 12px; }
+.mock-h { font-size: 19px; font-weight: 700; padding: 0 4px; }
+.mock-card { background: var(--surface-2); border-radius: 16px; border: 1px solid var(--border); padding: 16px; }
+.mock-line { height: 9px; border-radius: 5px; background: var(--bg-alt); margin-top: 8px; }
+.mock-line.a { background: var(--accent); width: 45%; } .mock-line.s { width: 70%; }
+.mock-big { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+.mock-nav { margin-top: auto; display: flex; justify-content: space-around; padding: 14px 0 20px; border-top: 1px solid var(--border); background: var(--surface-2); margin-left: -18px; margin-right: -18px; }
+.mock-nav i { width: 24px; height: 24px; border-radius: 50%; background: var(--bg-alt); display: block; } .mock-nav i.on { background: var(--accent); }
+
+/* 7r. Dark CTA / closing banner */
+.slide.dark { background: var(--ink); color: #fff; }
+.slide.dark .title, .slide.dark .statement { color: #fff; }
+.slide.dark em { color: var(--accent-light); }
+.slide.dark .lead, .slide.dark .body { color: rgba(255,255,255,0.62); }
+.slide.dark .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
+.slide.dark .label::before { background: var(--accent-light); }
+.slide.dark .orb-a { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.16) 0%, transparent 70%); }
+.slide.dark .orb-b { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.08) 0%, transparent 70%); }
+.cta-box { background: var(--ink); border-radius: var(--radius-lg); padding: 110px; display: flex; align-items: center; justify-content: space-between; gap: 80px; position: relative; overflow: hidden; }
+.cta-box::before { content: ''; position: absolute; top: -40%; right: -5%; width: 820px; height: 820px; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.17) 0%, transparent 70%); }
+.cta-box > * { position: relative; }
+.cta-box .title { color: #fff; } .cta-box em { color: var(--accent-light); }
+.cta-box .lead { color: rgba(255,255,255,0.62); }
+.cta-box .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
+.cta-box .label::before { background: var(--accent-light); }
+.cta-actions { display: flex; flex-direction: column; gap: 18px; flex-shrink: 0; }
+.btn-ghost-dark { color: rgba(255,255,255,0.7); border: 1.5px solid rgba(255,255,255,0.14); justify-content: center; }
+.contact { display: flex; flex-direction: column; gap: 14px; font-size: 22px; color: rgba(255,255,255,0.6); }
+.contact b { color: #fff; font-weight: 600; }
+
+/* 7s. Image figure */
+.figure { border-radius: var(--radius-lg); overflow: hidden; border: 1.5px solid var(--border); box-shadow: var(--shadow-md); background: var(--surface-2); }
+.figure img { width: 100%; height: 100%; object-fit: cover; }
+.caption { font-size: 18px; color: var(--text-3); margin-top: 16px; }
+
+/* Speaker notes are never shown */
+.notes { display: none !important; }
+
+/* === 8. INLINE EDITING === */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle { position: fixed; top: 18px; left: 18px; z-index: 10001; width: 48px; height: 48px; border-radius: 50%;
+  background: #fff; color: var(--accent); border: 1.5px solid var(--accent-border); box-shadow: 0 6px 20px rgba(var(--ink-rgb),0.12);
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s, background 0.3s, color 0.3s; }
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--accent); color: #fff; }
+.edit-toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px); z-index: 10002; opacity: 0; pointer-events: none;
+  background: var(--ink); color: #fff; font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: 100px; transition: all 0.4s var(--silk); }
+.edit-toast.show { opacity: 1; transform: translate(-50%, 0); }
+body.editing [contenteditable="true"] { outline: 2px dashed rgba(var(--accent-rgb),0.35); outline-offset: 6px; border-radius: 6px; cursor: text; }
+body.editing [contenteditable="true"]:focus { outline-color: var(--accent); }
+
+/* === 9. PRINT (one slide per page) & REDUCED MOTION === */
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+  .deck-viewport { position: static; overflow: visible; }
+  .deck-stage { position: static; width: 1920px; height: auto; transform: none !important; overflow: visible; }
+  .deck-stage::after, .deck-nav, .deck-dots, .edit-hotzone, .edit-toggle, .edit-toast, .phones-ctl { display: none !important; }
+  .slide { position: relative; visibility: visible !important; opacity: 1 !important; break-after: page; page-break-after: always; }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .bar { height: var(--h) !important; } .fv-fill { width: var(--w) !important; } .stat-rule { width: 84px !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+}
+</style>
+</head>
+<body>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit text (E)">✎</button>
+<div class="edit-toast" id="editToast"></div>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+  <!-- Deck chrome: logo (brand) · current section · slide counter · progress dots -->
+  <header class="deck-nav">
+    <div class="deck-logo">atlas<span>.review</span></div>
+    <div class="deck-meta"><div class="deck-section" id="deckSection"></div><div class="deck-count" id="deckCount"></div></div>
+  </header>
+  <nav class="deck-dots" id="deckDots" aria-label="Slides"></nav>
+
+  <!-- ================= 01 · TITLE (hero) ================= -->
+  <section class="slide" data-section="Overview">
+    <div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-d"></div>
+    <div class="split wide-left">
+      <div style="display:flex;flex-direction:column">
+        <div class="badge reveal"><div class="badge-dot">✦</div><span>Platform Review · <strong>November 2026</strong></span></div>
+        <h1 class="title hero reveal d1">Your platform,<br><em>finally clear.</em></h1>
+        <p class="lead reveal d2">How Atlas unified twelve internal tools into one calm, observable surface — and what we ship next.</p>
+        <div class="trust reveal d3">
+          <div class="trust-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Platform Engineering</span></div>
+          <div class="trust-divider"></div>
+          <div class="trust-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span>Q4 All-Hands</span></div>
+        </div>
+      </div>
+      <div class="visual reveal d2">
+        <div class="window">
+          <div class="window-bar"><i></i><i></i><i></i></div>
+          <div class="window-body">
+            <div class="win-head"><div class="win-title">Cluster Utilization</div><div class="tag">Live</div></div>
+            <div class="bars">
+              <div class="bar" style="--h:35%"></div><div class="bar" style="--h:55%"></div><div class="bar" style="--h:42%"></div><div class="bar on" style="--h:75%"></div>
+              <div class="bar" style="--h:60%"></div><div class="bar on" style="--h:88%"></div><div class="bar" style="--h:70%"></div><div class="bar on" style="--h:92%"></div>
+            </div>
+            <div class="mini-stats">
+              <div class="mini-stat"><div class="mini-val">94<small>%</small></div><div class="mini-label">GPU usage</div><div class="mini-chg">+12%</div></div>
+              <div class="mini-stat"><div class="mini-val">2.4<small>k</small></div><div class="mini-label">Workloads</div><div class="mini-chg">+8%</div></div>
+              <div class="mini-stat"><div class="mini-val">18<small>h</small></div><div class="mini-label">Saved / wk</div><div class="mini-chg">+24%</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="float" style="bottom:-28px;left:-44px"><div class="float-icon">✦</div><div class="float-text"><strong>Autoscaler on</strong><span>prod-east · just now</span></div></div>
+        <div class="float solid" style="top:40px;right:-36px"><div class="fv">↑ 34%</div><div class="fl">Throughput this quarter</div></div>
+      </div>
+    </div>
+    <div class="notes">Open with the headline number; the dashboard is illustrative.</div>
+  </section>
+
+  <!-- ================= 02 · AGENDA (checklist two-col) ================= -->
+  <section class="slide alt" data-section="Agenda">
+    <div class="head">
+      <div class="label reveal">Agenda</div>
+      <h2 class="title reveal d1">What we'll <em>cover</em> today</h2>
+    </div>
+    <div class="checklist two-col">
+      <div class="check reveal d2"><div class="check-icon">01</div><span><b>Where we started</b> — twelve tools, no single view</span></div>
+      <div class="check reveal d3"><div class="check-icon">02</div><span><b>What we built</b> — the unified control plane</span></div>
+      <div class="check reveal d3"><div class="check-icon">03</div><span><b>Results</b> — utilization, cost and uptime</span></div>
+      <div class="check reveal d4"><div class="check-icon">04</div><span><b>Options</b> — three paths for 2027</span></div>
+      <div class="check reveal d4"><div class="check-icon">05</div><span><b>Roadmap</b> — milestones and owners</span></div>
+      <div class="check reveal d5"><div class="check-icon">06</div><span><b>Q&amp;A</b> — your questions, answered</span></div>
+    </div>
+  </section>
+
+  <!-- ================= 03 · SECTION DIVIDER ================= -->
+  <section class="slide center" data-section="Chapter 1">
+    <div class="orb orb-c"></div>
+    <div class="head center" style="margin:0">
+      <div class="label reveal">Chapter 01</div>
+      <h2 class="title hero reveal d1">Built for <em>clarity</em><br>at every scale</h2>
+      <p class="lead reveal d2">Every feature reduces friction and surfaces what matters. No bloat, no configuration maze.</p>
+    </div>
+  </section>
+
+  <!-- ================= 04 · FEATURE (content + panel) ================= -->
+  <section class="slide" data-section="What we built">
+    <div class="split">
+      <div>
+        <div class="kicker reveal">01 — Unified Dashboard</div>
+        <h2 class="title reveal d1">Every metric, one <em>calm</em> surface</h2>
+        <p class="lead reveal d2">Pull data from any source into a single composable view. Share live dashboards — no exports, no screenshots.</p>
+        <div class="checklist">
+          <div class="check reveal d3"><div class="check-icon">✓</div><span>Drag-and-drop widget builder</span></div>
+          <div class="check reveal d4"><div class="check-icon">✓</div><span>Real-time sync across all sources</span></div>
+          <div class="check reveal d5"><div class="check-icon">✓</div><span>Role-based sharing with fine permissions</span></div>
+        </div>
+      </div>
+      <div class="panel reveal d2">
+        <div class="fv-row">
+          <div class="fv-card"><div class="fv-label">Monthly spend</div><div class="fv-val">$84.2k</div><div class="fv-track"><div class="fv-fill" style="--w:72%"></div></div></div>
+          <div class="fv-card"><div class="fv-label">Active nodes</div><div class="fv-val">12,481</div><div class="fv-track"><div class="fv-fill" style="--w:88%"></div></div></div>
+        </div>
+        <div class="fv-card">
+          <div class="fv-label">Recent activity</div>
+          <div class="fv-list">
+            <div class="fv-item"><span>Q3 capacity report synced</span><span class="pill green">Done</span></div>
+            <div class="fv-item"><span>GPU pool rebalance</span><span class="pill blue">Active</span></div>
+            <div class="fv-item"><span>Cost export to finance</span><span class="pill grape">Review</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 05 · FEATURE (reverse, with screenshot window) ================= -->
+  <section class="slide alt" data-section="What we built">
+    <div class="split reverse">
+      <div>
+        <div class="kicker reveal">02 — Smart Automation</div>
+        <h2 class="title reveal d1">Routines that run <em>themselves</em></h2>
+        <p class="lead reveal d2">Describe the intent in plain language; Atlas proposes the flow and keeps an audit trail of every action.</p>
+        <div class="checklist">
+          <div class="check reveal d3"><div class="check-icon">✓</div><span>Natural-language flow builder</span></div>
+          <div class="check reveal d4"><div class="check-icon">✓</div><span>500+ trigger templates</span></div>
+        </div>
+      </div>
+      <div class="window reveal d2">
+        <div class="window-bar"><i></i><i></i><i></i></div>
+        <div class="window-body">
+          <div class="win-head"><div class="win-title">Active automations</div><div class="tag">24 flows</div></div>
+          <div class="fv-list">
+            <div class="fv-item"><span>Weekly digest → Slack</span><span class="pill green">Running</span></div>
+            <div class="fv-item"><span>Node drift → page on-call</span><span class="pill green">Running</span></div>
+            <div class="fv-item"><span>Budget 80% → alert owner</span><span class="pill blue">Active</span></div>
+            <div class="fv-item"><span>Snapshot sync → cold tier</span><span class="pill warn">Retrying</span></div>
+            <div class="fv-item"><span>Report sync → Drive</span><span class="pill red">Failed</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 06 · STATS ================= -->
+  <section class="slide" data-section="Results">
+    <div class="orb orb-b"></div>
+    <div class="head">
+      <div class="label reveal">Results</div>
+      <h2 class="title reveal d1">Twelve months, <em>measured</em></h2>
+    </div>
+    <div class="stats reveal d2">
+      <div class="stat"><div class="stat-rule"></div><div class="stat-value"><span data-count="50">50</span><span class="stat-suffix">k+</span></div><div class="stat-label">Workloads managed</div><div class="stat-sub">Across 14 clusters</div></div>
+      <div class="stat"><div class="stat-rule"></div><div class="stat-value"><span data-count="34">34</span><span class="stat-suffix">%</span></div><div class="stat-label">Cost reduction</div><div class="stat-sub">Versus 2025 baseline</div></div>
+      <div class="stat"><div class="stat-rule"></div><div class="stat-value"><span data-count="99.9">99.9</span><span class="stat-suffix">%</span></div><div class="stat-label">Uptime</div><div class="stat-sub">Monitored 24/7</div></div>
+      <div class="stat"><div class="stat-rule"></div><div class="stat-value"><span data-count="18">18</span><span class="stat-suffix">h</span></div><div class="stat-label">Saved per team / week</div><div class="stat-sub">Self-reported survey</div></div>
+    </div>
+  </section>
+
+  <!-- ================= 07 · CARDS (options, one featured) ================= -->
+  <section class="slide alt" data-section="Options">
+    <div class="head center">
+      <div class="label reveal">Options for 2027</div>
+      <h2 class="title reveal d1">Three paths, one <em>recommendation</em></h2>
+    </div>
+    <div class="grid-3" style="align-items:stretch">
+      <div class="card reveal d2">
+        <div class="card-tier">Option A · Hold</div>
+        <div class="card-big">$1.2<small>M / yr</small></div>
+        <p class="card-desc">Keep today's footprint and focus on reliability work.</p>
+        <div class="card-divider"></div>
+        <div class="checklist"><div class="check"><div class="check-icon">✓</div><span>Lowest risk</span></div><div class="check"><div class="check-icon">✓</div><span>No new hiring</span></div><div class="check"><div class="check-icon">✓</div><span>Growth capped at 15%</span></div></div>
+      </div>
+      <div class="card featured reveal d3">
+        <div class="card-flag">Recommended</div>
+        <div class="card-tier">Option B · Expand</div>
+        <div class="card-big">$2.0<small>M / yr</small></div>
+        <p class="card-desc">Add a second GPU region and self-service onboarding.</p>
+        <div class="card-divider"></div>
+        <div class="checklist"><div class="check"><div class="check-icon">✓</div><span>2× capacity by Q3</span></div><div class="check"><div class="check-icon">✓</div><span>Payback in 14 months</span></div><div class="check"><div class="check-icon">✓</div><span>Four new hires</span></div></div>
+      </div>
+      <div class="card reveal d4">
+        <div class="card-tier">Option C · Rebuild</div>
+        <div class="card-big">$3.4<small>M / yr</small></div>
+        <p class="card-desc">Re-platform onto a new scheduler and storage layer.</p>
+        <div class="card-divider"></div>
+        <div class="checklist"><div class="check"><div class="check-icon">✓</div><span>Biggest long-term upside</span></div><div class="check"><div class="check-icon">✓</div><span>18-month migration</span></div><div class="check"><div class="check-icon">✓</div><span>High delivery risk</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 08 · ICON CARDS (pillars) ================= -->
+  <section class="slide" data-section="Principles">
+    <div class="head">
+      <div class="label reveal">Principles</div>
+      <h2 class="title reveal d1">How we <em>decide</em></h2>
+    </div>
+    <div class="grid-3">
+      <div class="card tinted reveal d2"><div class="card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="card-title">Safe by default</div><p class="card-desc">Every change is reversible, reviewed and observable before it reaches production.</p></div>
+      <div class="card tinted reveal d3"><div class="card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="card-title">Fast feedback</div><p class="card-desc">Teams see the cost and performance of a change within minutes, not at month-end.</p></div>
+      <div class="card tinted reveal d4"><div class="card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="card-title">One layer</div><p class="card-desc">A single control plane over compute, storage and network — no parallel tooling.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= 09 · STATEMENT ================= -->
+  <section class="slide center alt" data-section="Insight">
+    <div class="orb orb-c"></div>
+    <div class="center" style="display:flex;flex-direction:column">
+      <div class="label reveal">Key insight</div>
+      <p class="statement reveal d1">The bottleneck was never compute. It was <em>knowing what we already had.</em></p>
+      <div class="author statement-by reveal d2" style="justify-content:center"><div class="avatar">SW</div><div style="text-align:left"><div class="author-name">Platform team retro</div><div class="author-role">September 2026</div></div></div>
+    </div>
+  </section>
+
+  <!-- ================= 10 · QUOTES ================= -->
+  <section class="slide" data-section="Feedback">
+    <div class="head">
+      <div class="label reveal">What teams say</div>
+      <h2 class="title reveal d1">Teams that <em>love</em> the change</h2>
+    </div>
+    <div class="quotes">
+      <div class="quote tall reveal d2"><div class="quote-mark">“</div><p class="quote-text">We replaced three separate tools and actually have fewer meetings now. The automation handles the hand-offs we used to sort out every morning.</p><div class="author"><div class="avatar">SL</div><div><div class="author-name">Sarah Lin</div><div class="author-role">Head of Operations · Data</div></div></div></div>
+      <div class="quote reveal d3"><div class="quote-mark">“</div><p class="quote-text">I can review capacity and approve changes between meetings.</p><div class="author"><div class="avatar">MR</div><div><div class="author-name">Marcus Reyes</div><div class="author-role">Product Director</div></div></div></div>
+      <div class="quote reveal d4"><div class="quote-mark">“</div><p class="quote-text">Onboarding a 30-person team took one afternoon.</p><div class="author"><div class="avatar">PK</div><div><div class="author-name">Priya Kapoor</div><div class="author-role">Engineering Lead</div></div></div></div>
+      <div class="quote reveal d4"><div class="quote-mark">“</div><p class="quote-text">We show stakeholders live data instead of preparing decks.</p><div class="author"><div class="avatar">TW</div><div><div class="author-name">Tom Wang</div><div class="author-role">Finance</div></div></div></div>
+      <div class="quote reveal d5"><div class="quote-mark">“</div><p class="quote-text">Support answered an integration question in two hours.</p><div class="author"><div class="avatar">AN</div><div><div class="author-name">Aiko Nakamura</div><div class="author-role">CTO · Labs</div></div></div></div>
+    </div>
+  </section>
+
+  <!-- ================= 11 · PHONE SHOWCASE ================= -->
+  <section class="slide alt" data-section="Mobile">
+    <div class="head center" style="margin-bottom:0">
+      <div class="label reveal">Mobile app</div>
+      <h2 class="title reveal d1">Your cluster, <em>in your pocket</em></h2>
+    </div>
+    <div class="phones reveal d2">
+      <div class="phone"><div class="phone-shell"><div class="phone-screen"><div class="mock"><div class="mock-h">Overview</div><div class="mock-card"><div class="mock-big">94%</div><div class="mock-line a"></div><div class="mock-line s"></div></div><div class="mock-card"><div class="mock-line s"></div><div class="mock-line"></div></div><div class="mock-nav"><i class="on"></i><i></i><i></i><i></i></div></div></div></div><div class="phone-cap">Overview</div></div>
+      <div class="phone"><div class="phone-shell"><div class="phone-screen"><div class="mock"><div class="mock-h">Alerts</div><div class="mock-card"><div class="mock-line a"></div><div class="mock-line"></div></div><div class="mock-card"><div class="mock-line a"></div><div class="mock-line s"></div></div><div class="mock-card"><div class="mock-line"></div></div><div class="mock-nav"><i></i><i class="on"></i><i></i><i></i></div></div></div></div><div class="phone-cap">Alerts</div></div>
+      <div class="phone"><div class="phone-shell"><div class="phone-screen"><div class="mock"><div class="mock-h">Capacity</div><div class="mock-card"><div class="mock-big">2.4k</div><div class="mock-line a"></div></div><div class="mock-card"><div class="mock-big">$84k</div><div class="mock-line s"></div></div><div class="mock-nav"><i></i><i></i><i class="on"></i><i></i></div></div></div></div><div class="phone-cap">Capacity</div></div>
+      <div class="phone"><div class="phone-shell"><div class="phone-screen"><div class="mock"><div class="mock-h">Approvals</div><div class="mock-card"><div class="mock-line a"></div><div class="mock-line s"></div></div><div class="mock-card"><div class="mock-line a"></div><div class="mock-line"></div></div><div class="mock-nav"><i></i><i></i><i></i><i class="on"></i></div></div></div></div><div class="phone-cap">Approvals</div></div>
+      <div class="phone"><div class="phone-shell"><div class="phone-screen"><div class="mock"><div class="mock-h">Settings</div><div class="mock-card"><div class="mock-line"></div><div class="mock-line s"></div></div><div class="mock-card"><div class="mock-line"></div></div><div class="mock-nav"><i></i><i></i><i></i><i></i></div></div></div></div><div class="phone-cap">Settings</div></div>
+    </div>
+    <div class="phones-ctl"><button class="round-btn" data-dir="prev" aria-label="Previous">‹</button><button class="round-btn" data-dir="next" aria-label="Next">›</button></div>
+  </section>
+
+  <!-- ================= 12 · TABLE ================= -->
+  <section class="slide" data-section="Comparison">
+    <div class="head">
+      <div class="label reveal">Comparison</div>
+      <h2 class="title reveal d1">Before and <em>after</em> Atlas</h2>
+    </div>
+    <div class="table-wrap reveal d2">
+      <table class="data">
+        <thead><tr><th>Capability</th><th>2025 tooling</th><th>Atlas</th><th class="num">Change</th></tr></thead>
+        <tbody>
+          <tr><td>Provisioning time</td><td>3 days</td><td>12 minutes</td><td class="num yes">−99%</td></tr>
+          <tr class="hl"><td>GPU utilization</td><td>41%</td><td>78%</td><td class="num yes">+37 pts</td></tr>
+          <tr><td>Cost visibility</td><td>Monthly, by finance</td><td>Live, per team</td><td class="num yes">✓</td></tr>
+          <tr><td>Self-service onboarding</td><td class="no">—</td><td>Yes</td><td class="num yes">✓</td></tr>
+          <tr><td>Tools to operate</td><td>12</td><td>1</td><td class="num yes">−11</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= 13 · TIMELINE ================= -->
+  <section class="slide alt" data-section="Roadmap">
+    <div class="head">
+      <div class="label reveal">Roadmap</div>
+      <h2 class="title reveal d1">The next <em>four</em> quarters</h2>
+    </div>
+    <div class="steps" style="--n:4">
+      <div class="step done reveal d2"><div class="step-num">✓</div><div class="step-when">Q4 2026</div><div class="step-title">Unify</div><p class="step-desc">Retire the last three legacy dashboards.</p></div>
+      <div class="step now reveal d3"><div class="step-num">2</div><div class="step-when">Q1 2027</div><div class="step-title">Expand</div><p class="step-desc">Bring up the second GPU region.</p></div>
+      <div class="step reveal d4"><div class="step-num">3</div><div class="step-when">Q2 2027</div><div class="step-title">Self-serve</div><p class="step-desc">Teams onboard without a ticket.</p></div>
+      <div class="step reveal d5"><div class="step-num">4</div><div class="step-when">Q3 2027</div><div class="step-title">Optimize</div><p class="step-desc">Predictive scaling on every cluster.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= 14 · TAG CLOUD + TICKER ================= -->
+  <section class="slide" data-section="Ecosystem">
+    <div class="head center" style="margin-bottom:56px">
+      <div class="label reveal">Integrations</div>
+      <h2 class="title reveal d1">Connects with your <em>existing stack</em></h2>
+    </div>
+    <div class="tags reveal d2">
+      <span class="tag-pill hl">Kubernetes</span><span class="tag-pill">Prometheus</span><span class="tag-pill">Grafana</span><span class="tag-pill hl">NVIDIA DCGM</span>
+      <span class="tag-pill">Slack</span><span class="tag-pill">GitHub</span><span class="tag-pill">Terraform</span><span class="tag-pill">ServiceNow</span>
+      <span class="tag-pill">Jira</span><span class="tag-pill hl">Ceph</span><span class="tag-pill">Vault</span><span class="tag-pill">PagerDuty</span>
+    </div>
+    <div class="ticker reveal d3" style="margin-top:72px">
+      <div class="ticker-label">Running in production at</div>
+      <div class="ticker-track">
+        <div class="ticker-item"><i></i>Nexaflow</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Meridian</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Vanta Labs</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Pulsar HQ</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Arclight</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Stratum IO</div><div class="ticker-dot"></div>
+        <div class="ticker-item"><i></i>Nexaflow</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Meridian</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Vanta Labs</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Pulsar HQ</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Arclight</div><div class="ticker-dot"></div><div class="ticker-item"><i></i>Stratum IO</div><div class="ticker-dot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 15 · FAQ ================= -->
+  <section class="slide alt" data-section="Q&amp;A">
+    <div class="faq">
+      <div>
+        <div class="label reveal">Q&amp;A</div>
+        <h2 class="title reveal d1">Questions,<br><em>answered</em></h2>
+        <p class="lead reveal d2">Click a question to open it. Anything else — ask now.</p>
+      </div>
+      <div class="reveal d2">
+        <div class="faq-item open"><div class="faq-q"><span>Does Option B need new headcount?</span><div class="faq-icon">+</div></div><div class="faq-a"><div>Yes — four engineers, two of them in the new region. Hiring starts in January.</div></div></div>
+        <div class="faq-item"><div class="faq-q"><span>What happens to the legacy dashboards?</span><div class="faq-icon">+</div></div><div class="faq-a"><div>They go read-only in December and are retired once the last owners migrate.</div></div></div>
+        <div class="faq-item"><div class="faq-q"><span>How is uptime measured?</span><div class="faq-icon">+</div></div><div class="faq-a"><div>Synthetic probes every 30 seconds from three regions, published on the status page.</div></div></div>
+        <div class="faq-item"><div class="faq-q"><span>Can my team pilot self-service early?</span><div class="faq-icon">+</div></div><div class="faq-a"><div>Yes — three pilot slots open in Q1. Ask in #atlas-pilot.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 16 · CLOSING (dark CTA box) ================= -->
+  <section class="slide" data-section="Next steps">
+    <div class="cta-box reveal">
+      <div style="max-width:900px">
+        <div class="label">Decision needed</div>
+        <h2 class="title">Ready for a<br><em>clearer platform?</em></h2>
+        <p class="lead">Approve Option B today and we start the second region in January.</p>
+      </div>
+      <div class="cta-actions">
+        <span class="btn btn-primary">Approve Option B <span>→</span></span>
+        <span class="btn btn-ghost-dark">Schedule a deep-dive</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 17 · THANK YOU (full dark) ================= -->
+  <section class="slide dark center" data-section="">
+    <div class="orb orb-a"></div><div class="orb orb-b"></div>
+    <div class="center" style="display:flex;flex-direction:column">
+      <div class="label reveal">Thank you</div>
+      <h2 class="title hero reveal d1">Less noise,<br><em>more done.</em></h2>
+      <div class="contact reveal d2" style="margin-top:56px;align-items:center"><span><b>Sheng-Lin Wu</b> · Platform Engineering</span><span>atlas@example.com</span></div>
+    </div>
+  </section>
+</main>
+</div>
+<script>
+/* ==========================================================
+   NICE-PRESENTATION CONTROLLER
+   Stage scaling · navigation · reveal/counters · FAQ ·
+   phone carousel · inline editing (E) · fullscreen (F)
+   ========================================================== */
+(() => {
+  const stage  = document.getElementById('deckStage');
+  const slides = Array.from(stage.querySelectorAll('.slide'));
+  const sectionEl = document.getElementById('deckSection');
+  const countEl   = document.getElementById('deckCount');
+  const dotsEl    = document.getElementById('deckDots');
+  let current = 0, wheelLock = false, editing = false;
+
+  /* --- Fixed 16:9 stage scaling --- */
+  function scaleStage() {
+    const f = Math.min(innerWidth / 1920, innerHeight / 1080);
+    const x = (innerWidth - 1920 * f) / 2, y = (innerHeight - 1080 * f) / 2;
+    stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+  }
+  addEventListener('resize', scaleStage); scaleStage();
+
+  /* --- Progress dots --- */
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'deck-dot'; d.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+  });
+
+  /* --- Per-slide entrance effects --- */
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.count);
+    const dec = (el.dataset.count.split('.')[1] || '').length;
+    const t0 = performance.now(), dur = 1800;
+    el.textContent = (0).toFixed(dec);
+    const step = now => {
+      const p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 4);
+      el.textContent = (e * target).toFixed(dec);
+      if (p < 1) requestAnimationFrame(step); else el.textContent = target.toFixed(dec);
+    };
+    requestAnimationFrame(step);
+  }
+  function enter(slide) {
+    slide.querySelectorAll('[data-count]').forEach(animateCounter);
+  }
+
+  /* --- Show a slide --- */
+  function go(i) {
+    i = Math.max(0, Math.min(i, slides.length - 1));
+    slides.forEach((s, k) => { s.classList.toggle('active', k === i); if (k !== i) s.classList.remove('visible'); });
+    const s = slides[i];
+    requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add('visible')));
+    current = i;
+    enter(s);
+    stage.classList.toggle('on-dark', s.classList.contains('dark'));
+    if (sectionEl) { sectionEl.textContent = s.dataset.section || ''; sectionEl.style.opacity = s.dataset.section ? 1 : 0; }
+    if (countEl) countEl.textContent = `${String(i + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+    dotsEl.querySelectorAll('.deck-dot').forEach((d, k) => d.classList.toggle('active', k === i));
+    if (location.hash !== `#${i + 1}`) history.replaceState(null, '', `#${i + 1}`);
+  }
+  const next = () => go(current + 1), prev = () => go(current - 1);
+
+  /* --- Keyboard --- */
+  document.addEventListener('keydown', e => {
+    if (e.target.isContentEditable) return;
+    if (e.key === 'e' || e.key === 'E') { toggleEdit(); return; }
+    if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); return; }
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+  });
+  /* --- Wheel (throttled) --- */
+  addEventListener('wheel', e => {
+    if (editing || wheelLock || Math.abs(e.deltaY) < 20) return;
+    wheelLock = true; setTimeout(() => wheelLock = false, 700);
+    e.deltaY > 0 ? next() : prev();
+  }, { passive: true });
+  /* --- Touch swipe --- */
+  let tx = 0, ty = 0;
+  addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? next() : prev();
+  }, { passive: true });
+
+  /* --- FAQ accordion --- */
+  stage.querySelectorAll('.faq-q').forEach(q => q.addEventListener('click', () => {
+    if (!editing) q.parentElement.classList.toggle('open');
+  }));
+
+  /* --- 3D phone carousel(s) --- */
+  stage.querySelectorAll('.phones').forEach(wrap => {
+    const cards = Array.from(wrap.querySelectorAll('.phone'));
+    const cfg = { center: [0, 0, 1, 1], left1: [-1, 28, .82, 1], right1: [1, -28, .82, 1], left2: [-2, 45, .64, .55], right2: [2, -45, .64, .55], hidden: [0, 0, .4, 0] };
+    const gap = 260;
+    let c = Math.floor(cards.length / 2);
+    function layout() {
+      cards.forEach((card, i) => {
+        let off = i - c; const n = cards.length;
+        if (off > n / 2) off -= n; if (off < -n / 2) off += n;
+        const pos = off === 0 ? 'center' : off === -1 ? 'left1' : off === 1 ? 'right1' : off === -2 ? 'left2' : off === 2 ? 'right2' : 'hidden';
+        const [m, r, s, o] = cfg[pos];
+        card.dataset.pos = pos;
+        card.style.zIndex = 10 - Math.abs(off);
+        card.style.transform = `translateX(${(pos === 'left2' || pos === 'right2') ? m * gap * 0.9 : m * gap}px) rotateY(${r}deg) scale(${s})`;
+        card.style.opacity = o;
+      });
+    }
+    cards.forEach((card, i) => card.addEventListener('click', () => { c = i; layout(); }));
+    const ctl = wrap.nextElementSibling;
+    if (ctl && ctl.classList.contains('phones-ctl')) {
+      ctl.querySelector('[data-dir="prev"]')?.addEventListener('click', () => { c = (c - 1 + cards.length) % cards.length; layout(); });
+      ctl.querySelector('[data-dir="next"]')?.addEventListener('click', () => { c = (c + 1) % cards.length; layout(); });
+    }
+    layout();
+  });
+
+  /* --- Inline editing (E / top-left hotzone · Ctrl+S saves an edited copy) --- */
+  const EDITABLE = '.title,.statement,.lead,.body,.label,.kicker,.h3,.check span,.card-title,.card-desc,.card-tier,.card-big,.stat-label,.stat-sub,.quote-text,.author-name,.author-role,.step-title,.step-desc,.step-when,.faq-q span,.faq-a > div,.fv-label,.fv-val,.tag-pill,.caption,.badge span,.trust-item span,td,th,.deck-logo';
+  const toggleBtn = document.getElementById('editToggle');
+  const hotzone = document.querySelector('.edit-hotzone');
+  const toast = document.getElementById('editToast');
+  const storeKey = 'nice-presentation:' + location.pathname;
+  function say(msg) { toast.textContent = msg; toast.classList.add('show'); clearTimeout(say.t); say.t = setTimeout(() => toast.classList.remove('show'), 1800); }
+  function toggleEdit() {
+    editing = !editing;
+    document.body.classList.toggle('editing', editing);
+    toggleBtn.classList.toggle('active', editing);
+    document.querySelectorAll(EDITABLE).forEach(el => editing ? el.setAttribute('contenteditable', 'true') : el.removeAttribute('contenteditable'));
+    if (!editing) { localStorage.setItem(storeKey, stage.innerHTML); say('Edits saved in this browser · Ctrl+S to download'); }
+    else say('Edit mode · click any text · E to finish');
+  }
+  function download() {
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    clone.querySelector('body').classList.remove('editing');
+    clone.querySelectorAll('.slide').forEach(s => s.classList.remove('active', 'visible'));
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([html], { type: 'text/html' })), download: (location.pathname.split('/').pop() || 'presentation.html') });
+    a.click(); say('Downloaded edited copy');
+  }
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); download(); } });
+  let hideT;
+  const show = () => { clearTimeout(hideT); toggleBtn.classList.add('show'); };
+  const hide = () => { hideT = setTimeout(() => { if (!editing) toggleBtn.classList.remove('show'); }, 400); };
+  hotzone.addEventListener('mouseenter', show); hotzone.addEventListener('mouseleave', hide);
+  toggleBtn.addEventListener('mouseenter', show); toggleBtn.addEventListener('mouseleave', hide);
+  hotzone.addEventListener('click', toggleEdit); toggleBtn.addEventListener('click', toggleEdit);
+  try {
+    const saved = localStorage.getItem(storeKey);
+    if (saved && new URLSearchParams(location.search).get('fresh') === null) { /* restore only text edits made earlier */
+      const tmp = document.createElement('div'); tmp.innerHTML = saved;
+      const a = tmp.querySelectorAll(EDITABLE), b = stage.querySelectorAll(EDITABLE);
+      if (a.length === b.length) b.forEach((el, i) => el.innerHTML = a[i].innerHTML);
+    }
+  } catch (_) {}
+
+  addEventListener('hashchange', () => { const n = parseInt(location.hash.slice(1), 10); if (Number.isFinite(n) && n - 1 !== current) go(n - 1); });
+
+  /* --- Start --- */
+  const fromHash = parseInt(location.hash.slice(1), 10);
+  go(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+})();
+</script>
+</body>
+</html>
