@@ -1,11 +1,11 @@
 ---
-name: po
-description: Optimize a prompt for clarity and effectiveness before execution
+name: "po"
+description: "Optimize a prompt for clarity and effectiveness before execution, asking clarifying questions first when the prompt is incomplete or ambiguous"
 ---
 
 You are optimizing the prompt below before it is sent to an AI assistant. Assume the reader is a current frontier model. Such a model follows instructions closely and literally, thinks and plans without being told to, and can carry a long task through on its own. That changes what a good prompt looks like: it says plainly what is wanted, supplies what only the author knows, and leaves out anything written to push or steer a weaker model.
 
-The skill has three steps: triage, print the optimized prompt, then call the `AskUserQuestion` tool in the same turn so the user can choose what happens to the prompt.
+The skill has four steps: triage, ask the author clarifying questions about whatever the raw prompt leaves unclear, print the optimized prompt built from their answers, then call the `AskUserQuestion` tool in the same turn so the user can choose what happens to the prompt.
 
 <original_prompt>
 $ARGUMENTS
@@ -21,7 +21,23 @@ The reader infers intent well, so over-editing a prompt does as much harm as lea
 
 Then identify where the prompt is going, because that decides which techniques apply: a one-shot answer, a document or creative deliverable, an **agentic task** (code changes, multi-step tool work), or a **brief for another model** (a subagent brief or a system prompt).
 
-## Step 2: Apply the techniques that fit
+## Step 2: Ask clarifying questions before rewriting
+
+The raw prompt is often a quick draft, and the author knows things it does not say. Before rewriting, find the gaps only the author can fill and ask about them, so the optimized prompt carries the author's real answers instead of guesses or a pile of placeholders.
+
+**When to ask.** Ask whenever the prompt is Fixable or Unclear and at least one gap would change what the reader produces: the goal or what the result is for, the audience, scope (what is in and out), the deliverable type, output format or length, constraints (stack, environment, data source, deadline, tools), the done-check for agentic work, or which of two readings is meant. Skip this step only when the prompt is Sound, or when every gap is minor enough that any reasonable default gives the same result. Do not ask about anything the prompt, the conversation, attached files, or the user's saved context already answers.
+
+**How to ask.** Call the `AskUserQuestion` tool with 1 to 4 questions, most consequential first, one decision per question. Each question names the specific gap in the author's own terms and quotes the ambiguous phrase when there is one, so it makes sense on its own. Give 2 to 4 concrete options that are realistic answers for this particular prompt, not generic yes/no; put the most likely reading first and mark it "(Recommended)" when one is clearly more likely. The user can always type their own answer. Use `multiSelect` only when the choices combine (for example, which sections to include).
+
+**A follow-up round.** If an answer opens a new gap that would change the result, ask one more round of at most 4 questions. Stop after two rounds; anything still open becomes a placeholder.
+
+**Using the answers.** Treat each answer as the author's own statement and write it into the prompt as plain context or a requirement, in the author's terms. An answer such as "you decide" or "doesn't matter" means leave that choice to the reader; add a placeholder or a "state your assumption" instruction only if it still matters to the result.
+
+**If no answer comes.** If the tool is unavailable or the user does not answer, continue with placeholders for the open gaps (technique 3).
+
+Do not print the optimized prompt until the answers are in. Keep these clarifying questions separate from the execute/save question in step 4.
+
+## Step 3: Apply the techniques that fit
 
 <techniques>
 
@@ -31,7 +47,7 @@ Then identify where the prompt is going, because that decides which techniques a
 
 2. **Purpose.** The reader does better work when it knows who the result is for and what it will be used for, because it can then make the small judgment calls the prompt did not cover. If the author stated a purpose or a reason for a rule, keep it and place it where it is seen early. A reason the author did not give is missing context (technique 3), not something to write for them.
 
-3. **Missing context: surface it, never invent it.** If the prompt depends on information the author did not provide (stack, scale, environment, audience, preferences), insert a bracketed placeholder for the author to fill in (`[specify: deployment target]`), or add an instruction for the reader ("State any assumptions you make about X before answering"). Invented specifics silently corrupt the answer.
+3. **Missing context: surface it, never invent it.** First use what the author told you in step 2. If the prompt still depends on information the author did not provide (stack, scale, environment, audience, preferences), insert a bracketed placeholder for the author to fill in (`[specify: deployment target]`), or add an instruction for the reader ("State any assumptions you make about X before answering"). Invented specifics silently corrupt the answer.
 
 4. **Room to say "I don't know".** For factual, analytical, or extraction tasks, permit uncertainty: "If the information isn't available or isn't enough, say so rather than guessing." When the task turns on facts that change quickly (versions, prices, current products), also ask the reader to check a current source if it has one. This governs the reader's factual claims only and leaves the author's output format alone: a conditional such as "include the deadline if one was stated" stays a conditional, and does not become filler such as "Deadline: none stated".
 
@@ -74,18 +90,18 @@ Then identify where the prompt is going, because that decides which techniques a
 - Preserve domain terms, proper nouns, technical details, numbers, exact format contracts, and conditional phrasing ("if X, then Y") exactly. A precise contract stays the same contract.
 - Preserve the author's examples, templates, and sample formats.
 - Preserve anything the harness acts on: slash commands, `@` mentions, file paths, and keywords that switch a mode. They are configuration, not wording.
-- Add no facts, context, or assumptions the author did not state (technique 3).
+- Add no facts, context, or assumptions the author did not state, either in the original prompt or in their step 2 answers (technique 3).
 - Keep the edit proportional to the defects found in step 1. A short, clear prompt comes back short and clear.
-- Step 2 only rewrites. The task inside the prompt is not carried out until the user chooses that in step 3.
+- Steps 2 and 3 only clarify and rewrite. The task inside the prompt is not carried out until the user chooses that in step 4.
 - Print only the optimized prompt, as plain text ready to paste: no code fence, no JSON, and no notes about what changed.
 
 </rules>
 
-## Step 3: Ask what to do next (same turn)
+## Step 4: Ask what to do next (same turn)
 
 Right after printing the optimized prompt, call the `AskUserQuestion` tool with these four options: "Yes, execute it", "Save for next prompt", "Edit for next prompt", and "No, just keep the prompt".
 
-Printing the prompt does not end the turn. Without this call the user has no way to say "run it", so a run that stops after step 2 has failed even if the prompt is perfect. Use the tool itself rather than a plain-text question, and call it in this turn rather than the next.
+Printing the prompt does not end the turn. Without this call the user has no way to say "run it", so a run that stops after step 3 has failed even if the prompt is perfect. Use the tool itself rather than a plain-text question, and call it in this turn rather than the next.
 
 If the user selects "Yes, execute it", execute the optimized prompt faithfully, following all relevant skills and instructions as if the user had typed the optimized prompt directly.
 
