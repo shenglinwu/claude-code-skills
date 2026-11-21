@@ -1,8 +1,6 @@
 # cortex-palette
 
-The default set of colors for anything Claude draws for you: web pages, slides, charts, dashboards, diagrams, reports. Claude applies it by itself and does not stop to ask you to choose colors.
-
-The point is that every visual thing you get looks like it came from the same place, without you repeating your color preferences in each request.
+An older set of colors for anything Claude draws for you: web pages, slides, charts, dashboards, diagrams, reports. It is no longer the default. `nice-palette` is the default now, and this skill starts only when you ask for the Cortex palette or Cortex colors by name.
 
 ## The two colors that carry the identity
 
@@ -38,18 +36,18 @@ The reason for these three rules is that gradients and glows drift. Two people g
 
 This skill supplies color only. It does not choose fonts and it does not choose layout, so it can sit on top of any design skill without fighting it.
 
-When another visual skill is running, the Cortex colors win, unless you explicitly asked for that other skill's theme.
+When you have asked for Cortex colors and another visual skill is running, the Cortex colors go into that skill.
 
 | Other skill | What this skill overrides |
 | --- | --- |
 | theme-factory | Do not pick a preset theme. Hand it the Cortex hex values as a custom theme. |
 | nvidia-presentation | Replace the NVIDIA green accent with Cortex Blue. Keep the dark background. |
 | vizro-analytics, frontend-design, frontend-slides | Pass `CORTEX_CATEGORICAL` as the chart series list and Cortex Blue as the primary brand color. |
-| drawio, excalidraw-diagram, arch-flow-explainer | Color the boxes and arrows from this palette, and keep Cortex Blue for the main or starting box. |
+| drawio, excalidraw-diagram, arch-flow-explainer (which now defaults to nice-palette) | Color the boxes and arrows from this palette, and keep Cortex Blue for the main or starting box. |
 
-## Turning it off
+## Turning it on
 
-Name another theme in your request and this skill steps aside. "Use NVIDIA green", "make it monochrome", "match the existing site palette", and "use Solarized" all work. The skill is a default, not a rule.
+Ask for it by name, for example "use the Cortex palette" or "use Cortex colors". Without that, Claude uses `nice-palette`.
 
 ## Install
 
@@ -57,4 +55,4 @@ Name another theme in your request and this skill steps aside. "Use NVIDIA green
 ln -s "$PWD/skills/cortex-palette" ~/.claude/skills/cortex-palette
 ```
 
-Start a new Claude Code session afterward. You never type this skill by hand. It is written to start on its own whenever visual output is about to be produced.
+Start a new Claude Code session afterward. You turn it on by asking for Cortex colors in your request.

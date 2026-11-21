@@ -1,11 +1,11 @@
 ---
 name: cortex-palette
-description: User's default brand color palette — Cortex Blue + companion cyan + 12 named accents. Use whenever generating HTML pages, presentation slides, decks, dashboards, charts, data visualizations, infographics, landing pages, reports, or any visual artifact that requires a color scheme. Apply automatically without asking the user to pick colors. Also use to override the default theme tokens of design/slide/chart skills such as frontend-design, frontend-slides, vizro-analytics, nvidia-presentation, theme-factory, visual-explainer, arch-flow-explainer, code-explainer, drawio, and excalidraw-diagram when the user has not explicitly requested a different theme.
+description: Opt-in Cortex color palette (Cortex Blue + companion cyan + 12 named accents). Use only when the user asks for the Cortex palette or Cortex colors by name. It is not the default theme; the nice-palette skill is.
 ---
 
 # Cortex Palette
 
-The user's standardized color palette for all visual output. Apply this palette by default — do not ask the user to pick colors. Only deviate if the user explicitly requests a different theme (e.g. "use NVIDIA green", "make it monochrome", "use the existing theme of this project").
+An older color palette the user can ask for by name. It is **not** the default: the `nice-palette` skill is the user's default theme. Apply this palette only when the user asks for "Cortex" colors, the Cortex palette, or Cortex Blue.
 
 ## Style rules (non-negotiable)
 
@@ -16,7 +16,7 @@ The user's standardized color palette for all visual output. Apply this palette 
 
 ## When to invoke this skill
 
-Auto-apply when you are about to generate any of:
+Only when the user asks for the Cortex palette by name. Then it covers any of:
 - HTML pages, landing pages, marketing pages, or web components
 - Presentation slides, decks, or pitch documents
 - Charts, dashboards, KPI cards, data visualizations
@@ -224,7 +224,7 @@ Then headings: `<h1 class="text-cortex-blue">…</h1>`.
 
 ## Override behavior for sibling skills
 
-When another visual skill is also active, this skill's palette wins for color tokens unless the user explicitly opted into the other skill's theme. Specifically:
+When the user has asked for the Cortex palette and another visual skill is also active, use these colors in that skill. Specifically:
 
 - **theme-factory** — do not pick a preset theme; supply the Cortex hex values as a custom theme.
 - **nvidia-presentation** — override the NVIDIA green accent with Cortex Blue; keep dark Reflecting Pond background.
@@ -235,4 +235,4 @@ When another visual skill is also active, this skill's palette wins for color to
 
 - Not a font/typography spec — only colors. Pair with whatever typography the active design skill chooses.
 - Not a layout system — only color tokens. Layout decisions belong to the host skill.
-- Not mandatory — if the user names another theme ("Solarized", "the existing site palette", "monochrome"), defer to their choice.
+- Not the default — without an explicit request for Cortex colors, use `nice-palette` instead.
