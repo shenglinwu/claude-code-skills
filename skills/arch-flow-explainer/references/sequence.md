@@ -69,14 +69,14 @@ Common lane patterns:
 
     <style>
       /* SVG-internal CSS from styling.md, plus phase-band classes below */
-      .phase-band-0 { fill: #f7f1e4; }
-      .phase-band-1 { fill: #fbe6db; }
-      .phase-band-2 { fill: #dceaee; }
-      .phase-band-3 { fill: #f3ecf7; }
-      .phase-band-4 { fill: #eef2ea; }
+      .phase-band-0 { fill: #f7f1ef; }
+      .phase-band-1 { fill: #ffefdb; }
+      .phase-band-2 { fill: #ededed; }
+      .phase-band-3 { fill: #f3eef8; }
+      .phase-band-4 { fill: #ebf8f4; }
 
       .lane-header { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1; }
-      .lane-header.operator { fill: #f7f1e4; stroke: #d9be8a; }
+      .lane-header.operator { fill: #f7f1ef; stroke: #d2b3a6; }
       /* ... per-lane variants */
 
       .lifeline { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3,3; fill: none; }
@@ -141,7 +141,7 @@ Each message is an arrow between two lifelines, with a numbered circle and a lab
 <path class="arr-blue" d="M 550 350 L 340 350" marker-end="url(#arrow-blue)"/>
 
 <!-- Numbered circle on the arrow midpoint -->
-<circle cx="445" cy="350" r="11" fill="#0ea5e9" class="num-circle"/>
+<circle cx="445" cy="350" r="11" fill="#0d98ba" class="num-circle"/>
 <text class="num-text" x="445" y="354">3</text>
 ```
 
@@ -192,11 +192,11 @@ Phase bands use very pale fills so they don't overpower the foreground content:
 
 | Phase position | Class | Hex | Suggested role |
 |---|---|---|---|
-| 0 (first) | `.phase-band-0` | `#f7f1e4` (pale Oak Buff) | Pre-staging / setup |
-| 1 | `.phase-band-1` | `#fbe6db` (pale Cadmium Orange) | Initial boot / power-on |
-| 2 | `.phase-band-2` | `#dceaee` (pale Biscay Bay) | Network / discovery |
-| 3 | `.phase-band-3` | `#f3ecf7` (pale Amethyst Orchid) | Registration / handoff |
-| 4 (last) | `.phase-band-4` | `#eef2ea` (pale Fern Green) | Steady state / success |
+| 0 (first) | `.phase-band-0` | `#f7f1ef` (pale Amber Brown) | Pre-staging / setup |
+| 1 | `.phase-band-1` | `#ffefdb` (pale Dark Orange) | Initial boot / power-on |
+| 2 | `.phase-band-2` | `#ededed` (pale Metallic Gray) | Network / discovery |
+| 3 | `.phase-band-3` | `#f3eef8` (pale Grape) | Registration / handoff |
+| 4 (last) | `.phase-band-4` | `#ebf8f4` (pale Mint) | Steady state / success |
 
 If the system has fewer or more phases, adapt — but use pale tints throughout (saturated phase backgrounds compete with the message arrows).
 

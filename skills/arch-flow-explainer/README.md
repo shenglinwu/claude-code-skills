@@ -61,18 +61,18 @@ Claude only loads `SKILL.md` at first. It reads the reference files when it actu
 
 ## Colors
 
-The skill ships with the Cortex palette already applied, so a diagram built straight from the reference files is on brand with no extra work. See the `cortex-palette` skill in this repository for the full color list.
+The skill ships with the nice palette already applied, so a diagram built straight from the reference files uses your default colors with no extra work. See the `nice-palette` skill in this repository for the full color list. The slot names (blue, teal, amber, ...) are kept from the older Cortex colors so existing diagrams keep working, even where the color behind a name has changed.
 
 Six color slots cover every role. You pick a slot by what the part **does** in this particular picture, not by its name. The same service can be blue in one diagram and orange in another.
 
 | Slot | Color | Used for |
 | --- | --- | --- |
-| blue | Cortex Blue `#0ea5e9` | The main coordinator and control traffic |
-| purple | Amethyst Orchid `#9b5bb6` | Telemetry, registration, second-level controllers |
-| coral | Cadmium Orange `#e78a5c` | Compute, hosts, anything the end user touches |
-| teal | Biscay Bay `#3f7c8a` | Data plane traffic that never crosses the management network. Its arrows are dashed. |
-| amber | Oak Buff `#c9a66b` | Bootstrap, discovery, pre-staging, site-local services |
-| green | Fern Green `#659157` | Steady-state daemons and success states |
+| blue | Blue Green `#0d98ba` | The main coordinator and control traffic |
+| purple | Grape `#6f2da8` | Telemetry, registration, second-level controllers |
+| coral | Dark Orange `#ff8c00` | Compute, hosts, anything the end user touches |
+| teal | Metallic Gray `#999b9b` | Data plane traffic that never crosses the management network. Its arrows are dashed. |
+| amber | Amber Brown `#a6674c` | Bootstrap, discovery, pre-staging, site-local services |
+| green | Mint `#00ab78` | Steady-state daemons and success states |
 
 Fills are always solid. The skill never emits gradients or colored glow effects.
 

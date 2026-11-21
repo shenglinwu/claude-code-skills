@@ -9,21 +9,21 @@
     padding: 28px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: #fafafa;
-    color: #1a1a1a;
+    color: #0e2025;
   }
   .wrap { max-width: 1320px; margin: 0 auto; }
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
   .sub { color: #666; font-size: 13px; margin-bottom: 20px; }
   .scale-banner {
-    background: #f7f1e4;
-    border: 1px solid #eaa783;
-    color: #8a3d1a;
+    background: #f7f1ef;
+    border: 1px solid #ffc073;
+    color: #7a4300;
     padding: 10px 14px;
     border-radius: 8px;
     font-size: 13px;
     margin-bottom: 16px;
   }
-  .scale-banner b { color: #a8481f; }
+  .scale-banner b { color: #9b5500; }
   svg { width: 100%; height: auto; display: block; background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; }
   h2 { font-size: 15px; font-weight: 600; margin: 22px 0 10px; }
   .flows { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 36px; font-size: 13px; line-height: 1.5; }
@@ -34,17 +34,17 @@
     font-weight: 600; font-size: 12px; color: #fff;
     flex-shrink: 0;
   }
-  .flow.ctrl .num   { background: #0ea5e9; }
-  .flow.scout .num  { background: #c9a66b; }
-  .flow.tele .num   { background: #9b5bb6; }
-  .flow.inband .num { background: #3f7c8a; }
+  .flow.ctrl .num   { background: #0d98ba; }
+  .flow.scout .num  { background: #a6674c; }
+  .flow.tele .num   { background: #6f2da8; }
+  .flow.inband .num { background: #999b9b; }
   .flow b { font-weight: 600; }
   .flow code { font-size: 12px; color: #475569; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
   .scale {
     display: inline-block;
     font-size: 11px;
-    background: #f4ebd9;
-    color: #6b5325;
+    background: #f3eae6;
+    color: #935b43;
     padding: 1px 7px;
     border-radius: 10px;
     margin-left: 4px;
@@ -68,38 +68,38 @@
        aria-label="Multi-rack call-flow diagram between NICo on the management server and components inside one of N GB200 NVL72 racks. Adds UFM for InfiniBand fabric management.">
     <defs>
       <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M2 1L9 5L2 9" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#0d98ba" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
       <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M2 1L9 5L2 9" fill="none" stroke="#c9a66b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#a6674c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
       <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M2 1L9 5L2 9" fill="none" stroke="#9b5bb6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#6f2da8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
       <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M2 1L9 5L2 9" fill="none" stroke="#3f7c8a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 1L9 5L2 9" fill="none" stroke="#999b9b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
       <style>
-        .label-th { font: 600 14px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1a1a; }
+        .label-th { font: 600 14px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #0e2025; }
         .label-ts { font: 13px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #333; }
         .label-tn { font: 11px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #666; }
-        .label-scale { font: 600 10px -apple-system, sans-serif; fill: #6b5325; }
+        .label-scale { font: 600 10px -apple-system, sans-serif; fill: #935b43; }
         .container { fill: #f7f7f7; stroke: #d0d0d0; stroke-width: 1; }
-        .node-purple { fill: #efe4f4; stroke: #9b5bb6; stroke-width: 1.2; }
-        .node-blue   { fill: #e0f2fe; stroke: #0ea5e9; stroke-width: 1.2; }
-        .node-coral  { fill: #fbe6db; stroke: #e78a5c; stroke-width: 1.2; }
-        .node-teal   { fill: #dceaee; stroke: #3f7c8a; stroke-width: 1.2; }
-        .node-amber  { fill: #f4ebd9; stroke: #c9a66b; stroke-width: 1.2; }
-        .node-green  { fill: #e4ebe0; stroke: #659157; stroke-width: 1.2; }
+        .node-purple { fill: #eee6f5; stroke: #6f2da8; stroke-width: 1.2; }
+        .node-blue   { fill: #e2f3f7; stroke: #0d98ba; stroke-width: 1.2; }
+        .node-coral  { fill: #ffefdb; stroke: #ff8c00; stroke-width: 1.2; }
+        .node-teal   { fill: #ededed; stroke: #999b9b; stroke-width: 1.2; }
+        .node-amber  { fill: #f3eae6; stroke: #a6674c; stroke-width: 1.2; }
+        .node-green  { fill: #e0f5ef; stroke: #00ab78; stroke-width: 1.2; }
         .sub-box     { fill: #ffffff; stroke: #94a3b8; stroke-width: 1; }
         .ghost       { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 4,3; }
-        .arr-blue   { stroke: #0ea5e9; stroke-width: 1.8; fill: none; }
-        .arr-amber  { stroke: #c9a66b; stroke-width: 1.8; fill: none; }
-        .arr-purple { stroke: #9b5bb6; stroke-width: 1.8; fill: none; }
-        .arr-teal   { stroke: #3f7c8a; stroke-width: 1.8; fill: none; stroke-dasharray: 5,4; }
+        .arr-blue   { stroke: #0d98ba; stroke-width: 1.8; fill: none; }
+        .arr-amber  { stroke: #a6674c; stroke-width: 1.8; fill: none; }
+        .arr-purple { stroke: #6f2da8; stroke-width: 1.8; fill: none; }
+        .arr-teal   { stroke: #999b9b; stroke-width: 1.8; fill: none; stroke-dasharray: 5,4; }
         .num-circle { stroke: #fff; stroke-width: 1.5; }
         .num-text   { font: 700 12px -apple-system, sans-serif; fill: #fff; text-anchor: middle; }
-        .scale-pill { fill: #f4ebd9; stroke: #d9be8a; stroke-width: 0.8; }
+        .scale-pill { fill: #f3eae6; stroke: #d2b3a6; stroke-width: 0.8; }
       </style>
     </defs>
 
@@ -192,7 +192,7 @@
 
     <!-- internal in-band arrow within switch trays -->
     <path class="arr-teal" d="M 675 192 L 890 192" marker-end="url(#arrow-teal)"/>
-    <circle cx="782" cy="192" r="11" fill="#3f7c8a" class="num-circle"/>
+    <circle cx="782" cy="192" r="11" fill="#999b9b" class="num-circle"/>
     <text class="num-text" x="782" y="196">10</text>
 
     <!-- Compute trays -->
@@ -249,12 +249,12 @@
 
     <!-- in-band NVLink GPU↔NVSwitch -->
     <path class="arr-teal" d="M 992 600 C 992 470, 992 290, 992 250" marker-end="url(#arrow-teal)"/>
-    <circle cx="992" cy="425" r="11" fill="#3f7c8a" class="num-circle"/>
+    <circle cx="992" cy="425" r="11" fill="#999b9b" class="num-circle"/>
     <text class="num-text" x="992" y="429">11</text>
 
     <!-- in-band IB GPU↔HCA outbound -->
     <path class="arr-teal" d="M 1110 552 L 1170 552" marker-end="url(#arrow-teal)"/>
-    <circle cx="1140" cy="552" r="11" fill="#3f7c8a" class="num-circle"/>
+    <circle cx="1140" cy="552" r="11" fill="#999b9b" class="num-circle"/>
     <text class="num-text" x="1140" y="556">14</text>
 
     <!-- ToR switches -->
@@ -288,82 +288,82 @@
 
     <!-- 1: NICo → NMX-C (gRPC) — N total -->
     <path class="arr-blue" d="M 400 130 C 430 130, 460 145, 480 165" marker-end="url(#arrow-blue)"/>
-    <circle cx="470" cy="160" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="470" cy="160" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="470" y="164">1</text>
     <rect class="scale-pill" x="412" y="115" width="34" height="14" rx="7"/>
     <text class="label-scale" x="429" y="125" text-anchor="middle">×N</text>
 
     <!-- 2: NICo → BMC (Redfish) -->
     <path class="arr-blue" d="M 400 165 C 700 175, 850 270, 875 360" marker-end="url(#arrow-blue)"/>
-    <circle cx="868" cy="354" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="868" cy="354" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="868" y="358">2</text>
     <rect class="scale-pill" x="600" y="186" width="42" height="14" rx="7"/>
     <text class="label-scale" x="621" y="196" text-anchor="middle">×18N</text>
 
     <!-- 3: NICo → DPU dpu-agent -->
     <path class="arr-blue" d="M 400 195 C 430 290, 450 380, 690 480" marker-end="url(#arrow-blue)"/>
-    <circle cx="685" cy="478" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="685" cy="478" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="685" y="482">3</text>
     <rect class="scale-pill" x="430" y="320" width="42" height="14" rx="7"/>
     <text class="label-scale" x="451" y="330" text-anchor="middle">×18N</text>
 
     <!-- 4: NICo → SDN Ctrl (vertical, internal mgmt server) -->
     <path class="arr-blue" d="M 220 220 L 220 245" marker-end="url(#arrow-blue)"/>
-    <circle cx="220" cy="232" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="220" cy="232" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="220" y="236">4</text>
 
     <!-- 5: SDN Ctrl → DOCA SDN agent -->
     <path class="arr-blue" d="M 400 295 C 540 295, 640 350, 690 405" marker-end="url(#arrow-blue)"/>
-    <circle cx="685" cy="400" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="685" cy="400" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="685" y="404">5</text>
     <rect class="scale-pill" x="500" y="298" width="42" height="14" rx="7"/>
     <text class="label-scale" x="521" y="308" text-anchor="middle">×18N</text>
 
     <!-- 6: SDN Ctrl → FRR on ToR -->
     <path class="arr-blue" d="M 400 325 C 430 600, 450 740, 480 790" marker-end="url(#arrow-blue)"/>
-    <circle cx="475" cy="785" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="475" cy="785" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="475" y="789">6</text>
     <rect class="scale-pill" x="430" y="540" width="34" height="14" rx="7"/>
     <text class="label-scale" x="447" y="550" text-anchor="middle">×2N</text>
 
     <!-- 12: NICo → UFM (vertical from NICo down to UFM) -->
     <path class="arr-blue" d="M 280 220 C 280 300, 280 360, 280 375" marker-end="url(#arrow-blue)"/>
-    <circle cx="280" cy="298" r="12" fill="#0ea5e9" class="num-circle"/>
+    <circle cx="280" cy="298" r="12" fill="#0d98ba" class="num-circle"/>
     <text class="num-text" x="280" y="302">12</text>
 
     <!-- 13: UFM → IB switches (out to inter-rack box, going down/right) -->
     <path class="arr-teal" d="M 400 460 C 430 460, 530 880, 540 935"/>
-    <circle cx="540" cy="935" r="11" fill="#3f7c8a" class="num-circle"/>
+    <circle cx="540" cy="935" r="11" fill="#999b9b" class="num-circle"/>
     <text class="num-text" x="540" y="939">13</text>
 
     <!-- 7: NMX-M → NMX-C and NMX-T (one annotated arrow) -->
     <path class="arr-purple" d="M 400 580 C 470 480, 560 320, 580 250" marker-end="url(#arrow-purple)"/>
-    <circle cx="582" cy="245" r="12" fill="#9b5bb6" class="num-circle"/>
+    <circle cx="582" cy="245" r="12" fill="#6f2da8" class="num-circle"/>
     <text class="num-text" x="582" y="249">7</text>
-    <rect class="scale-pill" x="500" y="430" width="34" height="14" rx="7" fill="#efe4f4" stroke="#c39ad6"/>
-    <text class="label-scale" x="517" y="440" text-anchor="middle" fill="#6e3d85">×N</text>
+    <rect class="scale-pill" x="500" y="430" width="34" height="14" rx="7" fill="#eee6f5" stroke="#bea0d8"/>
+    <text class="label-scale" x="517" y="440" text-anchor="middle" fill="#6f2da8">×N</text>
 
     <path class="arr-purple" d="M 400 600 C 540 540, 720 320, 780 250" marker-end="url(#arrow-purple)"/>
-    <circle cx="785" cy="245" r="12" fill="#9b5bb6" class="num-circle"/>
+    <circle cx="785" cy="245" r="12" fill="#6f2da8" class="num-circle"/>
     <text class="num-text" x="785" y="249">7</text>
 
     <!-- 8: DHCP → forge-scout on DPU -->
     <path class="arr-amber" d="M 400 720 C 430 600, 470 510, 495 480" marker-end="url(#arrow-amber)"/>
-    <circle cx="500" cy="478" r="12" fill="#c9a66b" class="num-circle"/>
+    <circle cx="500" cy="478" r="12" fill="#a6674c" class="num-circle"/>
     <text class="num-text" x="500" y="482">8</text>
 
     <!-- 9: forge-scout → NICo (callback) -->
     <path class="arr-amber" d="M 580 445 C 470 380, 400 240, 400 200" marker-end="url(#arrow-amber)" stroke-dasharray="3,3"/>
-    <circle cx="405" cy="208" r="12" fill="#c9a66b" class="num-circle"/>
+    <circle cx="405" cy="208" r="12" fill="#a6674c" class="num-circle"/>
     <text class="num-text" x="405" y="212">9</text>
 
   </svg>
 
   <div class="legend-cats">
-    <span><i style="background:#0ea5e9;"></i>Control plane (admin Ethernet)</span>
-    <span><i style="background:#c9a66b;"></i>Bootstrap / discovery</span>
-    <span><i style="background:#9b5bb6;"></i>Telemetry (mTLS REST)</span>
-    <span><i style="background:#3f7c8a;"></i>In-band, never on mgmt network</span>
+    <span><i style="background:#0d98ba;"></i>Control plane (admin Ethernet)</span>
+    <span><i style="background:#a6674c;"></i>Bootstrap / discovery</span>
+    <span><i style="background:#6f2da8;"></i>Telemetry (mTLS REST)</span>
+    <span><i style="background:#999b9b;"></i>In-band, never on mgmt network</span>
   </div>
 
   <h2>Numbered call flows — multi-rack scale</h2>

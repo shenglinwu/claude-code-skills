@@ -9,7 +9,7 @@ A **skill** is a folder of instructions that Claude Code loads when the task mat
 | Folder | Name | What it does |
 | --- | --- | --- |
 | `skills/arch-flow-explainer/` | arch-flow-explainer | Draws system architecture and call flows as a single self-contained HTML file with an inline SVG picture. |
-| `skills/cortex-palette/` | cortex-palette | The older brand colors (Cortex Blue plus named accents). `arch-flow-explainer` still uses them. `nice-palette` is now the default. |
+| `skills/cortex-palette/` | cortex-palette The older brand colors (Cortex Blue plus named accents). Used only when you ask for Cortex colors by name. `nice-palette` is the default. |
 | `skills/daily-briefing/` | daily-briefing | Reads a list of news feeds, picks 40 tech items from the past 24 hours, summarizes and translates them, and builds one HTML page with the source links. It can also publish that page to Vercel. |
 | `skills/eli8/` | eli8 | A thin wrapper around an `eli5` skill for engineers: same simple explainer, but it keeps the real technical terms instead of everyday comparisons. |
 | `skills/nice-palette/` | nice-palette | The default colors: a blue-green base color (`#0D98BA`) with mint, orange, cinnabar, gold, grape, amber-brown, and gray side colors, for any HTML Claude builds. |
@@ -37,14 +37,15 @@ The older folders have their own `README.md` with the details. For `daily-briefi
                                                            │ takes its
                                                            │ colors from
                                                            ▼
-                                                    cortex-palette
-
-   nice-presentation ── takes its colors from ──▶ nice-palette
+                                                     nice-palette
+                                                           ▲
+   nice-presentation ── takes its colors from ─────────────┘
+   cortex-palette ── only when you ask for Cortex colors
    eli8 ── hands the topic to ──▶ eli5 skill (not in this repo)
    daily-briefing ── works on its own, can publish to Vercel
 ```
 
-An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `nice-palette` skill is the default color source for anything visual. The older `cortex-palette` still feeds `arch-flow-explainer`.
+An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `nice-palette` skill is the default color source for anything visual. Both `arch-flow-explainer` and `nice-presentation` take their colors from it. The older `cortex-palette` starts only when you ask for Cortex colors by name.
 
 ## Install
 
@@ -149,6 +150,6 @@ description: When to use this skill, written so Claude can match it to a request
 The instructions Claude follows once the skill is loaded.
 ```
 
-Skills that describe a habit rather than a command, such as `cortex-palette` and `nice-palette`, are meant to start on their own and are never typed. The two prompt skills and `eli8` are meant to be typed with a slash.
+Skills that describe a habit rather than a command, such as `nice-palette`, are meant to start on their own and are never typed. `cortex-palette` starts only when you name it in a request. The two prompt skills and `eli8` are meant to be typed with a slash.
 
 One detail to know: in this session Claude Code lists a skill under its **folder** name, not the `name:` field in the header. The two prompt skills set `name: pc` and `name: po` but sit in folders called `prompt-clarity` and `prompt-optimization`. If typing `/pc` does not find the skill, type `/prompt-clarity` instead, or rename the folder to match the header.

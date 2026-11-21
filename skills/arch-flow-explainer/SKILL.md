@@ -7,9 +7,9 @@ description: Generate self-contained HTML/SVG explainers for software and system
 
 Generates self-contained HTML files containing SVG diagrams and a numbered legend that explain how a system's components interact. Output is a single `.html` file with no external dependencies — it opens in any browser, embeds in any wiki page, and survives being copy-pasted around.
 
-## Default theme: Cortex palette
+## Default theme: nice palette
 
-This skill defaults to the **Cortex palette** — the user's brand colors. Every hex value in `references/styling.md` and the example assets is already a Cortex color, so a diagram built from them is on-brand with no extra work. Cortex Blue (`#0ea5e9`) is reserved for the primary/origin role; the other roles map to named Cortex accents (Amethyst Orchid, Cadmium Orange, Biscay Bay, Oak Buff, Fern Green). Use **solid fills only — no gradients, no colored glow effects**. Only deviate if the user explicitly requests a different theme (e.g. "match this project's existing palette", "make it monochrome").
+This skill defaults to the **nice palette** (the `nice-palette` skill), the user's default colors. Every hex value in `references/styling.md` and the example assets is already a nice-palette color, so a diagram built from them is on-brand with no extra work. Blue Green (`#0d98ba`), the base color, is reserved for the primary/origin role; the other roles map to nice-palette side colors (Grape, Dark Orange, Metallic Gray, Amber Brown, Mint). Use **solid fills only — no gradients, no colored glow effects**. Only deviate if the user explicitly requests a different theme (e.g. "match this project's existing palette", "make it monochrome").
 
 ## Two diagram patterns
 
@@ -73,7 +73,7 @@ If you can't decide in 30 seconds, pick topology — it's the more general patte
 
 A good diagram from this skill has:
 
-- **Numbered flows colored consistently** by category from the Cortex palette — control-plane is always Cortex Blue, in-band is always Biscay Bay teal-dashed, etc., across all diagrams in the same document set
+- **Numbered flows colored consistently** by category from the nice palette — control-plane is always Blue Green, in-band is always Metallic Gray dashed, etc., across all diagrams in the same document set
 - **Components grouped in functional containers** with role labels — never floating boxes on a blank canvas
 - **A complete legend below the diagram** — every numbered arrow has a corresponding legend entry; no arrows without explanation
 - **Prose insights** — at minimum three observations the visual makes possible

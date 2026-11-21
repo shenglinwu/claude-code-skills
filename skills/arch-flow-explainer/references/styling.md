@@ -47,7 +47,7 @@ body {
   padding: 28px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #fafafa;
-  color: #1a1a1a;
+  color: #0e2025;
 }
 .wrap { max-width: 1320px; margin: 0 auto; }
 h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
@@ -63,15 +63,15 @@ svg {
 
 /* Banner — orient the reader before they look at the diagram */
 .scale-banner {
-  background: #e0f2fe;             /* or #f7f1e4 for amber-themed banners */
-  border: 1px solid #7dd3fc;       /* matches background */
-  color: #075985;
+  background: #e2f3f7;             /* or #f7f1ef for amber-themed banners */
+  border: 1px solid #62bcd2;       /* matches background */
+  color: #0a748d;
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 13px;
   margin-bottom: 16px;
 }
-.scale-banner b { color: #0369a1; }
+.scale-banner b { color: #0a748d; }
 
 /* Legend categories row (under the SVG) */
 .legend-cats { margin-top: 8px; font-size: 12px; color: #555; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
@@ -87,18 +87,18 @@ svg {
   font-weight: 600; font-size: 12px; color: #fff;
   flex-shrink: 0;
 }
-.flow.ctrl   .num { background: #0ea5e9; }
-.flow.tele   .num { background: #9b5bb6; }
-.flow.inband .num { background: #3f7c8a; }
-.flow.scout  .num { background: #c9a66b; }
-.flow.live   .num { background: #659157; }
+.flow.ctrl   .num { background: #0d98ba; }
+.flow.tele   .num { background: #6f2da8; }
+.flow.inband .num { background: #999b9b; }
+.flow.scout  .num { background: #a6674c; }
+.flow.live   .num { background: #00ab78; }
 .flow b { font-weight: 600; }
 .flow code { font-size: 12px; color: #475569; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
 
 /* Inline scale pill (×N, site-wide, etc.) */
 .scale {
   display: inline-block; font-size: 11px;
-  background: #f4ebd9; color: #6b5325;
+  background: #f3eae6; color: #935b43;
   padding: 1px 7px; border-radius: 10px;
   margin-left: 4px; font-weight: 600;
 }
@@ -106,20 +106,20 @@ svg {
 /* Optional result/artifact box at the bottom */
 .result-box {
   margin-top: 28px;
-  background: #eef2ea;
-  border: 1px solid #a9c29e;
+  background: #ebf8f4;
+  border: 1px solid #99ddc9;
   padding: 14px 18px;
   border-radius: 10px;
   font-size: 13px;
 }
-.result-box h3 { margin: 0 0 8px; font-size: 14px; color: #3e5a33; }
+.result-box h3 { margin: 0 0 8px; font-size: 14px; color: #007653; }
 .result-box pre {
   background: #fff;
-  border: 1px solid #cdd9c6;
+  border: 1px solid #c7ede1;
   border-radius: 6px;
   padding: 10px 12px;
   font-size: 12px;
-  color: #3e5a33;
+  color: #007653;
   margin: 0;
   overflow-x: auto;
 }
@@ -131,34 +131,34 @@ These classes are referenced inside the SVG by SVG elements. Put them in a `<sty
 
 ```css
 /* Typography */
-.label-th    { font: 600 14px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1a1a; }
+.label-th    { font: 600 14px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #0e2025; }
 .label-ts    { font: 13px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #333; }
 .label-tn    { font: 11px -apple-system, "Segoe UI", Roboto, sans-serif; fill: #666; }
 .label-msg   { font: 600 11px -apple-system, sans-serif; fill: #1f2937; }
-.label-state { font: italic 600 11px -apple-system, sans-serif; fill: #6e3d85; }
+.label-state { font: italic 600 11px -apple-system, sans-serif; fill: #6f2da8; }
 .label-ph    { font: 700 13px -apple-system, sans-serif; fill: #1e293b; letter-spacing: 0.4px; }
 
 /* Container boxes (large outer groupings) */
 .container { fill: #f7f7f7; stroke: #d0d0d0; stroke-width: 1; }
 
 /* Node boxes (categorized by role) */
-.node-blue   { fill: #e0f2fe; stroke: #0ea5e9; stroke-width: 1.2; }
-.node-purple { fill: #efe4f4; stroke: #9b5bb6; stroke-width: 1.2; }
-.node-coral  { fill: #fbe6db; stroke: #e78a5c; stroke-width: 1.2; }
-.node-teal   { fill: #dceaee; stroke: #3f7c8a; stroke-width: 1.2; }
-.node-amber  { fill: #f4ebd9; stroke: #c9a66b; stroke-width: 1.2; }
-.node-green  { fill: #e4ebe0; stroke: #659157; stroke-width: 1.2; }
+.node-blue   { fill: #e2f3f7; stroke: #0d98ba; stroke-width: 1.2; }
+.node-purple { fill: #eee6f5; stroke: #6f2da8; stroke-width: 1.2; }
+.node-coral  { fill: #ffefdb; stroke: #ff8c00; stroke-width: 1.2; }
+.node-teal   { fill: #ededed; stroke: #999b9b; stroke-width: 1.2; }
+.node-amber  { fill: #f3eae6; stroke: #a6674c; stroke-width: 1.2; }
+.node-green  { fill: #e0f5ef; stroke: #00ab78; stroke-width: 1.2; }
 
 /* Sub-boxes inside node boxes (for component detail) */
 .sub-box { fill: #ffffff; stroke: #94a3b8; stroke-width: 1; }
 .ghost   { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 4,3; }
 
 /* Arrows */
-.arr-blue   { stroke: #0ea5e9; stroke-width: 1.7; fill: none; }
-.arr-purple { stroke: #9b5bb6; stroke-width: 1.7; fill: none; }
-.arr-amber  { stroke: #c9a66b; stroke-width: 1.7; fill: none; }
-.arr-teal   { stroke: #3f7c8a; stroke-width: 1.7; fill: none; stroke-dasharray: 5,4; }
-.arr-green  { stroke: #659157; stroke-width: 1.7; fill: none; }
+.arr-blue   { stroke: #0d98ba; stroke-width: 1.7; fill: none; }
+.arr-purple { stroke: #6f2da8; stroke-width: 1.7; fill: none; }
+.arr-amber  { stroke: #a6674c; stroke-width: 1.7; fill: none; }
+.arr-teal   { stroke: #999b9b; stroke-width: 1.7; fill: none; stroke-dasharray: 5,4; }
+.arr-green  { stroke: #00ab78; stroke-width: 1.7; fill: none; }
 
 /* Numbered circles on arrows */
 .num-circle { stroke: #fff; stroke-width: 1.5; }
@@ -172,7 +172,7 @@ Define one marker per arrow color in `<defs>`. The arrowhead colors must match t
 ```html
 <defs>
   <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-    <path d="M2 1L9 5L2 9" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M2 1L9 5L2 9" fill="none" stroke="#0d98ba" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
   </marker>
   <!-- repeat for amber, teal, purple, green with matching strokes -->
 </defs>
@@ -182,30 +182,30 @@ Apply with `marker-end="url(#arrow-blue)"` on the path/line element.
 
 ## Color palette — choosing colors
 
-This skill ships with the **Cortex palette** as its default theme — all the hex values in the CSS above are drawn from it, so a diagram produced verbatim is already on-brand. Cortex Blue (`#0ea5e9`) is reserved for the primary/origin role. Only deviate if the user explicitly asks for a different theme (e.g. "use the existing project palette", "make it monochrome"). The CSS class names (`.node-blue`, `.arr-blue`, …) are **stable semantic slot names** kept consistent across every diagram in a document set — keep the class names even though each maps to a named Cortex color.
+This skill ships with the **nice palette** (the `nice-palette` skill) as its default theme — all the hex values in the CSS above are drawn from it, so a diagram produced verbatim already uses the user's default colors. Blue Green (`#0d98ba`), the base color, is reserved for the primary/origin role. Only deviate if the user explicitly asks for a different theme (e.g. "use the existing project palette", "make it monochrome"). The CSS class names (`.node-blue`, `.arr-blue`, …) are **stable semantic slot names** kept consistent across every diagram in a document set — keep the class names even though each now maps to a nice-palette color (the names come from the older Cortex palette, so `teal` is now gray and `green` is mint).
 
 Six slots cover all roles. Pick by **semantic role**, not by component name. The same component can be a different color in different diagrams depending on what's being illustrated.
 
-| Slot (class) | Cortex color | Node fill / stroke | Use for |
+| Slot (class) | Nice-palette color | Node fill / stroke | Use for |
 |---|---|---|---|
-| **blue** | Cortex Blue | `#e0f2fe` / `#0ea5e9` | Primary orchestrator, control-plane services, control flows over admin Ethernet |
-| **purple** | Amethyst Orchid | `#efe4f4` / `#9b5bb6` | Telemetry / aggregation services, secondary controllers, registration / correlation flows |
-| **coral** | Cadmium Orange | `#fbe6db` / `#e78a5c` | Compute, hosts, tenant-facing components, end-user systems |
-| **teal** | Biscay Bay | `#dceaee` / `#3f7c8a` | Fabric / data plane, in-band traffic that doesn't cross the management network. Arrows are typically **dashed** (`stroke-dasharray: 5,4`) |
-| **amber** | Oak Buff | `#f4ebd9` / `#c9a66b` | Bootstrap / discovery / pre-staging services, site-local services |
-| **green** | Fern Green | `#e4ebe0` / `#659157` | Steady-state daemons, success states, post-provisioning operations |
+| **blue** | Blue Green | `#e2f3f7` / `#0d98ba` | Primary orchestrator, control-plane services, control flows over admin Ethernet |
+| **purple** | Grape | `#eee6f5` / `#6f2da8` | Telemetry / aggregation services, secondary controllers, registration / correlation flows |
+| **coral** | Dark Orange | `#ffefdb` / `#ff8c00` | Compute, hosts, tenant-facing components, end-user systems |
+| **teal** | Metallic Gray | `#ededed` / `#999b9b` | Fabric / data plane, in-band traffic that doesn't cross the management network. Arrows are typically **dashed** (`stroke-dasharray: 5,4`) |
+| **amber** | Amber Brown | `#f3eae6` / `#a6674c` | Bootstrap / discovery / pre-staging services, site-local services |
+| **green** | Mint | `#e0f5ef` / `#00ab78` | Steady-state daemons, success states, post-provisioning operations |
 
-Need a seventh or eighth role? Draw from the remaining Cortex accents — Companion Cyan `#22d3ee`, Marsala `#8a4e51`, Cashmere Rose `#b690a0`, Lavender Mist `#aaa1c8`, Desert Sage `#b7bfa9`, Dried Herb `#87864f`, Stormy Weather `#58656d` (muted/neutral chrome). Use solid fills only — **no gradients and no colored glow effects** anywhere (per the Cortex palette rules).
+Need a seventh or eighth role? Use the remaining nice-palette side colors: Gold (fill `#ffd700`, stroke `#e6c200`, text `#796600`) and Cinnabar (`#e34234`, text `#bd372b`). Keep Cinnabar for errors and failures when the diagram shows status. Use solid fills only — **no gradients and no colored glow effects** anywhere.
 
 ### Flow-color legend categories
 
-The legend below the diagram has small colored bars for each category. Standard categorization (Cortex color in parentheses):
+The legend below the diagram has small colored bars for each category. Standard categorization (nice-palette color in parentheses):
 
-- 🟦 **Blue** (Cortex Blue) — Control plane (admin Ethernet) — the everyday RPCs
-- 🟪 **Purple** (Amethyst Orchid) — Telemetry / registration / correlation
-- 🟧 **Amber** (Oak Buff) — Bootstrap / discovery / pre-staging
-- 🟢 **Green** (Fern Green) — Steady-state / lifecycle / operational
-- 🟢 **Teal, dashed** (Biscay Bay) — In-band traffic, never on management network
+- 🟦 **Blue** (Blue Green) — Control plane (admin Ethernet) — the everyday RPCs
+- 🟪 **Purple** (Grape) — Telemetry / registration / correlation
+- 🟧 **Amber** (Amber Brown) — Bootstrap / discovery / pre-staging
+- 🟢 **Green** (Mint) — Steady-state / lifecycle / operational
+- ⬜ **Teal, dashed** (Metallic Gray) — In-band traffic, never on management network
 
 Adapt the categories to match the system being diagrammed — these are the most common ones, but a security-focused diagram might use different categories (e.g. authn, authz, data, audit). The principle: each numbered arrow's color matches a category, and each category appears in the legend.
 
@@ -223,7 +223,7 @@ Adapt the categories to match the system being diagrammed — these are the most
 The single most distinctive element. Every numbered call flow has a colored circle on the arrow line near the destination side, with bold white text inside. The circle's **fill color matches the flow category** (blue/purple/amber/teal/green).
 
 ```svg
-<circle cx="X" cy="Y" r="11" fill="#0ea5e9" class="num-circle"/>
+<circle cx="X" cy="Y" r="11" fill="#0d98ba" class="num-circle"/>
 <text class="num-text" x="X" y="Y+4">1</text>
 ```
 

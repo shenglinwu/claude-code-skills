@@ -108,7 +108,7 @@ Arrows are drawn as `<path>` elements (preferred over `<line>` because curves ro
       marker-end="url(#arrow-blue)"/>
 
 <!-- Numbered circle near the destination side of the arrow -->
-<circle cx="470" cy="160" r="12" fill="#0ea5e9" class="num-circle"/>
+<circle cx="470" cy="160" r="12" fill="#0d98ba" class="num-circle"/>
 <text class="num-text" x="470" y="164">1</text>
 ```
 
@@ -129,8 +129,8 @@ For diagrams of systems that scale, annotate flows with their multiplication fac
 
 with CSS:
 ```css
-.scale-pill { fill: #f4ebd9; stroke: #d9be8a; stroke-width: 0.8; }
-.label-scale { font: 600 10px -apple-system, sans-serif; fill: #6b5325; }
+.scale-pill { fill: #f3eae6; stroke: #d2b3a6; stroke-width: 0.8; }
+.label-scale { font: 600 10px -apple-system, sans-serif; fill: #935b43; }
 ```
 
 Common scale values:
