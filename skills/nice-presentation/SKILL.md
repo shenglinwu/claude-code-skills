@@ -7,7 +7,7 @@ description: "Create colourful ClearWave-style HTML slide decks: blue-green base
 
 Generates single-file, zero-dependency HTML presentations that all share one design system, ported from the ClearWave template (TemplateMo 622): blue-green (#0D98BA) tinted light surfaces, a dark ink accent surface, DM Sans for everything with **one italic Playfair Display phrase per headline**, glow orbs, a faint noise texture, and slow "silk" easing (`cubic-bezier(0.16,1,0.3,1)`).
 
-Text, tables, charts, diagrams, timelines, panels and cards use a bold **business-infographic** build: three slanted colour dashes above every label, a three-colour strip along the bottom of each slide, solid icon circles with a white ring and soft shadow, thick coloured bars on light gray rails, tinted colour blocks for key numbers, and diagrams drawn as rings, waves and connected boxes. Every repeated item takes its own side colour, so slides are full and colourful rather than sparse.
+Text, tables, charts, diagrams, timelines, panels and cards use a bold **business-infographic** build: spaced caps labels in the base colour, solid icon circles with a white ring and soft shadow, thick coloured bars on light gray rails, tinted colour blocks for key numbers, and diagrams drawn as rings, waves and connected boxes. Every repeated item takes its own side colour, so slides are full and colourful rather than sparse.
 
 There is **no style-discovery phase**. The look is fixed; your job is content, structure, and choosing the right layout for each slide. Never swap in other fonts, gradients-on-white, neon, or "creative" alternatives. The only allowed variations are the base colour, set by the palette argument (see Palette argument), and how the side colours are spread across items (see Colour system).
 
@@ -49,7 +49,7 @@ Assemble: `Document shell (head)` → Base CSS → (deck-specific CSS) → `Docu
 
 Writing rules for this style:
 - Every slide headline gets **one** `<em>` phrase (2–4 words) — it renders in Playfair italic in the accent colour. Not more than one per headline.
-- Each content slide opens with a `.label` (1–3 words, uppercased, with the three colour dashes above it) or a `.kicker` ("01 — Topic") above the `.title`.
+- Each content slide opens with a `.label` (1–3 words, uppercased) or a `.kicker` ("01 — Topic") above the `.title`.
 - `data-section` on each `<section>` fills the pill in the top-right nav. Use short chapter names; reuse the same name for slides in one chapter.
 - Add `reveal` + stagger classes `d1`…`d6` to elements in reading order. Containers like `.stats`, `.panel`, `.window` get one reveal, not every child.
 - Numbers that should count up: `<span data-count="34">34</span>` (keep the real value as text so print/PDF is correct). Bars/progress fills: `style="--h:75%"` / `style="--w:72%"`.
@@ -102,16 +102,16 @@ The colours come from the **nice-palette** skill, the user's default theme. The 
 
 Two layers of colour:
 - **Base colour** (blue-green by default) is the structure: headline `<em>` words, labels, buttons, navigation, links, featured card, dark slides. Never put side colours on these.
-- **Side colours** decorate repeated items: Mint `#00AB78`, Dark Orange `#FF8C00`, Cinnabar `#E34234`, Gold `#FFD700`, Grape `#6F2DA8`, Amber Brown `#A6674C`, and Metallic Gray `#999B9B` for neutral items. Each has a `-ink` shade that is readable as text on the light backgrounds. Components use the exact colour for fills and the `-ink` shade for text, so gold and orange stay legible.
+- **Side colours** decorate repeated items. A deck uses **at most four colours in total: the base colour plus three side colours**, Dark Orange `#FF8C00`, Grape `#6F2DA8` and Mint `#00AB78`. nice-palette also defines gold and amber brown; this skill does not use them. Cinnabar `#E34234` is the one exception: it marks failed, negative or high-risk status only (`.pill.red`, `.bad`) and never decorates items. Neutrals (white, `--ink`, the text grays and Metallic Gray `#999B9B` for inactive items) do not count as colours. Each side colour has a `-ink` shade that is readable as text on the light backgrounds. Components use the exact colour for fills and the `-ink` shade for text.
 
 How items get a colour:
-- **Automatic.** Children of `.stats`, `.grid-2/3/4`, `.wave`, `.quotes`, `.checklist`, `.tags`, `.mini-stats`, `.fv-row`, `.ticker-track`, `.points`, `.hbars`, `.meters`, `.process`, `.tree-kids` and table rows (`.data > tbody`) cycle base → orange → grape → mint → cinnabar → gold → amber-brown. This colours stat blocks, card columns and icon circles, check circles, point and timeline circles, bars, meters, process rings, tree nodes, table row dots, quote marks and avatars, highlighted tags, mini-stat tops and progress fills. Donut segments and line series take an explicit `.tone-*` each, matching their callout or legend key.
-- **Explicit.** Add `.tone-mint`, `.tone-orange`, `.tone-cinnabar`, `.tone-gold`, `.tone-grape`, `.tone-amber-brown`, `.tone-gray` or `.tone-base` to any item to choose its colour. Use this when colour carries meaning, such as a risk in cinnabar or the same team always in grape across slides.
+- **Automatic.** Children of `.stats`, `.grid-2/3/4`, `.wave`, `.quotes`, `.checklist`, `.tags`, `.mini-stats`, `.fv-row`, `.ticker-track`, `.points`, `.hbars`, `.meters`, `.process`, `.tree-kids` and table rows (`.data > tbody`) cycle base → orange → grape → mint, then repeat. This colours stat blocks, card columns and icon circles, check circles, point and timeline circles, bars, meters, process rings, tree nodes, table row dots, quote marks and avatars, highlighted tags, mini-stat tops and progress fills. Donut segments and line series take an explicit `.tone-*` each, matching their callout or legend key.
+- **Explicit.** Add `.tone-base`, `.tone-orange`, `.tone-grape`, `.tone-mint` or `.tone-gray` to any item to choose its colour. Use this when colour carries meaning, such as the same team always in grape across slides.
 - **Single colour.** Add `.mono` to a slide to keep all its items in the base colour (for example a sober financial slide).
-- **Semantic pills and table marks.** `.pill.green` (mint, done), `.pill.warn` (orange), `.pill.red` (cinnabar, failed), `.pill.gold`, `.pill.grape`, `.pill.blue` (base), `.pill.dim` (gray). In tables, `.yes` is mint and `.bad` is cinnabar.
+- **Semantic pills and table marks.** `.pill.green` (mint, done), `.pill.warn` (light orange, in progress or medium), `.pill.red` (cinnabar, failed or high risk), `.pill.grape`, `.pill.blue` (base), `.pill.dim` (gray). In tables, `.yes` is mint and `.bad` is cinnabar. Red for problems is the only colour allowed outside the four.
 - **Extras.** `.card.tinted` adds a top border in the card's colour. `.orb-d` is a soft orange glow that pairs with `.orb-a`. `.kicker` text is orange unless a tone is set. `.float-icon` is grape.
 
-Keep it calm: one slide shows at most about four side colours (the cycle does this for normal item counts). Don't add colours to body text or headlines.
+Keep it calm: never more than four colours, base plus orange, grape and mint, on any slide or in the deck as a whole. The only exception is cinnabar red on failed or negative status marks. Don't add colours to body text or headlines.
 
 ## Palette argument
 The skill takes one optional argument: a **base colour**, either a hex code or a preset name. Examples: `/nice-presentation #0D98BA`, `/nice-presentation blue-green`, or in prose ("use blue-green #0D98BA"). With no argument, use the default blue-green `#0D98BA` that is already in the Base CSS.
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     print(f'  --shell: {shell};')
 ```
 
-Run it as `python3 palette.py blue-green` or `python3 palette.py "#0D98BA"`. The generator only sets the base colour; side colours stay the same. If the base colour is close to a side colour (for example a mint base), give the clashing items an explicit `.tone-*` instead. For a very light or very dark base (yellow, near-black), check the Phase 4 screenshots for washed-out or muddy surfaces and tell the user if the colour doesn't suit this style. Mention the base colour used when delivering.
+Run it as `python3 palette.py blue-green` or `python3 palette.py "#0D98BA"`. The generator only sets the base colour; side colours stay the same. If the base colour is close to a side colour (for example a mint or plum base), give the clashing items an explicit `.tone-*` of another side colour so the deck shows only three distinct colours plus neutrals; never bring in a palette colour outside orange, grape and mint. For a very light or very dark base (yellow, near-black), check the Phase 4 screenshots for washed-out or muddy surfaces and tell the user if the colour doesn't suit this style. Mention the base colour used when delivering.
 
 ### Hand-tuned reference palettes
 Older fixed values, kept for reference only. Prefer the generator above.
@@ -176,10 +176,10 @@ A brand colour is just a palette argument: pass its hex to the generator.
 ## Layout catalog
 Class reference (all defined in the Base CSS):
 - **Structure**: `.slide` (`.alt` lighter bg, `.dark` ink bg, `.center` centred), `.head` (+`.center`) wrapper for label/title/lead, `.split` 2-col (`.wide-left`, `.reverse`), `.grid-2/3/4`, `.row`, decorative `.orb .orb-a|b|c|d` (first children of the slide), tones `.tone-*` and `.mono` (see Colour system).
-- **Type**: `.label` (three colour dashes + caps), `.kicker`, `.title` (`.hero` bigger), `.h3`, `.lead`, `.body`, `.statement`, `em` accent. `.points` > `.point` (`.point-icon`, `.point-k`, `.point-d`) for an icon list.
+- **Type**: `.label` (spaced caps), `.kicker`, `.title` (`.hero` bigger), `.h3`, `.lead`, `.body`, `.statement`, `em` accent. `.points` > `.point` (`.point-icon`, `.point-k`, `.point-d`) for an icon list.
 - **Panels**: `.side-panel` (first child of the slide: tinted block over the right 44%, holds `.panel-text`, `.panel-cta`, `.panel-sub`; the next element is the left content), `.note-band` (`.note-band-k` + `.note-band-d`), `.panel` (feature panel, see Visuals).
 - **Hero bits**: `.badge` (+`.badge-dot`), `.trust` > `.trust-item` + `.trust-divider`, `.btn .btn-primary|.btn-outline|.btn-ghost-dark`.
-- **Visuals**: `.window` (`.window-bar` with three `<i>`, `.window-body`, or a direct `<img>`), `.bars` > `.bar[.on]` with `--h`, `.mini-stats`, `.visual` + `.float` / `.float.solid` floating badges, `.panel` > `.fv-row` / `.fv-card[.wide]` / `.fv-track > .fv-fill` / `.fv-list > .fv-item` + `.pill .green|.blue|.dim|.warn|.red|.gold|.grape`, `.figure` + `.caption`.
+- **Visuals**: `.window` (`.window-bar` with three `<i>`, `.window-body`, or a direct `<img>`), `.bars` > `.bar[.on]` with `--h`, `.mini-stats`, `.visual` + `.float` / `.float.solid` floating badges, `.panel` > `.fv-row` / `.fv-card[.wide]` / `.fv-track > .fv-fill` / `.fv-list > .fv-item` + `.pill .green|.blue|.dim|.warn|.red|.grape`, `.figure` + `.caption`.
 - **Content**: `.checklist[.two-col]` > `.check` (`.check-icon` ✓ or 01…), `.stats[.three]` > `.stat`, `.card[.featured|.tinted]` (`.card-flag`, `.card-tier`, `.card-big`, `.card-title`, `.card-desc`, `.card-icon`, `.card-divider`), `.quotes` > `.quote[.tall]`, `.tags` > `.tag-pill[.hl]`, `.ticker` (items listed twice for a seamless loop), `.faq` > `.faq-item[.open]` (`button.faq-q`), `.phones` + `.phones-ctl`, `.cta-box` + `.cta-actions`, `.contact`.
 - **Tables**: `.table-wrap > table.data` (`tr.hl`, `.num`, `.yes`, `.no`, `.bad`). The first column is the row label and gets a coloured dot.
 - **Charts**: `.chart-k` caps caption, then `.hbars` > `.hbar` (`style="--v:72%"`; `.hbar-icon`, `.hbar-label`, `.hbar-track > .hbar-fill`, `.hbar-val`) · `.donut-chart` = `.donut-side` + `.donut` (SVG with `.dn-track` and one `.dn-seg.tone-*` per segment, `pathLength="100"`, `style="--p:58;--o:0"` = length and start in %, + `.donut-center` > `.dc-big` + `.dc-cap`) + `.donut-side.right`; each side holds `.dc` (`.dc-head` > `.dc-k` + `.dc-v`, `.dc-d`) · `.meters` > `.meter` (`style="--v:72%"`; `.meter-val`, `.meter-track > .meter-fill > .meter-knob`, `.meter-k`, `.meter-d`) · `.line-chart` = `.lc-plot` + `.lc-legend`. The plot holds `.lc-y` (axis numbers, top to bottom), `.lc-area` and `.lc-x` (labels with `style="--x:40%"`). `.lc-area` holds one SVG (`viewBox="0 0 100 100" preserveAspectRatio="none"`) with a `g.lc-series.tone-*` per line: `.lc-fill` (area under the line, closed to y=100), `.lc-line`, and `.lc-pts` (`M x,y h0` per point, drawn as round dots). Then one `.lc-end.tone-*` per line (`style="--x:100%;--y:16%"`) with the last value in `<b>`. Coordinates: x = 0–100 across, y = 100 − value ÷ axis max × 100. The legend holds `.lc-key.tone-*` (`.lc-icon`, `div` > `.lc-k` + `.lc-d`, `.lc-v`).
@@ -717,11 +717,10 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   /* Side colours: decorate repeated items. Exact colour for fills; -ink = darker shade readable as text on light bg */
   --c-mint:     #00AB78; --c-mint-rgb:     0,171,120;  --c-mint-ink:     #007653;
   --c-orange:   #FF8C00; --c-orange-rgb:   255,140,0;  --c-orange-ink:   #9B5500;
-  --c-cinnabar: #E34234; --c-cinnabar-rgb: 227,66,52;  --c-cinnabar-ink: #BD372B;
-  --c-gold:     #FFD700; --c-gold-rgb:     255,215,0;  --c-gold-ink:     #796600;
+  /* status only: the one exception to the four-colour rule, for failed / negative marks */
+  --c-cinnabar: #E34234; --c-cinnabar-rgb: 227,66,52; --c-cinnabar-ink: #BD372B;
   --c-gray:     #999B9B; --c-gray-rgb:     153,155,155; --c-gray-ink:    #6A6B6B;
   --c-grape:    #6F2DA8; --c-grape-rgb:    111,45,168; --c-grape-ink:    #6F2DA8;
-  --c-amber-brown: #A6674C; --c-amber-brown-rgb: 166,103,76; --c-amber-brown-ink: #935B43;
   --pad-x:        128px;
   --pad-top:      150px;
   --pad-bottom:   120px;
@@ -732,19 +731,13 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
 .tone-base     { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); }
 .tone-mint     { --tone: var(--c-mint);     --tone-rgb: var(--c-mint-rgb);     --tone-ink: var(--c-mint-ink); }
 .tone-orange   { --tone: var(--c-orange);   --tone-rgb: var(--c-orange-rgb);   --tone-ink: var(--c-orange-ink); }
-.tone-cinnabar { --tone: var(--c-cinnabar); --tone-rgb: var(--c-cinnabar-rgb); --tone-ink: var(--c-cinnabar-ink); }
-.tone-gold     { --tone: var(--c-gold);     --tone-rgb: var(--c-gold-rgb);     --tone-ink: var(--c-gold-ink); }
 .tone-gray     { --tone: var(--c-gray);     --tone-rgb: var(--c-gray-rgb);     --tone-ink: var(--c-gray-ink); }
 .tone-grape    { --tone: var(--c-grape);    --tone-rgb: var(--c-grape-rgb);    --tone-ink: var(--c-grape-ink); }
-.tone-amber-brown { --tone: var(--c-amber-brown); --tone-rgb: var(--c-amber-brown-rgb); --tone-ink: var(--c-amber-brown-ink); }
-/* auto-cycle: base → orange → grape → mint → cinnabar → gold → amber-brown (gray is for explicit/neutral use) */
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+1):not([class*="tone-"]) { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); }
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+2):not([class*="tone-"]) { --tone: var(--c-orange); --tone-rgb: var(--c-orange-rgb); --tone-ink: var(--c-orange-ink); }
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+3):not([class*="tone-"]) { --tone: var(--c-grape); --tone-rgb: var(--c-grape-rgb); --tone-ink: var(--c-grape-ink); }
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+4):not([class*="tone-"]) { --tone: var(--c-mint); --tone-rgb: var(--c-mint-rgb); --tone-ink: var(--c-mint-ink); }
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+5):not([class*="tone-"]) { --tone: var(--c-cinnabar); --tone-rgb: var(--c-cinnabar-rgb); --tone-ink: var(--c-cinnabar-ink); }
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+6):not([class*="tone-"]) { --tone: var(--c-gold); --tone-rgb: var(--c-gold-rgb); --tone-ink: var(--c-gold-ink); }
-:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(7n+7):not([class*="tone-"]) { --tone: var(--c-amber-brown); --tone-rgb: var(--c-amber-brown-rgb); --tone-ink: var(--c-amber-brown-ink); }
+/* auto-cycle: base → orange → grape → mint, then repeat (max four colours; gray is for explicit/neutral use) */
+:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(4n+1):not([class*="tone-"]) { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(4n+2):not([class*="tone-"]) { --tone: var(--c-orange); --tone-rgb: var(--c-orange-rgb); --tone-ink: var(--c-orange-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(4n+3):not([class*="tone-"]) { --tone: var(--c-grape); --tone-rgb: var(--c-grape-rgb); --tone-ink: var(--c-grape-ink); }
+:is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > :nth-child(4n+4):not([class*="tone-"]) { --tone: var(--c-mint); --tone-rgb: var(--c-mint-rgb); --tone-ink: var(--c-mint-ink); }
 .mono :is(.stats,.grid-2,.grid-3,.grid-4,.wave,.quotes,.checklist,.tags,.mini-stats,.fv-row,.ticker-track,.points,.hbars,.meters,.process,.tree-kids,.data > tbody) > * { --tone: var(--accent-mid); --tone-rgb: var(--mid-rgb); --tone-ink: var(--accent); } /* .mono on a slide = single colour */
 
 /* === 2. RESET === */
@@ -782,8 +775,6 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 }
 .slide.active { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; transition: opacity 0.6s var(--silk); }
 .slide.alt     { background: var(--surface); }
-.slide:not(.dark)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 14px; z-index: 2; pointer-events: none;
-  background: linear-gradient(105deg, var(--accent-mid) 0 33%, transparent 33% 33.5%, var(--c-mint) 33.5% 66.5%, transparent 66.5% 67%, var(--c-orange) 67%); }
 .slide > *     { position: relative; z-index: 1; }
 
 /* Decorative glow orbs (ClearWave hero circles). Add <div class="orb orb-a"></div> etc. */
@@ -829,9 +820,6 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
   font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--accent); margin-bottom: 26px;
 }
-/* three slanted colour dashes above every label: base · mint · orange */
-.label::before { content: ''; width: 116px; height: 10px; margin: 0 0 18px 4px; transform: skewX(-32deg);
-  background: linear-gradient(90deg, var(--accent-mid) 0 30%, transparent 30% 35%, var(--c-mint) 35% 65%, transparent 65% 70%, var(--c-orange) 70%); }
 .center .label { align-self: center; align-items: center; }
 .title { font-size: var(--fs-title); font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; color: var(--text-1); text-wrap: balance; }
 .title.hero { font-size: var(--fs-hero); letter-spacing: -0.045em; line-height: 1.04; }
@@ -970,8 +958,8 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 .fv-item span:first-child { color: var(--text-2); font-weight: 500; }
 .pill { font-size: 16px; font-weight: 600; padding: 5px 16px; border-radius: 100px; }
 .pill.green { background: rgba(var(--c-mint-rgb),0.14); color: var(--c-mint-ink); }
+/* failed / high risk: cinnabar, the one allowed exception to the four-colour rule */
 .pill.red   { background: rgba(var(--c-cinnabar-rgb),0.12); color: var(--c-cinnabar-ink); }
-.pill.gold  { background: rgba(var(--c-gold-rgb),0.22); color: var(--c-gold-ink); }
 .pill.grape { background: rgba(var(--c-grape-rgb),0.12); color: var(--c-grape-ink); }
 .pill.blue  { background: rgba(var(--mid-rgb),0.12); color: var(--accent-mid); }
 .pill.dim   { background: var(--border); color: var(--text-3); }
