@@ -1,0 +1,33 @@
+import colorsys, sys
+PRESETS = {'steel-blue': '#4682B4', 'blue-green': '#0D98BA', 'teal': '#2A9D8F', 'plum': '#9A4A9A', 'amber': '#C27530'}
+def rgb(h): h = h.lstrip('#'); return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+def hx(c): return '#%02X%02X%02X' % tuple(round(max(0, min(255, v))) for v in c)
+def mix(a, b, t): return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+def hsl(h, s, l): return tuple(v * 255 for v in colorsys.hls_to_rgb(h, l, s))
+def lum(c):
+    f = lambda v: (v / 255) / 12.92 if v / 255 <= 0.03928 else ((v / 255 + 0.055) / 1.055) ** 2.4
+    r, g, b = map(f, c); return 0.2126 * r + 0.7152 * g + 0.0722 * b
+def contrast(a, b): la, lb = sorted((lum(a), lum(b)), reverse=True); return (la + 0.05) / (lb + 0.05)
+def palette(base):
+    base = rgb(PRESETS.get(base.lower(), base))
+    H, L, S = colorsys.rgb_to_hls(*(v / 255 for v in base))
+    W = (255, 255, 255)
+    bg = mix(W, base, 0.12)
+    accent = tuple(v * 0.8 for v in base)
+    while contrast(accent, bg) < 4.5: accent = tuple(v * 0.95 for v in accent)  # readable text on bg
+    ink = hsl(H, min(S, 0.45), 0.10)
+    t = {
+        '--bg': hx(bg), '--bg-alt': hx(mix(W, base, 0.18)), '--surface': hx(mix(W, base, 0.06)),
+        '--accent': hx(accent), '--accent-mid': hx(base), '--accent-light': hx(mix(base, W, 0.35)),
+        '--ink': hx(ink), '--text-1': hx(ink),
+        '--text-2': hx(hsl(H, min(S, 0.26), 0.31)), '--text-3': hx(hsl(H, min(S, 0.15), 0.50)),
+        '--letterbox': hx(mix(W, base, 0.25)),
+    }
+    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink')):
+        t[k] = ','.join(map(str, rgb(t[src])))
+    shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
+    return t, shell
+if __name__ == '__main__':
+    t, shell = palette(sys.argv[1] if len(sys.argv) > 1 else 'blue-green')
+    for k, v in t.items(): print(f'  {k}: {v};')
+    print(f'  --shell: {shell};')
