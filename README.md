@@ -12,6 +12,7 @@ A **skill** is a folder of instructions that Claude Code loads when the task mat
 | `skills/cortex-palette/` | cortex-palette The older brand colors (Cortex Blue plus named accents). Used only when you ask for Cortex colors by name. `nice-palette` is the default. |
 | `skills/daily-briefing/` | daily-briefing | Reads a list of news feeds, picks 40 tech items from the past 24 hours, summarizes and translates them, and builds one HTML page with the source links. It can also publish that page to Vercel. |
 | `skills/eli8/` | eli8 | A thin wrapper around an `eli5` skill for engineers: same simple explainer, but it keeps the real technical terms instead of everyday comparisons. |
+| `skills/nice-document/` | nice-document | Builds polished A4 documents (white papers, reports, briefs) as one HTML file that prints to PDF one page per sheet. Uses the nice-palette base color plus orange, grape and mint only, with red kept for problem tags. Ships with a 9-page sample and a small color script. |
 | `skills/nice-palette/` | nice-palette | The default colors: a blue-green base color (`#0D98BA`) with mint, orange, cinnabar, gold, grape, amber-brown, and gray side colors, for any HTML Claude builds. |
 | `skills/nice-presentation/` | nice-presentation | Builds colorful 16:9 HTML slide decks in the nice-palette colors. Takes an optional base color, and ships with three sample decks and a small color script. |
 | `skills/prompt-clarity/` | prompt-clarity (`pc`) | Rewrites only the unclear wording of your prompt, then asks whether to run it. |
@@ -19,7 +20,7 @@ A **skill** is a folder of instructions that Claude Code loads when the task mat
 | `output-styles/plain/` | Plain | Makes Claude answer in simple, short, everyday English for a non-native reader. |
 | `output-styles/eli5/` | eli5 | Makes Claude explain everything as if you know nothing about the topic, with big pictures and very few words. |
 
-The older folders have their own `README.md` with the details. For `daily-briefing`, `eli8`, `nice-palette`, and `nice-presentation`, the `SKILL.md` file is the only documentation so far.
+The older folders have their own `README.md` with the details. For `daily-briefing`, `eli8`, `nice-document`, `nice-palette`, and `nice-presentation`, the `SKILL.md` file is the only documentation so far.
 
 ## How the pieces fit together
 
@@ -39,13 +40,14 @@ The older folders have their own `README.md` with the details. For `daily-briefi
                                                            ▼
                                                      nice-palette
                                                            ▲
-   nice-presentation ── takes its colors from ─────────────┘
+   nice-presentation ── takes its colors from ─────────────┤
+   nice-document ────── takes its colors from ─────────────┘
    cortex-palette ── only when you ask for Cortex colors
    eli8 ── hands the topic to ──▶ eli5 skill (not in this repo)
    daily-briefing ── works on its own, can publish to Vercel
 ```
 
-An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `nice-palette` skill is the default color source for anything visual. Both `arch-flow-explainer` and `nice-presentation` take their colors from it. The older `cortex-palette` starts only when you ask for Cortex colors by name.
+An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `nice-palette` skill is the default color source for anything visual. `arch-flow-explainer`, `nice-presentation` and `nice-document` take their colors from it. The presentation and document skills use only four of its colors (the base color plus orange, grape and mint), with red kept for problem tags. The older `cortex-palette` starts only when you ask for Cortex colors by name.
 
 ## Install
 
@@ -57,6 +59,7 @@ ln -s "$PWD/skills/arch-flow-explainer"  ~/.claude/skills/arch-flow-explainer
 ln -s "$PWD/skills/cortex-palette"       ~/.claude/skills/cortex-palette
 ln -s "$PWD/skills/daily-briefing"       ~/.claude/skills/daily-briefing
 ln -s "$PWD/skills/eli8"                 ~/.claude/skills/eli8
+ln -s "$PWD/skills/nice-document"        ~/.claude/skills/nice-document
 ln -s "$PWD/skills/nice-palette"         ~/.claude/skills/nice-palette
 ln -s "$PWD/skills/nice-presentation"    ~/.claude/skills/nice-presentation
 ln -s "$PWD/skills/prompt-clarity"       ~/.claude/skills/prompt-clarity
@@ -122,6 +125,10 @@ claude-code-skills/
     │   └── SKILL.md
     ├── eli8/
     │   └── SKILL.md
+    ├── nice-document/
+    │   ├── SKILL.md
+    │   ├── palette.py              ← makes document colors from one base color
+    │   └── nice-document-sample.html  ← 9-page sample, source of the CSS
     ├── nice-palette/
     │   └── SKILL.md
     ├── nice-presentation/
