@@ -39,8 +39,8 @@ Skip questions the user already answered. If the user gave content up front and 
 
 ### Phase 2 — Outline
 Map the content to layouts from the catalog. A good default arc:
-Title (hero) → Agenda → [Section divider → Feature / Points / Stats / Chart / Diagram / Cards …]×N → Statement → Table/Timeline → Q&A → Closing CTA → Thank-you (dark).
-Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ; use a section divider every 4–6 slides in long decks; at most one dark full slide (usually the last) and one CTA box; use the featured dark card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
+Title (hero, dark) → Agenda → [Section divider → Feature / Points / Stats / Chart / Diagram / Cards …]×N → Statement → Table/Timeline → Q&A → Closing CTA → Thank-you (dark).
+Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ; use a section divider every 4–6 slides in long decks; make the title slide and the thank-you slide `slide dark` (the only dark full slides) and one CTA box; use the featured dark card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
 
 ### Phase 3 — Generate
 If a palette argument (or a colour from Phase 1) was given, generate the tokens first (see Palette argument) and replace the matching lines in the Base CSS `:root`; otherwise keep the blue-green default.
@@ -191,8 +191,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
 ### Example deck — every layout (slides go inside `<main class="deck-stage">`)
 
 ```html
-  <!-- ================= 01 · TITLE (hero) ================= -->
-  <section class="slide" data-section="Overview">
+  <!-- ================= 01 · TITLE (hero, full dark) ================= -->
+  <section class="slide dark" data-section="Overview">
     <div class="orb orb-a"></div><div class="orb orb-b"></div>
     <div class="split wide-left">
       <div style="display:flex;flex-direction:column">
@@ -1232,6 +1232,9 @@ table.data .num { text-align: right; }
 .slide.dark em { color: var(--accent-light); }
 .slide.dark .lead, .slide.dark .body { color: rgba(255,255,255,0.62); }
 .slide.dark .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
+.slide.dark :is(.window, .float:not(.solid)) { color: var(--text-1); }
+.slide.dark .trust-item { color: rgba(255,255,255,0.7); } .slide.dark .trust-item svg { color: var(--accent-light); }
+.slide.dark .trust-divider { background: rgba(255,255,255,0.18); }
 .slide.dark .orb-a { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.16) 0%, transparent 70%); }
 .slide.dark .orb-b { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.08) 0%, transparent 70%); }
 .cta-box { background: var(--ink); border-radius: var(--radius-lg); padding: 110px; display: flex; align-items: center; justify-content: space-between; gap: 80px; position: relative; overflow: hidden; }

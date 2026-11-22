@@ -572,6 +572,9 @@ table.data .num { text-align: right; }
 .slide.dark em { color: var(--accent-light); }
 .slide.dark .lead, .slide.dark .body { color: rgba(255,255,255,0.62); }
 .slide.dark .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
+.slide.dark :is(.window, .float:not(.solid)) { color: var(--text-1); }
+.slide.dark .trust-item { color: rgba(255,255,255,0.7); } .slide.dark .trust-item svg { color: var(--accent-light); }
+.slide.dark .trust-divider { background: rgba(255,255,255,0.18); }
 .slide.dark .orb-a { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.16) 0%, transparent 70%); }
 .slide.dark .orb-b { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.08) 0%, transparent 70%); }
 .cta-box { background: var(--ink); border-radius: var(--radius-lg); padding: 110px; display: flex; align-items: center; justify-content: space-between; gap: 80px; position: relative; overflow: hidden; }
@@ -660,8 +663,8 @@ body.editing [contenteditable="true"]:focus { outline-color: var(--accent); }
     <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></symbol>
   </svg>
 
-  <!-- ================= 01 · TITLE (hero) ================= -->
-  <section class="slide" data-section="Overview">
+  <!-- ================= 01 · TITLE (hero, full dark) ================= -->
+  <section class="slide dark" data-section="Overview">
     <div class="orb orb-a"></div><div class="orb orb-b"></div>
     <div class="split wide-left">
       <div style="display:flex;flex-direction:column">
