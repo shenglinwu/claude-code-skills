@@ -41,7 +41,16 @@ https://www.therundown.ai/feed
 https://techcrunch.com/category/artificial-intelligence/feed/
 https://cyberq.tw/category/news/feed/
 https://simonwillison.net/atom/everything/
+https://www.theverge.com/rss/index.xml
+https://feeds.arstechnica.com/arstechnica/index
+https://www.theregister.com/headlines.atom
+https://thehackernews.com/feeds/posts/default
+https://www.404media.co/rss/
+https://krebsonsecurity.com/feed/
+https://hnrss.org/frontpage
 ```
+
+The Google News entry gives only headlines and redirect links, so it serves as a topic signal (see step 2). The direct feeds after Simon Willison's give real article links, and most carry the full text.
 
 The two `web-proxy-smoky.vercel.app` entries go through a personal Vercel proxy run by the author of this skill, and it may not stay available. Tell users who share this skill that they can deploy their own proxy (see "Setting up your own proxy" at the end) and swap the URLs. Lines that are blank or start with `#` are not feeds.
 
@@ -63,6 +72,7 @@ Keep items whose publish date falls in the window. Convert every date to UTC bef
 
 - **Merge duplicates.** When several sources cover the same event, make it a single item and list every source link. Never list the same URL twice.
 - **Rank for the audience.** Put hands-on guides, new tools and releases, security incidents, and major industry news first. Drop event listings, job posts, and stories that matter only to consumers.
+- **Use Google News as a topic signal.** Its headlines show which topics are big today, so rank matching stories from other feeds higher. Pick a Google News story itself only when a direct feed or the publisher's own page gives enough text. Don't try to decode its redirect links.
 - **Fill 40 slots.** If the window has fewer than 40 distinct items, use what exists and don't pad with older news.
 - **Don't pick items you can't summarize.** If neither the feed nor the article has enough real content to write the summary, skip the item and choose another.
 
@@ -73,7 +83,8 @@ Many feed descriptions are too short for a 200–300 word summary.
 - Open the article when the feed text is thin.
 - When the article page blocks you, check whether the feed itself carries the full text in `content:encoded`. MarkTechPost, Juejin, 36Kr, and CyberQ do, so read the feed rather than the article page for those. Simon Willison's Atom feed carries the full post in its `summary` element.
 - Simon Willison's feed mixes long posts with short link posts, quotes, and release notes. Merge the short ones into related stories or skip them, rather than giving each its own item.
-- Google News feed links are redirect addresses (`news.google.com/rss/articles/...`) that fetch tools usually can't follow. Search for the headline to find the publisher's own article. If you only find coverage from other outlets, use that, and list it as an extra link.
+- Google News feed links are redirect addresses (`news.google.com/rss/articles/...`) that fetch tools usually can't follow. First look for the same story in the direct feeds. Search for the headline only when the topic is big and no direct feed covers it, and keep it to about 5 searches per run. If you only find coverage from other outlets, use that, and list it as an extra link.
+- The Hacker News front page feed (`hnrss.org/frontpage`) lists links to other sites. Open the linked article for content, and skip items whose page can't be read.
 - If you can't get enough content, write a shorter summary and say inside the item what it was based on (for example, "based only on the RSS description").
 
 ### 4. Write each item
@@ -96,7 +107,8 @@ Page layout:
 - A header with the title, the date, the covered window, and the item count.
 - A sticky row of category links with item counts. Suggested categories: 焦點新聞, 資安, AI 模型與研究, 開發者工具與實務, 基礎設施與能源, 產業與市場. Drop categories that end up empty.
 - One card per item, numbered within the page, holding the meta line, title, original title, summary, 建議 block (visually distinct, for example a tinted box), and links.
-- A footer note listing which sources were read, which failed, which had nothing in the window, and that summaries follow the sources while suggestions are editorial.
+
+Don't put a source-status section (來源說明) on the page. Readers don't need it. Write it to `briefing-YYYY-MM-DD.log` in the working folder instead: which feeds were read, which failed and why, which had nothing in the window, the item count, thin or merged items, and the step 6 check results.
 - Readable on phone and desktop, with support for dark mode via `prefers-color-scheme`. Use `lang="zh-Hant-TW"` for Traditional Chinese.
 
 ### 6. Check it and report
