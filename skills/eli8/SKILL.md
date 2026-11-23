@@ -15,6 +15,7 @@ Rules (these win over any active output style):
 - Use the real technical terms. Define each new term once, in a short clause, where it first appears.
 - No everyday-life analogies. Compare to engineering ideas instead (hash map, queue, HTTP request).
 - Short, direct American English.
+- Make it read smoothly from top to bottom. Open each part with a short sentence on what it covers and how it follows from the part before. Explain each diagram, table, and example in plain words, so the reader never has to guess why it is there.
 - If the topic is code, a file, or an error in this repo, read it first.
 
 Answer shape:
