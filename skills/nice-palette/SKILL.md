@@ -1,6 +1,6 @@
 ---
 name: "nice-palette"
-description: "Default colour theme for any HTML Claude builds (pages, presentations, dashboards, reports, charts, SVG): blue-green base #0D98BA plus mint, orange, cinnabar, gold, grape, amber-brown and gray side colours. Use unless the user names other colours."
+description: "Default colour theme for any HTML Claude builds (pages, presentations, dashboards, reports, charts, SVG): blue-green base #0D98BA plus mint, orange, cinnabar, gold, grape, amber-brown and gray side colours. Named palettes to pick from: blue-green (default), steel-blue, galaxy, natural. Use unless the user names other colours."
 ---
 
 # Nice Palette
@@ -11,6 +11,19 @@ Don't apply it when:
 - the user names other colours, a brand, or another theme for this output (theirs wins), or
 - the output is an existing file or template that already has its own colours (keep them unless asked to restyle), or
 - a dedicated artifact type or skill with its own fixed design system is producing the output.
+
+## Choosing a palette
+
+Four named palettes. Use **blue-green** unless the user names another one ("use the galaxy palette", "natural colours", `/nice-palette galaxy`).
+
+| Palette | Base | Side colours | Where the details are |
+|---|---|---|---|
+| `blue-green` (default) | `#0D98BA` | mint, dark orange, cinnabar, gold, grape, amber brown, gray | The palette (below) |
+| `steel-blue` | `#4682B4` | same as blue-green | Run the script with `steel-blue`; side colours stay the same |
+| `galaxy` | `#324856` | sage `#4A746A`, ochre `#D18237`, terracotta `#D66C44` | Galaxy and Natural |
+| `natural` | `#6C838B` | copper `#BB7748`, mauve `#9E6D70`, taupe `#7F726A` | Galaxy and Natural |
+
+Galaxy and natural bring their **own** side colours: they replace the blue-green side colours, they do not add to them. Say which palette you used when you hand over the output.
 
 ## The palette
 
@@ -111,13 +124,70 @@ const NICE_TEXT   = { title: '#0E2025', label: '#3A5C64', axis: '#6C8B93', grid:
 
 For dark sections, dark slides or a dark mode: background `--ink` `#0E2025`; text `#FFFFFF` at 100% / 70% / 50% opacity for primary / secondary / meta; base accent `--accent-light` `#62BCD2`; side colours as fills; borders `rgba(255,255,255,0.10)`.
 
-## Changing the base colour
+## Galaxy and Natural
 
-If the user asks for a different base colour (a hex or a name), keep the side colours and regenerate only the base tokens with this script. Preset names: `blue-green` #0D98BA (default), `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530. If the new base is close to a side colour, drop that side colour from the cycle.
+These two palettes are each a base colour plus three side colours of their own. Everything in The palette, Rules, Charts and Dark surfaces still applies, with these changes.
+
+**Galaxy**, a dark slate-blue base with warm accents.
+
+| Token | Hex | | Token | Hex |
+|---|---|---|---|---|
+| `--accent` | `#283A45` | | `--bg` | `#E6E9EB` |
+| `--accent-mid` (base) | `#324856` | | `--bg-alt` | `#DADEE1` |
+| `--accent-light` | `#7A8891` | | `--surface` | `#F3F4F5` |
+| `--ink` / `--text-1` | `#131B20` | | `--text-2` / `--text-3` | `#3A5464` / `#6C8493` |
+
+| Name | Fill | RGB | -ink (text) |
+|---|---|---|---|
+| Sage | `#4A746A` | 74,116,106 | `#466E65` |
+| Ochre | `#D18237` | 209,130,55 | `#925B26` |
+| Terracotta | `#D66C44` | 214,108,68 | `#9D4F32` |
+
+**Natural**, a soft gray-blue base with earthy accents.
+
+| Token | Hex | | Token | Hex |
+|---|---|---|---|---|
+| `--accent` | `#56696F` | | `--bg` | `#EDF0F1` |
+| `--accent-mid` (base) | `#6C838B` | | `--bg-alt` | `#E5E9EA` |
+| `--accent-light` | `#9FAEB4` | | `--surface` | `#F6F8F8` |
+| `--ink` / `--text-1` | `#161B1D` | | `--text-2` / `--text-3` | `#455459` / `#6F8790` |
+
+| Name | Fill | RGB | -ink (text) |
+|---|---|---|---|
+| Copper | `#BB7748` | 187,119,72 | `#915C38` |
+| Mauve | `#9E6D70` | 158,109,112 | `#875D60` |
+| Taupe | `#7F726A` | 127,114,106 | `#736760` |
+
+Changes from blue-green:
+
+- **Cycle order** is the base, then the three side colours in the order listed: galaxy is slate → sage → ochre → terracotta; natural is gray-blue → copper → mauve → taupe. Metallic gray `#999B9B` is still "other".
+- **Status meanings:**
+
+  | Status | Galaxy | Natural |
+  |---|---|---|
+  | success / done | sage `#4A746A` | mint `#00AB78` (status only) |
+  | warning / in progress | ochre `#D18237` | copper `#BB7748` |
+  | error / failed | cinnabar `#E34234` (status only) | cinnabar `#E34234` (status only) |
+  | info / active | base | base |
+  | inactive / neutral | metallic gray | metallic gray |
+
+  "Status only" colours come from the blue-green set and appear only on status marks, never as decoration. In galaxy, don't put terracotta next to error marks, because the two reds look alike. In natural, taupe is close to metallic gray, so give "other" items a lighter gray tint or leave taupe out of that view.
+- **Charts:** galaxy `['#324856', '#4A746A', '#D18237', '#D66C44']`, natural `['#6C838B', '#BB7748', '#9E6D70', '#7F726A']`. Sequential scales run from the palette's `--bg` to its base to its `--accent`.
+- **Dark surfaces:** background is the palette's `--ink`, base accent is its `--accent-light`. The galaxy base is itself dark, so dark sections can also use `--accent-mid` `#324856` as their background.
+- **Drop-in CSS:** run the script below with `galaxy` or `natural`. It prints the `:root` tokens, the `.tone-*` classes and a four-step `.tone-cycle` to paste in place of the blue-green block.
+
+## Other base colours and the palette script
+
+The script prints the tokens for any palette name or hex. For a name in `PALETTES` (galaxy, natural) it also prints that palette's side colours, `.tone-*` classes, `.tone-cycle` and chart series. For any other base colour (a hex or a preset name: `blue-green` #0D98BA, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530), keep the blue-green side colours and replace only the base tokens. If the new base is close to a side colour, drop that side colour from the cycle.
 
 ```python
 import colorsys, sys
 PRESETS = {'steel-blue': '#4682B4', 'blue-green': '#0D98BA', 'teal': '#2A9D8F', 'plum': '#9A4A9A', 'amber': '#C27530'}
+# Full palettes: a base colour plus their own side colours, in cycle order.
+PALETTES = {
+    'galaxy':  ('#324856', [('sage', '#4A746A'), ('ochre', '#D18237'), ('terracotta', '#D66C44')]),
+    'natural': ('#6C838B', [('copper', '#BB7748'), ('mauve', '#9E6D70'), ('taupe', '#7F726A')]),
+}
 def rgb(h): h = h.lstrip('#'); return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 def hx(c): return '#%02X%02X%02X' % tuple(round(max(0, min(255, v))) for v in c)
 def mix(a, b, t): return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
@@ -126,8 +196,16 @@ def lum(c):
     f = lambda v: (v / 255) / 12.92 if v / 255 <= 0.03928 else ((v / 255 + 0.055) / 1.055) ** 2.4
     r, g, b = map(f, c); return 0.2126 * r + 0.7152 * g + 0.0722 * b
 def contrast(a, b): la, lb = sorted((lum(a), lum(b)), reverse=True); return (la + 0.05) / (lb + 0.05)
+def base_hex(name): n = name.lower(); return PALETTES[n][0] if n in PALETTES else PRESETS.get(n, name)
+def sides(name, bg):
+    out = []
+    for n, h in PALETTES.get(name.lower(), (None, []))[1]:
+        ink = rgb(h)
+        while contrast(ink, bg) < 4.5: ink = tuple(v * 0.95 for v in ink)  # readable text on bg
+        out.append((n, h, ','.join(map(str, rgb(h))), hx(ink)))
+    return out
 def palette(base):
-    base = rgb(PRESETS.get(base.lower(), base))
+    base = rgb(base_hex(base))
     H, L, S = colorsys.rgb_to_hls(*(v / 255 for v in base))
     W = (255, 255, 255)
     bg = mix(W, base, 0.12)
@@ -146,9 +224,23 @@ def palette(base):
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
 if __name__ == '__main__':
-    t, shell = palette(sys.argv[1] if len(sys.argv) > 1 else 'blue-green')
+    name = sys.argv[1] if len(sys.argv) > 1 else 'blue-green'
+    t, shell = palette(name)
     for k, v in t.items(): print(f'  {k}: {v};')
     print(f'  --shell: {shell};')
+    sd = sides(name, rgb(t['--bg']))
+    if sd:
+        for n, h, r, ink in sd: print(f'  --c-{n}: {h}; --c-{n}-rgb: {r}; --c-{n}-ink: {ink};')
+        tones = [('base', 'var(--accent-mid)', 'var(--mid-rgb)', 'var(--accent)')]
+        tones += [(n, f'var(--c-{n})', f'var(--c-{n}-rgb)', f'var(--c-{n}-ink)') for n, *_ in sd]
+        print()
+        for n, a, b, c in tones: print(f'.tone-{n} {{ --tone: {a}; --tone-rgb: {b}; --tone-ink: {c}; }}')
+        for i, (n, a, b, c) in enumerate(tones, 1):
+            print(f'.tone-cycle > :nth-child({len(tones)}n+{i}) {{ --tone: {a}; --tone-rgb: {b}; --tone-ink: {c}; }}')
+        print()
+        print('const NICE_SERIES = ' + repr([t['--accent-mid']] + [h for _, h, *_ in sd]) + ';')
 ```
 
-Side-colour -ink shades were computed for at least 4.5:1 contrast on the blue-green `--bg`. With a much darker or warmer background, check them again.
+Run it as `python3 palette.py galaxy`, `python3 palette.py natural`, `python3 palette.py steel-blue` or `python3 palette.py "#4682B4"`, after saving the block above as `palette.py`. Paste the `--` lines over the matching lines in `:root` (ignore `--letterbox` and `--shell` outside slide decks). `.tone-gray` and the `--c-gray` tokens stay as they are in every palette.
+
+Side-colour -ink shades were computed for at least 4.5:1 contrast on each palette's own `--bg`. With a much darker or warmer background, check them again.
