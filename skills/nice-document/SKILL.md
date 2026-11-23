@@ -97,7 +97,7 @@ Pass criteria:
 - Look at every page picture for cramped text, single orphan words in headings, tables with one-word columns, and empty-looking areas.
 
 ### Phase 5: Deliver
-Save `<document-name>.html` (plus `assets/` if any) where the user asked, or next to their files. Do not save a PDF unless the user asked for one. Tell the user that opening the file shows one scrolling web page with a clickable contents list, and mention the base colour used. In one line, say a PDF is optional: **Ctrl+P → Save as PDF** with margins "None" and "Background graphics" on gives A4 pages with clickable contents links, or you can make it for them. If the user asked for a PDF, run the Verify script with `outdir` set to their folder and name the file `<document-name>.pdf`.
+Save `<document-name>.html` (plus `assets/` if any) where the user asked, or next to their files. Do not save a PDF unless the user asked for one. Tell the user that opening the file shows one scrolling web page with a clickable contents list, and mention the base colour or palette name used. In one line, say a PDF is optional: **Ctrl+P → Save as PDF** with margins "None" and "Background graphics" on gives A4 pages with clickable contents links, or you can make it for them. If the user asked for a PDF, run the Verify script with `outdir` set to their folder and name the file `<document-name>.pdf`.
 
 ## Colour system
 
@@ -123,7 +123,18 @@ Rules:
 
 ## Palette argument
 
-One optional argument: a base colour as a hex code or preset name (`blue-green` #0D98BA default, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530). Run `python3 palette.py "#4682B4"` and paste its output over the matching `:root` lines; side colours stay the same. If the base is close to a side colour, give clashing items an explicit `.tone-*`.
+One optional argument: a base colour as a hex code or preset name (`blue-green` #0D98BA default, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530), or a named palette with its own side colours (`galaxy` #324856, `natural` #6C838B). Run `python3 palette.py "#4682B4"` or `python3 palette.py galaxy` and paste its output over the matching `:root` lines. For a hex or a base-only preset, side colours stay the same. If the base is close to a side colour, give clashing items an explicit `.tone-*`.
+
+**Galaxy and natural** (from nice-palette) set the base colour *and* the three side colours. The script prints extra `--c-orange`, `--c-grape` and `--c-mint` lines for them; paste those over the same lines in `:root` too. The class names stay the same, so `.tone-orange` simply shows the palette's colour in that slot:
+
+| Slot (class) | Meaning | Galaxy | Natural |
+|---|---|---|---|
+| base | structure, info | slate `#324856` | gray-blue `#6C838B` |
+| orange | warning, in progress | ochre `#D18237` | copper `#BB7748` |
+| grape | decoration only | terracotta `#D66C44` | mauve `#9E6D70` |
+| mint | success, done | sage `#4A746A` | taupe `#7F726A` |
+
+Cinnabar red stays for failed status only. In galaxy, terracotta and red look alike, so avoid terracotta next to failed marks. In natural, taupe is close to metallic gray, so check that done and inactive marks still read as different.
 
 ## Page patterns (from the reference templates)
 

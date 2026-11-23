@@ -114,15 +114,32 @@ How items get a colour:
 Keep it calm: never more than four colours, base plus orange, grape and mint, on any slide or in the deck as a whole. The only exception is cinnabar red on failed or negative status marks. Don't add colours to body text or headlines.
 
 ## Palette argument
-The skill takes one optional argument: a **base colour**, either a hex code or a preset name. Examples: `/nice-presentation #0D98BA`, `/nice-presentation blue-green`, or in prose ("use blue-green #0D98BA"). With no argument, use the default blue-green `#0D98BA` that is already in the Base CSS.
+The skill takes one optional argument: a **base colour** or a **named palette**, either a hex code or a preset name. Examples: `/nice-presentation #0D98BA`, `/nice-presentation blue-green`, or in prose ("use blue-green #0D98BA"). With no argument, use the default blue-green `#0D98BA` that is already in the Base CSS.
 
-Presets: `blue-green` #0D98BA (default) · `steel-blue` #4682B4 · `teal` #2A9D8F (original ClearWave) · `plum` #9A4A9A · `amber` #C27530. Any other hex is accepted.
+Presets: `blue-green` #0D98BA (default) · `steel-blue` #4682B4 · `teal` #2A9D8F (original ClearWave) · `plum` #9A4A9A · `amber` #C27530 · `galaxy` #324856 (own side colours) · `natural` #6C838B (own side colours). Any other hex is accepted.
+
+**Galaxy and natural** (from nice-palette) set the base colour *and* the three side colours. The script prints extra `--c-orange`, `--c-grape` and `--c-mint` lines for them; paste those over the same lines in `:root` too. The class names stay the same, so `.tone-orange` simply shows the palette's colour in that slot:
+
+| Slot (class) | Meaning | Galaxy | Natural |
+|---|---|---|---|
+| base | structure, info | slate `#324856` | gray-blue `#6C838B` |
+| orange | warning, in progress | ochre `#D18237` | copper `#BB7748` |
+| grape | decoration only | terracotta `#D66C44` | mauve `#9E6D70` |
+| mint | success, done | sage `#4A746A` | taupe `#7F726A` |
+
+Cinnabar red stays for failed status only. In galaxy, terracotta and red look alike, so avoid terracotta next to failed marks. In natural, taupe is close to metallic gray, so check that done and inactive marks still read as different.
 
 The base colour becomes `--accent-mid`. Everything else is derived from it: a darker `--accent` checked for at least 4.5:1 contrast on the background (used for text, buttons and italic headline words), a lighter `--accent-light`, tinted backgrounds, a near-black ink in the same hue, muted text colours, the letterbox colour and the phone frame. Never hand-pick these values. Run this script and paste its output over the same-named lines in `:root`:
 
 ```python
 import colorsys, sys
 PRESETS = {'steel-blue': '#4682B4', 'blue-green': '#0D98BA', 'teal': '#2A9D8F', 'plum': '#9A4A9A', 'amber': '#C27530'}
+# Full nice-palette palettes: a base colour plus three side colours that fill the
+# orange / grape / mint slots. Orange stays "warning" and mint stays "success".
+PALETTES = {
+    'galaxy':  ('#324856', {'orange': '#D18237', 'grape': '#D66C44', 'mint': '#4A746A'}),
+    'natural': ('#6C838B', {'orange': '#BB7748', 'grape': '#9E6D70', 'mint': '#7F726A'}),
+}
 def rgb(h): h = h.lstrip('#'); return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 def hx(c): return '#%02X%02X%02X' % tuple(round(max(0, min(255, v))) for v in c)
 def mix(a, b, t): return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
@@ -131,8 +148,16 @@ def lum(c):
     f = lambda v: (v / 255) / 12.92 if v / 255 <= 0.03928 else ((v / 255 + 0.055) / 1.055) ** 2.4
     r, g, b = map(f, c); return 0.2126 * r + 0.7152 * g + 0.0722 * b
 def contrast(a, b): la, lb = sorted((lum(a), lum(b)), reverse=True); return (la + 0.05) / (lb + 0.05)
+def base_hex(name): n = name.lower(); return PALETTES[n][0] if n in PALETTES else PRESETS.get(n, name)
+def slots(name, bg):
+    out = []
+    for slot, h in PALETTES.get(name.lower(), (None, {}))[1].items():
+        ink = rgb(h)
+        while contrast(ink, bg) < 4.5: ink = tuple(v * 0.95 for v in ink)  # readable text on bg
+        out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {hx(ink)};')
+    return out
 def palette(base):
-    base = rgb(PRESETS.get(base.lower(), base))
+    base = rgb(base_hex(base))
     H, L, S = colorsys.rgb_to_hls(*(v / 255 for v in base))
     W = (255, 255, 255)
     bg = mix(W, base, 0.12)
@@ -151,12 +176,14 @@ def palette(base):
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
 if __name__ == '__main__':
-    t, shell = palette(sys.argv[1] if len(sys.argv) > 1 else 'blue-green')
+    name = sys.argv[1] if len(sys.argv) > 1 else 'blue-green'
+    t, shell = palette(name)
     for k, v in t.items(): print(f'  {k}: {v};')
     print(f'  --shell: {shell};')
+    for line in slots(name, rgb(t['--bg'])): print(line)
 ```
 
-Run it as `python3 palette.py blue-green` or `python3 palette.py "#0D98BA"`. The generator only sets the base colour; side colours stay the same. If the base colour is close to a side colour (for example a mint or plum base), give the clashing items an explicit `.tone-*` of another side colour so the deck shows only three distinct colours plus neutrals; never bring in a palette colour outside orange, grape and mint. For a very light or very dark base (yellow, near-black), check the Phase 4 screenshots for washed-out or muddy surfaces and tell the user if the colour doesn't suit this style. Mention the base colour used when delivering.
+Run it as `python3 palette.py blue-green`, `python3 palette.py galaxy` or `python3 palette.py "#0D98BA"`. For a hex or a base-only preset, the generator only sets the base colour; side colours stay the same. If the base colour is close to a side colour (for example a mint or plum base), give the clashing items an explicit `.tone-*` of another side colour so the deck shows only three distinct colours plus neutrals; never bring in a palette colour outside orange, grape and mint. For a very light or very dark base (yellow, near-black), check the Phase 4 screenshots for washed-out or muddy surfaces and tell the user if the colour doesn't suit this style. Mention the base colour or palette name used when delivering.
 
 ### Hand-tuned reference palettes
 Older fixed values, kept for reference only. Prefer the generator above.
