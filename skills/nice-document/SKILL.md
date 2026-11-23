@@ -40,7 +40,7 @@ Ask together, in one structured question round, only what the user has not alrea
 1. **Document type**: White paper / Business report / Research brief / Executive summary / Other.
 2. **Length**: Short (3 to 5 pages) / Medium (6 to 10) / Long (11+).
 3. **Content**: Full draft ready / Notes and data / Topic only (you research and write).
-4. **Branding**: organisation name, document title, date or edition, website, base colour (default blue-green `#0D98BA`).
+4. **Branding**: organisation name, document title, date or edition, website, base colour (default galaxy, slate `#324856`).
 
 If the user gave content and is clearly in a hurry, assume Medium and say so.
 
@@ -107,25 +107,25 @@ How the template's colours map to the palette:
 
 | Template colour | Role | nice-palette token |
 |---|---|---|
-| Navy header band, table header, quote and banner panels | Dark structure | `--ink` `#0E2025` |
-| Bright blue big numbers, bold key lines | Accent text | `--accent` `#0A748D` |
-| Blue and cyan chart bars and lines | Data fills | `--accent-mid` `#0D98BA`, then the side-colour cycle |
+| Navy header band, table header, quote and banner panels | Dark structure | `--ink` `#131B20` |
+| Bright blue big numbers, bold key lines | Accent text | `--accent` `#283A45` |
+| Blue and cyan chart bars and lines | Data fills | `--accent-mid` `#324856`, then the side-colour cycle |
 | Light cyan highlighted tile or card | Highlighted item | solid `--accent` stat (`.stat.hl`), stronger tint card (`.card.hl`) |
-| Light gray panels and cards | Panels | `--surface` `#F0F9FB` |
+| Light gray panels and cards | Panels | `--surface` `#F3F4F5` |
 | Teal cover band | Cover | `--accent-mid` with `--bg` above it |
 
 Rules:
 - **Base colour carries the structure**: band numbers, accent text, key lines, single-series charts, highlights. Side colours only decorate repeated items: the tint and number colour of stat tiles, card tints and icon circles, flow step circles, second and later chart series. Never mark a tile or card with a coloured top edge or a short bar above its title; colour comes from the tint and the icon circle, as in nice-presentation. Never use side colours for headings or body text.
-- **Four colours at most.** A document uses the base colour plus three side colours, dark orange, grape and mint, and nothing else. nice-palette also defines gold and amber brown; this skill does not use them. Cinnabar red is the one exception: it marks failed, negative or high-risk status only (`.pill.bad`) and never decorates items. Neutrals (white, `--ink`, the text grays and metallic gray for inactive items) do not count as colours. If the base colour is close to one of the three (for example a plum or mint base), use the other two side colours instead of bringing in a new one.
-- **`.tone-cycle`** on a container colours its children in order: blue-green → orange → grape → mint, then repeat. Add it to rows of stats, cards and flows. Use an explicit `.tone-*` class when colour carries meaning.
-- **Charts**: one series is blue-green only; never colour each bar differently just for decoration. A second series is orange (`.tone-orange`). Mark one bar as special with `.tone-ink` or a `.tone-*` that means something.
-- **Status pills** have fixed meanings: `.pill.ok` mint (done, good), `.pill.warn` orange (in progress, medium), `.pill.bad` cinnabar red (failed, high risk; the one colour allowed outside the four), `.pill.info` blue-green (planned, active), `.pill.off` gray (queued, inactive).
+- **Four colours at most.** A document uses the base colour plus three side colours, held in three slots named orange, grape and mint, and nothing else. In the default galaxy palette the slots hold ochre `#D18237` (orange), terracotta `#D66C44` (grape) and sage `#4A746A` (mint); in blue-green they hold dark orange, grape and mint. nice-palette also defines gold and amber brown; this skill does not use them. Cinnabar red is the one exception: it marks failed, negative or high-risk status only (`.pill.bad`) and never decorates items. Neutrals (white, `--ink`, the text grays and metallic gray for inactive items) do not count as colours. If the base colour is close to one of the three (for example a plum or mint base), use the other two side colours instead of bringing in a new one.
+- **`.tone-cycle`** on a container colours its children in order: base → orange → grape → mint slots, then repeat (galaxy: slate → ochre → terracotta → sage). Add it to rows of stats, cards and flows. Use an explicit `.tone-*` class when colour carries meaning.
+- **Charts**: one series is the base colour only; never colour each bar differently just for decoration. A second series is orange (`.tone-orange`). Mark one bar as special with `.tone-ink` or a `.tone-*` that means something.
+- **Status pills** have fixed meanings: `.pill.ok` mint (done, good), `.pill.warn` orange (in progress, medium), `.pill.bad` cinnabar red (failed, high risk; the one colour allowed outside the four), `.pill.info` base colour (planned, active), `.pill.off` gray (queued, inactive).
 
 ## Palette argument
 
-One optional argument: a base colour as a hex code or preset name (`blue-green` #0D98BA default, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530), or a named palette with its own side colours (`galaxy` #324856, `natural` #6C838B). Run `python3 palette.py "#4682B4"` or `python3 palette.py galaxy` and paste its output over the matching `:root` lines. For a hex or a base-only preset, side colours stay the same. If the base is close to a side colour, give clashing items an explicit `.tone-*`.
+One optional argument: a base colour as a hex code or preset name (`blue-green` #0D98BA, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530), or a named palette with its own side colours (`galaxy` #324856, the default, and `natural` #6C838B). Run `python3 palette.py "#4682B4"` or `python3 palette.py galaxy` and paste its output over the matching `:root` lines. For a hex or a base-only preset, the side colours are the blue-green ones. If the base is close to a side colour, give clashing items an explicit `.tone-*`.
 
-**Galaxy and natural** (from nice-palette) set the base colour *and* the three side colours. The script prints extra `--c-orange`, `--c-grape` and `--c-mint` lines for them; paste those over the same lines in `:root` too. The class names stay the same, so `.tone-orange` simply shows the palette's colour in that slot:
+The script always prints the three side-colour lines too (`--c-orange`, `--c-grape`, `--c-mint`); paste them over the same lines in `:root`. Galaxy and natural (from nice-palette) put their own colours in these slots. Every other preset or hex gets the blue-green side colours: dark orange `#FF8C00`, grape `#6F2DA8`, mint `#00AB78`. The class names stay the same, so `.tone-orange` simply shows the palette's colour in that slot:
 
 | Slot (class) | Meaning | Galaxy | Natural |
 |---|---|---|---|

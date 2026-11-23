@@ -1,11 +1,11 @@
 ---
 name: "nice-presentation"
-description: "Create colourful ClearWave-style HTML slide decks: blue-green base with mint, orange, grape and other side colours, DM Sans + Playfair italic, 16:9 stage. Optional argument: base colour hex or preset."
+description: "Create colourful ClearWave-style HTML slide decks: galaxy palette by default (slate base with ochre, terracotta and sage side colours), DM Sans + Playfair italic, 16:9 stage. Optional argument: base colour hex or palette name (galaxy, blue-green, steel-blue, natural, ...)."
 ---
 
 # Nice Presentation
 
-Generates single-file, zero-dependency HTML presentations that all share one design system, ported from the ClearWave template (TemplateMo 622): blue-green (#0D98BA) tinted light surfaces, a dark ink accent surface, DM Sans for everything with **one italic Playfair Display phrase per headline**, glow orbs, a faint noise texture, and slow "silk" easing (`cubic-bezier(0.16,1,0.3,1)`).
+Generates single-file, zero-dependency HTML presentations that all share one design system, ported from the ClearWave template (TemplateMo 622): light surfaces tinted with the base colour (galaxy slate #324856 by default), a dark ink accent surface, DM Sans for everything with **one italic Playfair Display phrase per headline**, glow orbs, a faint noise texture, and slow "silk" easing (`cubic-bezier(0.16,1,0.3,1)`).
 
 Text, tables, charts, diagrams, timelines, panels and cards use a bold **business-infographic** build: spaced caps labels in the base colour, solid icon circles with a white ring and soft shadow, thick coloured bars on light gray rails, tinted colour blocks for key numbers, and diagrams drawn as rings, waves and connected boxes. Every repeated item takes its own side colour, so slides are full and colourful rather than sparse.
 
@@ -33,7 +33,7 @@ Ask these together in one question round (use the structured-question UI if avai
 2. **Length** — Short 5–10 / Medium 10–20 / Long 20+
 3. **Content** — All content ready / Rough notes / Topic only
 4. **Density** — *Speaker-led* (big ideas, 1–3 points per slide) / *Reading-first* (self-contained, up to 6 bullets or 4–6 cards)
-5. **Brand** (optional) — deck short name for the top-left logo, base colour (skip if a palette argument was given; default blue-green `#0D98BA`), logo image if any.
+5. **Brand** (optional) — deck short name for the top-left logo, base colour (skip if a palette argument was given; default galaxy, slate `#324856`), logo image if any.
 
 Skip questions the user already answered. If the user gave content up front and is clearly in a hurry, assume Medium + Speaker-led and say so.
 
@@ -43,7 +43,7 @@ Title (hero, dark) → Agenda → [Section divider → Feature / Points / Stats 
 Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ; use a section divider every 4–6 slides in long decks; make the title slide and the thank-you slide `slide dark` (the only dark full slides) and one CTA box; use the featured dark card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
 
 ### Phase 3 — Generate
-If a palette argument (or a colour from Phase 1) was given, generate the tokens first (see Palette argument) and replace the matching lines in the Base CSS `:root`; otherwise keep the blue-green default.
+If a palette argument (or a colour from Phase 1) was given, generate the tokens first (see Palette argument) and replace the matching lines in the Base CSS `:root`; otherwise keep the galaxy default.
 
 Assemble: `Document shell (head)` → Base CSS → (deck-specific CSS) → `Document shell (body start)` → slides → `Document shell (end)` with the Controller JS.
 
@@ -101,24 +101,24 @@ await pg.pdf(path=out_pdf, width='1920px', height='1080px', print_background=Tru
 The colours come from the **nice-palette** skill, the user's default theme. The Base CSS below already contains its values. If nice-palette is available and its values differ (it was updated later), its colours win: copy its base and side-colour values over the matching `:root` tokens here.
 
 Two layers of colour:
-- **Base colour** (blue-green by default) is the structure: headline `<em>` words, labels, buttons, navigation, links, featured card, dark slides. Never put side colours on these.
-- **Side colours** decorate repeated items. A deck uses **at most four colours in total: the base colour plus three side colours**, Dark Orange `#FF8C00`, Grape `#6F2DA8` and Mint `#00AB78`. nice-palette also defines gold and amber brown; this skill does not use them. Cinnabar `#E34234` is the one exception: it marks failed, negative or high-risk status only (`.pill.red`, `.bad`) and never decorates items. Neutrals (white, `--ink`, the text grays and Metallic Gray `#999B9B` for inactive items) do not count as colours. Each side colour has a `-ink` shade that is readable as text on the light backgrounds. Components use the exact colour for fills and the `-ink` shade for text.
+- **Base colour** (galaxy slate `#324856` by default) is the structure: headline `<em>` words, labels, buttons, navigation, links, featured card, dark slides. Never put side colours on these.
+- **Side colours** decorate repeated items. A deck uses **at most four colours in total: the base colour plus three side colours**, held in three slots named orange, grape and mint. In the default galaxy palette the slots hold Ochre `#D18237` (orange slot), Terracotta `#D66C44` (grape slot) and Sage `#4A746A` (mint slot); in blue-green they hold Dark Orange `#FF8C00`, Grape `#6F2DA8` and Mint `#00AB78`. nice-palette also defines gold and amber brown; this skill does not use them. Cinnabar `#E34234` is the one exception: it marks failed, negative or high-risk status only (`.pill.red`, `.bad`) and never decorates items. Neutrals (white, `--ink`, the text grays and Metallic Gray `#999B9B` for inactive items) do not count as colours. Each side colour has a `-ink` shade that is readable as text on the light backgrounds. Components use the exact colour for fills and the `-ink` shade for text.
 
 How items get a colour:
 - **Automatic.** Children of `.stats`, `.grid-2/3/4`, `.wave`, `.quotes`, `.checklist`, `.tags`, `.mini-stats`, `.fv-row`, `.ticker-track`, `.points`, `.hbars`, `.meters`, `.process`, `.tree-kids` and table rows (`.data > tbody`) cycle base → orange → grape → mint, then repeat. This colours stat blocks, card columns and icon circles, check circles, point and timeline circles, bars, meters, process rings, tree nodes, table row dots, quote marks and avatars, highlighted tags, mini-stat tops and progress fills. Donut segments and line series take an explicit `.tone-*` each, matching their callout or legend key.
 - **Explicit.** Add `.tone-base`, `.tone-orange`, `.tone-grape`, `.tone-mint` or `.tone-gray` to any item to choose its colour. Use this when colour carries meaning, such as the same team always in grape across slides.
 - **Single colour.** Add `.mono` to a slide to keep all its items in the base colour (for example a sober financial slide).
-- **Semantic pills and table marks.** `.pill.green` (mint, done), `.pill.warn` (light orange, in progress or medium), `.pill.red` (cinnabar, failed or high risk), `.pill.grape`, `.pill.blue` (base), `.pill.dim` (gray). In tables, `.yes` is mint and `.bad` is cinnabar. Red for problems is the only colour allowed outside the four.
+- **Semantic pills and table marks.** `.pill.green` (mint slot, done), `.pill.warn` (light orange slot, in progress or medium), `.pill.red` (cinnabar, failed or high risk), `.pill.grape`, `.pill.blue` (base), `.pill.dim` (gray). In tables, `.yes` is mint and `.bad` is cinnabar. Red for problems is the only colour allowed outside the four.
 - **Extras.** `.card.tinted` adds a top border in the card's colour. `.orb-d` is a soft orange glow that pairs with `.orb-a`. `.kicker` text is orange unless a tone is set. `.float-icon` is grape.
 
 Keep it calm: never more than four colours, base plus orange, grape and mint, on any slide or in the deck as a whole. The only exception is cinnabar red on failed or negative status marks. Don't add colours to body text or headlines.
 
 ## Palette argument
-The skill takes one optional argument: a **base colour** or a **named palette**, either a hex code or a preset name. Examples: `/nice-presentation #0D98BA`, `/nice-presentation blue-green`, or in prose ("use blue-green #0D98BA"). With no argument, use the default blue-green `#0D98BA` that is already in the Base CSS.
+The skill takes one optional argument: a **base colour** or a **named palette**, either a hex code or a preset name. Examples: `/nice-presentation #0D98BA`, `/nice-presentation blue-green`, or in prose ("use blue-green #0D98BA"). With no argument, use the default galaxy palette that is already in the Base CSS.
 
-Presets: `blue-green` #0D98BA (default) · `steel-blue` #4682B4 · `teal` #2A9D8F (original ClearWave) · `plum` #9A4A9A · `amber` #C27530 · `galaxy` #324856 (own side colours) · `natural` #6C838B (own side colours). Any other hex is accepted.
+Presets: `galaxy` #324856 (default, own side colours) · `natural` #6C838B (own side colours) · `blue-green` #0D98BA · `steel-blue` #4682B4 · `teal` #2A9D8F (original ClearWave) · `plum` #9A4A9A · `amber` #C27530. Any other hex is accepted.
 
-**Galaxy and natural** (from nice-palette) set the base colour *and* the three side colours. The script prints extra `--c-orange`, `--c-grape` and `--c-mint` lines for them; paste those over the same lines in `:root` too. The class names stay the same, so `.tone-orange` simply shows the palette's colour in that slot:
+The script always prints the three side-colour lines too (`--c-orange`, `--c-grape`, `--c-mint`); paste them over the same lines in `:root`. Galaxy and natural (from nice-palette) put their own colours in these slots. Every other preset or hex gets the blue-green side colours: dark orange `#FF8C00`, grape `#6F2DA8`, mint `#00AB78`. The class names stay the same, so `.tone-orange` simply shows the palette's colour in that slot:
 
 | Slot (class) | Meaning | Galaxy | Natural |
 |---|---|---|---|
@@ -136,6 +136,8 @@ import colorsys, sys
 PRESETS = {'steel-blue': '#4682B4', 'blue-green': '#0D98BA', 'teal': '#2A9D8F', 'plum': '#9A4A9A', 'amber': '#C27530'}
 # Full nice-palette palettes: a base colour plus three side colours that fill the
 # orange / grape / mint slots. Orange stays "warning" and mint stays "success".
+# Any other name or hex gets the blue-green side colours (BASE_SIDES).
+BASE_SIDES = {'orange': ('#FF8C00', '#9B5500'), 'grape': ('#6F2DA8', '#6F2DA8'), 'mint': ('#00AB78', '#007653')}
 PALETTES = {
     'galaxy':  ('#324856', {'orange': '#D18237', 'grape': '#D66C44', 'mint': '#4A746A'}),
     'natural': ('#6C838B', {'orange': '#BB7748', 'grape': '#9E6D70', 'mint': '#7F726A'}),
@@ -151,7 +153,11 @@ def contrast(a, b): la, lb = sorted((lum(a), lum(b)), reverse=True); return (la 
 def base_hex(name): n = name.lower(); return PALETTES[n][0] if n in PALETTES else PRESETS.get(n, name)
 def slots(name, bg):
     out = []
-    for slot, h in PALETTES.get(name.lower(), (None, {}))[1].items():
+    if name.lower() not in PALETTES:
+        for slot, (h, ink) in BASE_SIDES.items():
+            out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {ink};')
+        return out
+    for slot, h in PALETTES[name.lower()][1].items():
         ink = rgb(h)
         while contrast(ink, bg) < 4.5: ink = tuple(v * 0.95 for v in ink)  # readable text on bg
         out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {hx(ink)};')
@@ -176,14 +182,14 @@ def palette(base):
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
 if __name__ == '__main__':
-    name = sys.argv[1] if len(sys.argv) > 1 else 'blue-green'
+    name = sys.argv[1] if len(sys.argv) > 1 else 'galaxy'
     t, shell = palette(name)
     for k, v in t.items(): print(f'  {k}: {v};')
     print(f'  --shell: {shell};')
     for line in slots(name, rgb(t['--bg'])): print(line)
 ```
 
-Run it as `python3 palette.py blue-green`, `python3 palette.py galaxy` or `python3 palette.py "#0D98BA"`. For a hex or a base-only preset, the generator only sets the base colour; side colours stay the same. If the base colour is close to a side colour (for example a mint or plum base), give the clashing items an explicit `.tone-*` of another side colour so the deck shows only three distinct colours plus neutrals; never bring in a palette colour outside orange, grape and mint. For a very light or very dark base (yellow, near-black), check the Phase 4 screenshots for washed-out or muddy surfaces and tell the user if the colour doesn't suit this style. Mention the base colour or palette name used when delivering.
+Run it as `python3 palette.py blue-green`, `python3 palette.py galaxy` or `python3 palette.py "#0D98BA"`. For a hex or a base-only preset, the side colours are the blue-green ones. If the base colour is close to a side colour (for example a mint or plum base), give the clashing items an explicit `.tone-*` of another side colour so the deck shows only three distinct colours plus neutrals; never bring in a palette colour outside orange, grape and mint. For a very light or very dark base (yellow, near-black), check the Phase 4 screenshots for washed-out or muddy surfaces and tell the user if the colour doesn't suit this style. Mention the base colour or palette name used when delivering.
 
 ### Hand-tuned reference palettes
 Older fixed values, kept for reference only. Prefer the generator above.
@@ -702,23 +708,23 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
 
 /* === 1. TOKENS === */
 :root {
-  --bg:           #E2F3F7;
-  --bg-alt:       #D3ECF3;
-  --surface:      #F0F9FB;
+  --bg:           #E6E9EB;
+  --bg-alt:       #DADEE1;
+  --surface:      #F3F4F5;
   --surface-2:    #FFFFFF;
-  --accent:       #0A748D;
-  --accent-mid:   #0D98BA;
-  --accent-light: #62BCD2;
-  --accent-rgb:   10,116,141;          /* = --accent as r,g,b */
-  --mid-rgb:      13,152,186;          /* = --accent-mid as r,g,b */
-  --light-rgb:    98,188,210;          /* = --accent-light as r,g,b */
+  --accent:       #283A45;
+  --accent-mid:   #324856;
+  --accent-light: #7A8891;
+  --accent-rgb:   40,58,69;          /* = --accent as r,g,b */
+  --mid-rgb:      50,72,86;          /* = --accent-mid as r,g,b */
+  --light-rgb:    122,136,145;          /* = --accent-light as r,g,b */
   --accent-ghost: rgba(var(--accent-rgb),0.08);
   --accent-border:rgba(var(--accent-rgb),0.15);
-  --ink:          #0E2025;             /* dark surfaces (CTA, featured card) */
-  --ink-rgb:      14,32,37;            /* = --ink as r,g,b */
-  --text-1:       #0E2025;
-  --text-2:       #3A5C64;
-  --text-3:       #6C8B93;
+  --ink:          #131B20;             /* dark surfaces (CTA, featured card) */
+  --ink-rgb:      19,27,32;            /* = --ink as r,g,b */
+  --text-1:       #131B20;
+  --text-2:       #3A5464;
+  --text-3:       #6C8493;
   --border:       rgba(var(--ink-rgb),0.08);
   --track:        rgba(var(--ink-rgb),0.08);   /* light gray rails, tracks and the timeline ribbon */
   --badge-shadow: 0 8px 22px rgba(var(--ink-rgb),0.16);   /* soft drop shadow under icon circles */
@@ -739,15 +745,15 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --fs-body:      26px;
   --fs-small:     21px;
   --fs-label:     17px;
-  --letterbox:    #C2E5EE;             /* color around the stage on non-16:9 screens */
-  --shell:        #BCCED2;             /* phone frame */
+  --letterbox:    #CCD1D5;             /* color around the stage on non-16:9 screens */
+  --shell:        #BCC9D2;             /* phone frame */
   /* Side colours: decorate repeated items. Exact colour for fills; -ink = darker shade readable as text on light bg */
-  --c-mint:     #00AB78; --c-mint-rgb:     0,171,120;  --c-mint-ink:     #007653;
-  --c-orange:   #FF8C00; --c-orange-rgb:   255,140,0;  --c-orange-ink:   #9B5500;
+  --c-mint:     #4A746A; --c-mint-rgb:     74,116,106;  --c-mint-ink:     #466E65;
+  --c-orange:   #D18237; --c-orange-rgb:   209,130,55;  --c-orange-ink:   #925B26;
   /* status only: the one exception to the four-colour rule, for failed / negative marks */
   --c-cinnabar: #E34234; --c-cinnabar-rgb: 227,66,52; --c-cinnabar-ink: #BD372B;
-  --c-gray:     #999B9B; --c-gray-rgb:     153,155,155; --c-gray-ink:    #6A6B6B;
-  --c-grape:    #6F2DA8; --c-grape-rgb:    111,45,168; --c-grape-ink:    #6F2DA8;
+  --c-gray:     #999B9B; --c-gray-rgb:     153,155,155; --c-gray-ink:    #656666;
+  --c-grape:    #D66C44; --c-grape-rgb:    214,108,68; --c-grape-ink:    #9D4F32;
   --pad-x:        128px;
   --pad-top:      150px;
   --pad-bottom:   120px;

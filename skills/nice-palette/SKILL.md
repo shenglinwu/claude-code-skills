@@ -1,6 +1,6 @@
 ---
 name: "nice-palette"
-description: "Default colour theme for any HTML Claude builds (pages, presentations, dashboards, reports, charts, SVG): blue-green base #0D98BA plus mint, orange, cinnabar, gold, grape, amber-brown and gray side colours. Named palettes to pick from: blue-green (default), steel-blue, galaxy, natural. Use unless the user names other colours."
+description: "Default colour theme for any HTML Claude builds (pages, presentations, dashboards, reports, charts, SVG): galaxy palette, slate base #324856 plus ochre #D18237, terracotta #D66C44 and sage #4A746A side colours. Named palettes to pick from: galaxy (default), blue-green, steel-blue, natural. Use unless the user names other colours."
 ---
 
 # Nice Palette
@@ -14,18 +14,107 @@ Don't apply it when:
 
 ## Choosing a palette
 
-Four named palettes. Use **blue-green** unless the user names another one ("use the galaxy palette", "natural colours", `/nice-palette galaxy`).
+Four named palettes. Use **galaxy** unless the user names another one ("use the blue-green palette", "natural colours", `/nice-palette natural`).
 
 | Palette | Base | Side colours | Where the details are |
 |---|---|---|---|
-| `blue-green` (default) | `#0D98BA` | mint, dark orange, cinnabar, gold, grape, amber brown, gray | The palette (below) |
-| `steel-blue` | `#4682B4` | same as blue-green | Run the script with `steel-blue`; side colours stay the same |
-| `galaxy` | `#324856` | sage `#4A746A`, ochre `#D18237`, terracotta `#D66C44` | Galaxy and Natural |
-| `natural` | `#6C838B` | copper `#BB7748`, mauve `#9E6D70`, taupe `#7F726A` | Galaxy and Natural |
+| `galaxy` (default) | `#324856` | ochre `#D18237`, terracotta `#D66C44`, sage `#4A746A` | The palette (below) |
+| `blue-green` | `#0D98BA` | mint, dark orange, cinnabar, gold, grape, amber brown, gray | Blue-green |
+| `steel-blue` | `#4682B4` | same as blue-green | Run the script with `steel-blue`; side colours stay the same as blue-green |
+| `natural` | `#6C838B` | copper `#BB7748`, mauve `#9E6D70`, taupe `#7F726A` | Natural |
 
-Galaxy and natural bring their **own** side colours: they replace the blue-green side colours, they do not add to them. Say which palette you used when you hand over the output.
+Each palette brings its **own** side colours; never mix side colours from two palettes. Say which palette you used when you hand over the output.
 
 ## The palette
+
+**Galaxy**, a dark slate-blue base with warm accents. **Base colour: Slate `#324856`.** It carries the structure: headings' accent words, links, buttons, navigation, active states, focus rings, the primary chart series.
+
+| Token | Hex | RGB | Use |
+|---|---|---|---|
+| `--accent` | `#283A45` | 40,58,69 | Accent **text**, buttons, links (4.5:1 on the background) |
+| `--accent-mid` | `#324856` | 50,72,86 | The base colour itself: fills, bars, icons, borders |
+| `--accent-light` | `#7A8891` | 122,136,145 | Glows, accents on dark surfaces |
+| `--bg` | `#E6E9EB` | | Page background |
+| `--bg-alt` | `#DADEE1` | | Table headers, alternate sections |
+| `--surface` | `#F3F4F5` | | Light panels |
+| `--surface-2` | `#FFFFFF` | | Cards |
+| `--ink` / `--text-1` | `#131B20` | 19,27,32 | Headings, body text, dark sections |
+| `--text-2` | `#3A5464` | | Secondary text |
+| `--text-3` | `#6C8493` | | Captions, meta |
+
+**Side colours** decorate repeated or categorical items: cards, stats, chart series, tags, timeline steps, avatars, status. Each has an **-ink** shade. Use the exact colour for fills, bars and borders, and the -ink shade for any **text or thin glyph** in that colour, so ochre and terracotta stay readable.
+
+| Name | Fill | RGB | -ink (text) |
+|---|---|---|---|
+| Ochre | `#D18237` | 209,130,55 | `#925B26` |
+| Terracotta | `#D66C44` | 214,108,68 | `#9D4F32` |
+| Sage | `#4A746A` | 74,116,106 | `#466E65` |
+| Metallic Gray | `#999B9B` | 153,155,155 | `#656666` |
+| Cinnabar (error status only) | `#E34234` | 227,66,52 | `#BD372B` |
+
+## Rules
+
+1. **Base colour first.** Most of the page is neutral (backgrounds, ink, greys) plus slate. Side colours are decoration, not structure: never use them for headlines, body text, links or primary buttons.
+2. **Cycle order** for repeated items and chart series: slate → ochre → terracotta → sage, then repeat. Metallic gray is for "other", neutral, disabled or baseline items. With more than four categories, group the tail into gray "Other".
+3. **Status meanings are fixed:** sage = success/done/positive, ochre = warning/in progress, cinnabar = error/failed/negative, gray = inactive/queued, slate = info/active. Cinnabar appears only on error marks, never as decoration. Terracotta and cinnabar look alike, so don't put terracotta next to error marks.
+4. **Text contrast:** text in any side colour uses its -ink shade. On dark (`--ink`) backgrounds use the fill colours or `--accent-light`, never the -ink shades. Sage is dim on dark backgrounds, so use it there only for large fills.
+5. **Tints:** for soft backgrounds of chips, icons and badges use the colour at 10–14% alpha with a 25–35% alpha border, as in `rgba(209,130,55,0.10)`.
+6. **Fonts are not part of this skill.** Keep whatever typography the output calls for. If nothing else decides it, DM Sans for text with Playfair Display italic for accent words pairs well with this palette.
+
+## Drop-in CSS
+
+Paste into the `<style>` of any HTML file, then use the variables. The `.tone-*` classes set `--tone`, `--tone-rgb` and `--tone-ink` on an element so components can read one colour. `.tone-cycle` applies the cycle order to its children automatically.
+
+```css
+:root {
+  /* Base: Galaxy slate #324856 */
+  --bg: #E6E9EB; --bg-alt: #DADEE1; --surface: #F3F4F5; --surface-2: #FFFFFF;
+  --accent: #283A45; --accent-mid: #324856; --accent-light: #7A8891;
+  --accent-rgb: 40,58,69; --mid-rgb: 50,72,86; --light-rgb: 122,136,145;
+  --ink: #131B20; --ink-rgb: 19,27,32; --text-1: #131B20; --text-2: #3A5464; --text-3: #6C8493;
+  --border: rgba(19,27,32,0.08);
+  /* Side colours: fill / rgb / -ink (text) */
+  --c-ochre: #D18237;      --c-ochre-rgb: 209,130,55;      --c-ochre-ink: #925B26;
+  --c-terracotta: #D66C44; --c-terracotta-rgb: 214,108,68; --c-terracotta-ink: #9D4F32;
+  --c-sage: #4A746A;       --c-sage-rgb: 74,116,106;       --c-sage-ink: #466E65;
+  --c-gray: #999B9B;       --c-gray-rgb: 153,155,155;      --c-gray-ink: #656666;
+  --c-cinnabar: #E34234;   --c-cinnabar-rgb: 227,66,52;    --c-cinnabar-ink: #BD372B;   /* error status only */
+}
+.tone-base       { --tone: var(--accent-mid);   --tone-rgb: var(--mid-rgb);          --tone-ink: var(--accent); }
+.tone-ochre      { --tone: var(--c-ochre);      --tone-rgb: var(--c-ochre-rgb);      --tone-ink: var(--c-ochre-ink); }
+.tone-terracotta { --tone: var(--c-terracotta); --tone-rgb: var(--c-terracotta-rgb); --tone-ink: var(--c-terracotta-ink); }
+.tone-sage       { --tone: var(--c-sage);       --tone-rgb: var(--c-sage-rgb);       --tone-ink: var(--c-sage-ink); }
+.tone-gray       { --tone: var(--c-gray);       --tone-rgb: var(--c-gray-rgb);       --tone-ink: var(--c-gray-ink); }
+.tone-cycle > :nth-child(4n+1) { --tone: var(--accent-mid);   --tone-rgb: var(--mid-rgb);          --tone-ink: var(--accent); }
+.tone-cycle > :nth-child(4n+2) { --tone: var(--c-ochre);      --tone-rgb: var(--c-ochre-rgb);      --tone-ink: var(--c-ochre-ink); }
+.tone-cycle > :nth-child(4n+3) { --tone: var(--c-terracotta); --tone-rgb: var(--c-terracotta-rgb); --tone-ink: var(--c-terracotta-ink); }
+.tone-cycle > :nth-child(4n+4) { --tone: var(--c-sage);       --tone-rgb: var(--c-sage-rgb);       --tone-ink: var(--c-sage-ink); }
+/* example component use: */
+/* .badge { background: rgba(var(--tone-rgb),0.10); border: 1.5px solid rgba(var(--tone-rgb),0.30); color: var(--tone-ink); } */
+```
+
+## Charts
+
+Series colours in cycle order, for any charting library:
+
+```js
+const NICE_SERIES = ['#324856', '#D18237', '#D66C44', '#4A746A'];
+const NICE_OTHER  = '#999B9B';   // "Other", baseline, comparison series
+const NICE_STATUS = { success: '#4A746A', warning: '#D18237', error: '#E34234', info: '#324856', neutral: '#999B9B' };
+const NICE_TEXT   = { title: '#131B20', label: '#3A5464', axis: '#6C8493', grid: 'rgba(19,27,32,0.08)' };
+```
+
+- For a single series, use slate alone. Don't rainbow one series's bars.
+- Sequential scales (heatmaps, choropleths) run from `--bg` `#E6E9EB` to slate `#324856` to `--ink` `#131B20`. Diverging scales run terracotta → `#F3F4F5` → slate.
+- If a dataviz skill is also in use, follow its method (form, marks, interaction) but use these colours instead of its placeholder palette.
+
+## Dark surfaces
+
+For dark sections, dark slides or a dark mode: background `--ink` `#131B20`, or the slate base `#324856` itself, which is dark enough for white text; text `#FFFFFF` at 100% / 70% / 50% opacity for primary / secondary / meta; base accent `--accent-light` `#7A8891`; side colours as fills; borders `rgba(255,255,255,0.10)`.
+
+## Blue-green
+
+The earlier default: a bright blue-green base with seven side colours. Use it when the user asks for blue-green, and as the start for `steel-blue` and other base-only colours.
 
 **Base colour: Blue Green `#0D98BA`.** It carries the structure: headings' accent words, links, buttons, navigation, active states, focus rings, the primary chart series.
 
@@ -54,7 +143,7 @@ Galaxy and natural bring their **own** side colours: they replace the blue-green
 | Amber Brown | `#A6674C` | 166,103,76 | `#935B43` |
 | Metallic Gray | `#999B9B` | 153,155,155 | `#6A6B6B` |
 
-## Rules
+### Rules (blue-green)
 
 1. **Base colour first.** Most of the page is neutral (backgrounds, ink, greys) plus blue-green. Side colours are decoration, not structure: never use them for headlines, body text, links or primary buttons.
 2. **Cycle order** for repeated items and chart series: blue-green → dark orange → grape → mint → cinnabar → gold → amber brown. Metallic gray is for "other", neutral, disabled or baseline items.
@@ -64,9 +153,9 @@ Galaxy and natural bring their **own** side colours: they replace the blue-green
 6. **Tints:** for soft backgrounds of chips, icons and badges use the colour at 10–14% alpha with a 25–35% alpha border, as in `rgba(0,171,120,0.10)`.
 7. **Fonts are not part of this skill.** Keep whatever typography the output calls for. If nothing else decides it, DM Sans for text with Playfair Display italic for accent words pairs well with this palette.
 
-## Drop-in CSS
+### Drop-in CSS (blue-green)
 
-Paste into the `<style>` of any HTML file, then use the variables. The `.tone-*` classes set `--tone`, `--tone-rgb` and `--tone-ink` on an element so components can read one colour. `.tone-cycle` applies the cycle order to its children automatically.
+Use this block in place of the galaxy one when the user picks blue-green.
 
 ```css
 :root {
@@ -104,7 +193,7 @@ Paste into the `<style>` of any HTML file, then use the variables. The `.tone-*`
 /* .badge { background: rgba(var(--tone-rgb),0.10); border: 1.5px solid rgba(var(--tone-rgb),0.30); color: var(--tone-ink); } */
 ```
 
-## Charts
+### Charts (blue-green)
 
 Series colours in cycle order, for any charting library:
 
@@ -120,30 +209,13 @@ const NICE_TEXT   = { title: '#0E2025', label: '#3A5C64', axis: '#6C8B93', grid:
 - Gold as a thin line is hard to see; use it for bars, areas or large markers, or move it later in the order.
 - If a dataviz skill is also in use, follow its method (form, marks, interaction) but use these colours instead of its placeholder palette.
 
-## Dark surfaces
+### Dark surfaces (blue-green)
 
 For dark sections, dark slides or a dark mode: background `--ink` `#0E2025`; text `#FFFFFF` at 100% / 70% / 50% opacity for primary / secondary / meta; base accent `--accent-light` `#62BCD2`; side colours as fills; borders `rgba(255,255,255,0.10)`.
 
-## Galaxy and Natural
+## Natural
 
-These two palettes are each a base colour plus three side colours of their own. Everything in The palette, Rules, Charts and Dark surfaces still applies, with these changes.
-
-**Galaxy**, a dark slate-blue base with warm accents.
-
-| Token | Hex | | Token | Hex |
-|---|---|---|---|---|
-| `--accent` | `#283A45` | | `--bg` | `#E6E9EB` |
-| `--accent-mid` (base) | `#324856` | | `--bg-alt` | `#DADEE1` |
-| `--accent-light` | `#7A8891` | | `--surface` | `#F3F4F5` |
-| `--ink` / `--text-1` | `#131B20` | | `--text-2` / `--text-3` | `#3A5464` / `#6C8493` |
-
-| Name | Fill | RGB | -ink (text) |
-|---|---|---|---|
-| Sage | `#4A746A` | 74,116,106 | `#466E65` |
-| Ochre | `#D18237` | 209,130,55 | `#925B26` |
-| Terracotta | `#D66C44` | 214,108,68 | `#9D4F32` |
-
-**Natural**, a soft gray-blue base with earthy accents.
+A soft gray-blue base with earthy accents. Rules, Charts and Dark surfaces work as for galaxy, with these colours.
 
 | Token | Hex | | Token | Hex |
 |---|---|---|---|---|
@@ -158,34 +230,21 @@ These two palettes are each a base colour plus three side colours of their own. 
 | Mauve | `#9E6D70` | 158,109,112 | `#875D60` |
 | Taupe | `#7F726A` | 127,114,106 | `#736760` |
 
-Changes from blue-green:
-
-- **Cycle order** is the base, then the three side colours in the order listed: galaxy is slate → sage → ochre → terracotta; natural is gray-blue → copper → mauve → taupe. Metallic gray `#999B9B` is still "other".
-- **Status meanings:**
-
-  | Status | Galaxy | Natural |
-  |---|---|---|
-  | success / done | sage `#4A746A` | mint `#00AB78` (status only) |
-  | warning / in progress | ochre `#D18237` | copper `#BB7748` |
-  | error / failed | cinnabar `#E34234` (status only) | cinnabar `#E34234` (status only) |
-  | info / active | base | base |
-  | inactive / neutral | metallic gray | metallic gray |
-
-  "Status only" colours come from the blue-green set and appear only on status marks, never as decoration. In galaxy, don't put terracotta next to error marks, because the two reds look alike. In natural, taupe is close to metallic gray, so give "other" items a lighter gray tint or leave taupe out of that view.
-- **Charts:** galaxy `['#324856', '#4A746A', '#D18237', '#D66C44']`, natural `['#6C838B', '#BB7748', '#9E6D70', '#7F726A']`. Sequential scales run from the palette's `--bg` to its base to its `--accent`.
-- **Dark surfaces:** background is the palette's `--ink`, base accent is its `--accent-light`. The galaxy base is itself dark, so dark sections can also use `--accent-mid` `#324856` as their background.
-- **Drop-in CSS:** run the script below with `galaxy` or `natural`. It prints the `:root` tokens, the `.tone-*` classes and a four-step `.tone-cycle` to paste in place of the blue-green block.
+- **Cycle order:** gray-blue → copper → mauve → taupe. Metallic gray `#999B9B` is "other".
+- **Status meanings:** success mint `#00AB78` (status only, as natural has no green), warning copper, error cinnabar `#E34234` (status only), info base, inactive metallic gray. Taupe is close to metallic gray, so give "other" items a lighter gray tint or leave taupe out of that view.
+- **Charts:** `['#6C838B', '#BB7748', '#9E6D70', '#7F726A']`. Sequential scales run from `#EDF0F1` to the base to `#56696F`.
+- **Drop-in CSS:** run the script below with `natural`. It prints the `:root` tokens, the `.tone-*` classes and a four-step `.tone-cycle`. Paste them in place of the galaxy lines, and keep `--c-gray`, `--c-cinnabar` and `.tone-gray`.
 
 ## Other base colours and the palette script
 
-The script prints the tokens for any palette name or hex. For a name in `PALETTES` (galaxy, natural) it also prints that palette's side colours, `.tone-*` classes, `.tone-cycle` and chart series. For any other base colour (a hex or a preset name: `blue-green` #0D98BA, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530), keep the blue-green side colours and replace only the base tokens. If the new base is close to a side colour, drop that side colour from the cycle.
+The script prints the tokens for any palette name or hex. For a name in `PALETTES` (galaxy, natural) it also prints that palette's side colours, `.tone-*` classes, `.tone-cycle` and chart series. For any other base colour (a hex or a preset name: `blue-green` #0D98BA, `steel-blue` #4682B4, `teal` #2A9D8F, `plum` #9A4A9A, `amber` #C27530), start from the blue-green drop-in CSS, keep its side colours and replace only the base tokens. If the new base is close to a side colour, drop that side colour from the cycle.
 
 ```python
 import colorsys, sys
 PRESETS = {'steel-blue': '#4682B4', 'blue-green': '#0D98BA', 'teal': '#2A9D8F', 'plum': '#9A4A9A', 'amber': '#C27530'}
 # Full palettes: a base colour plus their own side colours, in cycle order.
 PALETTES = {
-    'galaxy':  ('#324856', [('sage', '#4A746A'), ('ochre', '#D18237'), ('terracotta', '#D66C44')]),
+    'galaxy':  ('#324856', [('ochre', '#D18237'), ('terracotta', '#D66C44'), ('sage', '#4A746A')]),
     'natural': ('#6C838B', [('copper', '#BB7748'), ('mauve', '#9E6D70'), ('taupe', '#7F726A')]),
 }
 def rgb(h): h = h.lstrip('#'); return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
@@ -224,7 +283,7 @@ def palette(base):
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
 if __name__ == '__main__':
-    name = sys.argv[1] if len(sys.argv) > 1 else 'blue-green'
+    name = sys.argv[1] if len(sys.argv) > 1 else 'galaxy'
     t, shell = palette(name)
     for k, v in t.items(): print(f'  {k}: {v};')
     print(f'  --shell: {shell};')
@@ -241,6 +300,6 @@ if __name__ == '__main__':
         print('const NICE_SERIES = ' + repr([t['--accent-mid']] + [h for _, h, *_ in sd]) + ';')
 ```
 
-Run it as `python3 palette.py galaxy`, `python3 palette.py natural`, `python3 palette.py steel-blue` or `python3 palette.py "#4682B4"`, after saving the block above as `palette.py`. Paste the `--` lines over the matching lines in `:root` (ignore `--letterbox` and `--shell` outside slide decks). `.tone-gray` and the `--c-gray` tokens stay as they are in every palette.
+Run it as `python3 palette.py galaxy`, `python3 palette.py natural`, `python3 palette.py steel-blue` or `python3 palette.py "#4682B4"`, after saving the block above as `palette.py`. Paste the `--` lines over the matching lines in `:root` (ignore `--letterbox` and `--shell` outside slide decks). Keep the `--c-gray` and `--c-cinnabar` tokens and `.tone-gray` in every palette.
 
 Side-colour -ink shades were computed for at least 4.5:1 contrast on each palette's own `--bg`. With a much darker or warmer background, check them again.

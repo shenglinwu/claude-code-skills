@@ -2,6 +2,8 @@ import colorsys, sys
 PRESETS = {'steel-blue': '#4682B4', 'blue-green': '#0D98BA', 'teal': '#2A9D8F', 'plum': '#9A4A9A', 'amber': '#C27530'}
 # Full nice-palette palettes: a base colour plus three side colours that fill the
 # orange / grape / mint slots. Orange stays "warning" and mint stays "success".
+# Any other name or hex gets the blue-green side colours (BASE_SIDES).
+BASE_SIDES = {'orange': ('#FF8C00', '#9B5500'), 'grape': ('#6F2DA8', '#6F2DA8'), 'mint': ('#00AB78', '#007653')}
 PALETTES = {
     'galaxy':  ('#324856', {'orange': '#D18237', 'grape': '#D66C44', 'mint': '#4A746A'}),
     'natural': ('#6C838B', {'orange': '#BB7748', 'grape': '#9E6D70', 'mint': '#7F726A'}),
@@ -17,7 +19,11 @@ def contrast(a, b): la, lb = sorted((lum(a), lum(b)), reverse=True); return (la 
 def base_hex(name): n = name.lower(); return PALETTES[n][0] if n in PALETTES else PRESETS.get(n, name)
 def slots(name, bg):
     out = []
-    for slot, h in PALETTES.get(name.lower(), (None, {}))[1].items():
+    if name.lower() not in PALETTES:
+        for slot, (h, ink) in BASE_SIDES.items():
+            out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {ink};')
+        return out
+    for slot, h in PALETTES[name.lower()][1].items():
         ink = rgb(h)
         while contrast(ink, bg) < 4.5: ink = tuple(v * 0.95 for v in ink)  # readable text on bg
         out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {hx(ink)};')
@@ -42,7 +48,7 @@ def palette(base):
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
 if __name__ == '__main__':
-    name = sys.argv[1] if len(sys.argv) > 1 else 'blue-green'
+    name = sys.argv[1] if len(sys.argv) > 1 else 'galaxy'
     t, shell = palette(name)
     for k, v in t.items(): print(f'  {k}: {v};')
     print(f'  --shell: {shell};')
