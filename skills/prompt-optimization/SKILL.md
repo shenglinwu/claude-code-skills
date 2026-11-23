@@ -11,6 +11,8 @@ The skill has four steps: triage, ask the author clarifying questions about what
 $ARGUMENTS
 </original_prompt>
 
+If the original prompt is `@saved`, or contains `@saved`, read `/tmp/.claude.saved_prompt.txt` and use its text in place of `@saved`. If that file does not exist, tell the user no prompt is saved and stop.
+
 ## Step 1: Triage before rewriting
 
 The reader infers intent well, so over-editing a prompt does as much harm as leaving it vague. Pick an intervention level first:
@@ -99,14 +101,14 @@ Do not print the optimized prompt until the answers are in. Keep these clarifyin
 
 ## Step 4: Ask what to do next (same turn)
 
-Right after printing the optimized prompt, call the `AskUserQuestion` tool with these four options: "Yes, execute it", "Save for next prompt", "Edit for next prompt", and "No, just keep the prompt".
+First print the full optimized prompt as your visible reply text, so the user can read it before deciding. Do not skip it, shorten it, or put it only inside a tool call. Only after the prompt is printed, call the `AskUserQuestion` tool with these four options: "Yes, execute it", "Save for next prompt", "Edit for next prompt", and "No, just keep the prompt". The question dialog can hide text printed earlier in the turn, so also put the full optimized prompt in the `preview` field of each option.
 
 Printing the prompt does not end the turn. Without this call the user has no way to say "run it", so a run that stops after step 3 has failed even if the prompt is perfect. Use the tool itself rather than a plain-text question, and call it in this turn rather than the next.
 
 If the user selects "Yes, execute it", execute the optimized prompt faithfully, following all relevant skills and instructions as if the user had typed the optimized prompt directly.
 
-If the user selects "Save for next prompt", silently delete the file `/tmp/.claude.saved_prompt.txt` if it exists and write the full optimized prompt text to the file `/tmp/.claude.saved_prompt.txt`, confirm to the user that the prompt has been saved, and inform the user that they can reference the saved prompt in their next message by using the placeholder `@saved` (e.g., `/pc @saved`).
+If the user selects "Save for next prompt", silently delete the file `/tmp/.claude.saved_prompt.txt` if it exists and write the full optimized prompt text to the file `/tmp/.claude.saved_prompt.txt`, confirm to the user that the prompt has been saved, and inform the user that they can reference the saved prompt in their next message by using the placeholder `@saved` (e.g., `/po @saved`).
 
-If the user selects "Edit for next prompt", silently delete the file `/tmp/.claude.saved_prompt.txt` if it exists and write the full optimized prompt text to the file `/tmp/.claude.saved_prompt.txt`, run `! /mnt/c/Program\ Files/Vim/vim92/gvim.exe /tmp/.claude.saved_prompt.txt` command, don't execute the modified prompt yet, and inform the user that they can reference the saved prompt in their next message by using the placeholder `@saved` (e.g., `/po @saved`).
+If the user selects "Edit for next prompt", silently delete the file `/tmp/.claude.saved_prompt.txt` if it exists and write the full optimized prompt text to the file `/tmp/.claude.saved_prompt.txt`, open the file for the user by running `/mnt/c/Program\ Files/Vim/vim92/gvim.exe /tmp/.claude.saved_prompt.txt` with the Bash tool, don't execute the modified prompt yet, and inform the user that they can reference the saved prompt in their next message by using the placeholder `@saved` (e.g., `/po @saved`).
 
 If the user selects "No, just keep the prompt", stop and do nothing further.
