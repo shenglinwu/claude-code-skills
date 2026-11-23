@@ -85,7 +85,6 @@ Some skills contain absolute paths that only exist on the author's machine. Fix 
 
 | File | Path inside it | What it is for |
 | --- | --- | --- |
-| `skills/prompt-clarity/SKILL.md` | `/root/.claude/skills/prompt-clarity/clarity-prompt.md` | The instruction file the subagent reads. |
 | `skills/prompt-clarity/SKILL.md` | `/mnt/c/Program Files/Vim/vim92/gvim.exe` | The editor opened by the "Edit for next prompt" choice. |
 | `skills/prompt-optimization/SKILL.md` | `/mnt/c/Program Files/Vim/vim92/gvim.exe` | Same editor, same choice. |
 | `output-styles/plain/hooks/settings.json` | `/root/.claude/hooks/style-reminder.sh` | The hook script that injects the active style's checklist before every reply. |
