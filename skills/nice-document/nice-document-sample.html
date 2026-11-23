@@ -84,12 +84,13 @@ body { background: var(--desk); color: var(--text-1); font-family: var(--font-sa
   .nd-over { outline: none !important; }
 }
 
-/* === 3b. WEB VIEW (screen default): one continuous page instead of A4 sheets.
+/* === 3b. WEB VIEW (screen default): one continuous page as wide as the window, instead of A4 sheets.
    Print and PDF always use the A4 pages above. <html class="paged"> or ?view=pages shows A4 sheets on screen. === */
 @media screen {
   /* No A4 sheet edges, dark page bands or footers: those exist only in print and PDF */
   html:not(.paged) body { background: #fff; }
-  html:not(.paged) .doc { display: block; width: 100%; max-width: var(--page-w); margin: 0 auto; padding: 0 0 10mm; }
+  /* Width follows the window, not A4: only print, PDF and ?view=pages use the 210 mm page */
+  html:not(.paged) .doc { display: block; width: 100%; margin: 0; padding: 0 0 10mm; }
   html:not(.paged) .page { width: auto; height: auto; overflow: visible; box-shadow: none; }
   html:not(.paged) .band { height: auto; background: none; color: var(--ink); justify-content: flex-start; gap: 3mm; padding: 12mm var(--mx) 0; }
   html:not(.paged) .band-n { order: -1; font-size: 15pt; color: var(--accent); }
@@ -99,9 +100,9 @@ body { background: var(--desk); color: var(--text-1); font-family: var(--font-sa
   html:not(.paged) .page.cont .band { display: none; }
   html:not(.paged) .foot { display: none; }
   html:not(.paged) .toc-p { display: none; }
-  html:not(.paged) { --side: 0mm; }
+  html:not(.paged) { --side: 0mm; --mx: clamp(8mm, 4vw, 24mm); }
   html:not(.paged) body { overflow-x: clip; padding-left: var(--side); }
-  html:not(.paged) .cover { margin: 0 calc(50% - (100vw - var(--side)) / 2); padding: 30mm max(20mm, calc((100vw - var(--side)) / 2 - 85mm)) 14mm; }
+  html:not(.paged) .cover { padding: 30mm var(--mx) 14mm; }
   html:not(.paged) .cover-card { position: relative; inset: auto; padding: 16mm 15mm 14mm; }
   html:not(.paged) .cover-title { margin-top: 10mm; }
   html:not(.paged) .cover-kind { margin-top: 12mm; }

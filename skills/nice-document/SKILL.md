@@ -9,10 +9,10 @@ Generates single-file HTML documents with two views of the same markup:
 
 | View | When | Layout |
 |---|---|---|
-| **Web (default)** | Opening the HTML file | One continuous page in a 210 mm column on white. No A4 sheet edges, no dark page bands, no footers, no contents page numbers. Each section title shows once as a plain heading (number + title). The cover spans the full width. A **contents sidebar** stays on screen while you scroll and marks the current section (beside the text on wide screens, behind a round ☰ button under 1100 px). One column on phones |
+| **Web (default)** | Opening the HTML file | One continuous page on white, as wide as the window (not limited to A4; side margins grow with the window). No A4 sheet edges, no dark page bands, no footers, no contents page numbers. Each section title shows once as a plain heading (number + title). The cover spans the full width. A **contents sidebar** stays on screen while you scroll and marks the current section (beside the text on wide screens, behind a round ☰ button under 1100 px). One column on phones |
 | **A4 pages** | Print, PDF, or `?view=pages` in the URL | Fixed **A4 pages (210 × 297 mm)**, one page per sheet, dark header band on every page, numbered footers |
 
-You author A4 pages; the web view comes from the CSS, so plan and verify every page against A4.
+You author A4 pages; the web view comes from the CSS, so plan and verify every page against A4. Only print and PDF are held to the A4 width: in the browser the same blocks stretch to fill the window, so never set a fixed width in mm on a block (fixed heights for charts and figures are fine).
 
 **The deliverable is the HTML file only.** Make a PDF file for the user only when they ask for one. The test PDF in Verify is a throwaway check: write it to a temporary folder, never next to the user's files, and do not hand it over. The look is a corporate white-paper style: a full-width dark header band on every page with the section name and number, light rounded panels, big-number stat tiles, simple bar and line charts, dark-header tables, dark pull-quote panels with Playfair Display text, arrow process flows and one-line takeaway banners. Colours come from the **nice-palette** skill, and the DM Sans + Playfair italic accent words, icon circles and side-colour cycle make it a sibling of **nice-presentation**. Colour never appears as a stripe or edge: no multi-colour strips, no coloured top borders, no short bars above titles.
 
