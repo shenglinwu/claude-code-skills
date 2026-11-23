@@ -1,6 +1,6 @@
 ---
 name: "nice-document"
-description: "Create high-quality A4 documents (white papers, business reports, research briefs, executive summaries) as one HTML file that reads as a single scrolling web page on screen and prints to A4 pages in PDF, with a linked table of contents: dark section bands, stat tiles, charts, tables, pull quotes and process flows in nice-palette colours, DM Sans + Playfair. Use when the user asks for a white paper, report, brief or other polished multi-page document. Optional argument: base colour hex or preset."
+description: "Create high-quality A4 documents (white papers, business reports, research briefs, executive summaries) as one HTML file that reads as a single scrolling web page on screen, with a linked table of contents; it also prints to A4 pages, so a PDF is available on request (not made by default): dark section bands, stat tiles, charts, tables, pull quotes and process flows in nice-palette colours, DM Sans + Playfair. Use when the user asks for a white paper, report, brief or other polished multi-page document. Optional argument: base colour hex or preset."
 ---
 
 # Nice Document
@@ -12,7 +12,9 @@ Generates single-file HTML documents with two views of the same markup:
 | **Web (default)** | Opening the HTML file | One continuous page in a 210 mm column on white. No A4 sheet edges, no dark page bands, no footers, no contents page numbers. Each section title shows once as a plain heading (number + title). The cover spans the full width. One column on phones |
 | **A4 pages** | Print, PDF, or `?view=pages` in the URL | Fixed **A4 pages (210 × 297 mm)**, one page per sheet, dark header band on every page, numbered footers |
 
-You author A4 pages; the web view comes from the CSS, so plan and verify every page against A4. The look is a corporate white-paper style: a full-width dark header band on every page with the section name and number, light rounded panels, big-number stat tiles, simple bar and line charts, dark-header tables, dark pull-quote panels with Playfair Display text, arrow process flows and one-line takeaway banners. Colours come from the **nice-palette** skill, and the DM Sans + Playfair italic accent words, icon circles and side-colour cycle make it a sibling of **nice-presentation**. Colour never appears as a stripe or edge: no multi-colour strips, no coloured top borders, no short bars above titles.
+You author A4 pages; the web view comes from the CSS, so plan and verify every page against A4.
+
+**The deliverable is the HTML file only.** Make a PDF file for the user only when they ask for one. The test PDF in Verify is a throwaway check: write it to a temporary folder, never next to the user's files, and do not hand it over. The look is a corporate white-paper style: a full-width dark header band on every page with the section name and number, light rounded panels, big-number stat tiles, simple bar and line charts, dark-header tables, dark pull-quote panels with Playfair Display text, arrow process flows and one-line takeaway banners. Colours come from the **nice-palette** skill, and the DM Sans + Playfair italic accent words, icon circles and side-colour cycle make it a sibling of **nice-presentation**. Colour never appears as a stripe or edge: no multi-colour strips, no coloured top borders, no short bars above titles.
 
 There is **no style-discovery phase**. The look is fixed; your job is content, structure and choosing the right page pattern for each page. The only variations are the base colour (palette argument) and how side colours are spread across items.
 
@@ -55,7 +57,7 @@ Assemble: head (title + fonts link) → copied `<style>` → `<body><main class=
 Copy the structure of the patterns you need from the sample, **never its wording or numbers**.
 
 ### Phase 4: Verify (do not skip)
-Open the file in headless Chromium and check three things: the self-check result, a picture of every page, and the printed PDF.
+Open the file in headless Chromium and check three things: the self-check result, a picture of every page, and a test print. `outdir` must be a temporary folder (scratchpad), not the user's folder.
 
 ```python
 import asyncio, sys
@@ -76,15 +78,15 @@ async def main(path, outdir):
         pages = await pg.query_selector_all('.page')
         for i, el in enumerate(pages): await el.screenshot(path=f'{outdir}/page-{i+1:02d}.png')
         await pg.emulate_media(media='print')
-        await pg.pdf(path=f'{outdir}/document.pdf', prefer_css_page_size=True, print_background=True)
-        pdf = open(f'{outdir}/document.pdf', 'rb').read()
+        await pg.pdf(path=f'{outdir}/test-print.pdf', prefer_css_page_size=True, print_background=True)   # throwaway check, not a deliverable
+        pdf = open(f'{outdir}/test-print.pdf', 'rb').read()
         print('html pages:', len(pages), 'pdf pages:', pdf.count(b'/MediaBox'))
         print('pdf contents links:', pdf.count(b'/Subtype /Link'), 'of', await pg.evaluate("document.querySelectorAll('.toc a').length"))
         print('JS errors:', errs); await b.close()
 asyncio.run(main(sys.argv[1], sys.argv[2]))
 ```
 
-Without Playwright, any Chrome or Edge can do the PDF part: `chrome --headless=new --no-pdf-header-footer --virtual-time-budget=8000 --print-to-pdf=out.pdf file:///path/doc.html`, and `--dump-dom` shows the `data-overflow`, `data-underfilled` and `data-badlinks` attributes on `<html>`. The self-check always measures the A4 layout, even in the web view. Every PDF page should have `/MediaBox [0 0 595 842]` (A4 in points, give or take a fraction).
+Without Playwright, any Chrome or Edge can do the test print: `chrome --headless=new --no-pdf-header-footer --virtual-time-budget=8000 --print-to-pdf=/tmp/test-print.pdf file:///path/doc.html`, and `--dump-dom` shows the `data-overflow`, `data-underfilled` and `data-badlinks` attributes on `<html>`. The self-check always measures the A4 layout, even in the web view. Every PDF page should have `/MediaBox [0 0 595 842]` (A4 in points, give or take a fraction).
 
 Pass criteria:
 - `overflow blocks: 0`. If not, the flagged block has a dashed red outline on screen: shorten it, move a block to another page, or split the page.
@@ -95,7 +97,7 @@ Pass criteria:
 - Look at every page picture for cramped text, single orphan words in headings, tables with one-word columns, and empty-looking areas.
 
 ### Phase 5: Deliver
-Save `<document-name>.html` (plus `assets/` if any) where the user asked, or next to their files. Tell the user that opening the file shows one scrolling web page with a clickable contents list, the A4 page count, that **Ctrl+P → Save as PDF** with margins "None" and "Background graphics" on gives the PDF (A4 is set by the page, and the contents links stay clickable in the PDF), and offer to export the PDF yourself with the script above. Mention the base colour used.
+Save `<document-name>.html` (plus `assets/` if any) where the user asked, or next to their files. Do not save a PDF unless the user asked for one. Tell the user that opening the file shows one scrolling web page with a clickable contents list, and mention the base colour used. In one line, say a PDF is optional: **Ctrl+P → Save as PDF** with margins "None" and "Background graphics" on gives A4 pages with clickable contents links, or you can make it for them. If the user asked for a PDF, run the Verify script with `outdir` set to their folder and name the file `<document-name>.pdf`.
 
 ## Colour system
 
