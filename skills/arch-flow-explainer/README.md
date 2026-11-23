@@ -61,7 +61,7 @@ Claude only loads `SKILL.md` at first. It reads the reference files when it actu
 
 ## Colors
 
-The skill ships with the nice palette already applied, so a diagram built straight from the reference files uses your default colors with no extra work. See the `nice-palette` skill in this repository for the full color list. The slot names (blue, teal, amber, ...) are kept from the older Cortex colors so existing diagrams keep working, even where the color behind a name has changed.
+The skill ships with the blue-green nice-palette colors already applied, so a diagram built straight from the reference files needs no extra color work. It keeps blue-green on purpose: the default galaxy palette has only four colors, and a diagram needs about six. See the `nice-palette` skill in this repository for the full color list. The slot names (blue, teal, amber, ...) are kept from the older Cortex colors so existing diagrams keep working, even where the color behind a name has changed.
 
 Six color slots cover every role. You pick a slot by what the part **does** in this particular picture, not by its name. The same service can be blue in one diagram and orange in another.
 

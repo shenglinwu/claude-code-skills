@@ -47,7 +47,7 @@ The older folders have their own `README.md` with the details. For `daily-briefi
    daily-briefing ── works on its own, can publish to Vercel
 ```
 
-An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `nice-palette` skill is the default color source for anything visual. `arch-flow-explainer`, `nice-presentation` and `nice-document` take their colors from it. The presentation and document skills use only four of its colors (the base color plus orange, grape and mint), with red kept for problem tags. The older `cortex-palette` starts only when you ask for Cortex colors by name.
+An output style is always on once you select it, and only one style is active at a time. The two prompt skills run only when you ask for them. The `nice-palette` skill is the default color source for anything visual. `nice-presentation` and `nice-document` take their colors from it (galaxy by default). `arch-flow-explainer` uses its blue-green colors, because diagrams need more colors than galaxy has. The presentation and document skills use only four of its colors (the base color plus orange, grape and mint), with red kept for problem tags. The older `cortex-palette` starts only when you ask for Cortex colors by name.
 
 ## Install
 

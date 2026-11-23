@@ -9,7 +9,7 @@ Generates self-contained HTML files containing SVG diagrams and a numbered legen
 
 ## Default theme: nice palette
 
-This skill defaults to the **nice palette** (the `nice-palette` skill), the user's default colors. Every hex value in `references/styling.md` and the example assets is already a nice-palette color, so a diagram built from them is on-brand with no extra work. Blue Green (`#0d98ba`), the base color, is reserved for the primary/origin role; the other roles map to nice-palette side colors (Grape, Dark Orange, Metallic Gray, Amber Brown, Mint). Use **solid fills only — no gradients, no colored glow effects**. Only deviate if the user explicitly requests a different theme (e.g. "match this project's existing palette", "make it monochrome").
+This skill uses the **blue-green** palette of the `nice-palette` skill. nice-palette's overall default is now galaxy, but galaxy has only four colors and a diagram needs about six roles, so this skill stays on blue-green on purpose; do not switch it to galaxy unless the user asks. Every hex value in `references/styling.md` and the example assets is already a blue-green nice-palette color, so a diagram built from them is on-brand with no extra work. Blue Green (`#0d98ba`), the base color, is reserved for the primary/origin role; the other roles map to nice-palette side colors (Grape, Dark Orange, Metallic Gray, Amber Brown, Mint). Use **solid fills only — no gradients, no colored glow effects**. Only deviate if the user explicitly requests a different theme (e.g. "match this project's existing palette", "make it monochrome").
 
 ## Two diagram patterns
 
