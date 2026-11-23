@@ -1,6 +1,7 @@
 ---
 name: "daily-briefing"
 description: "Generate a daily tech news briefing: read RSS feeds, curate 40 de-duplicated items from the past 24 hours, summarize and translate them, and output an HTML page with source links."
+model: sonnet
 ---
 
 # Daily Briefing
@@ -9,9 +10,9 @@ Build a daily news briefing for engineers from a list of RSS feeds. Read the fee
 
 ## Settings
 
-Use these defaults unless the user says otherwise in their request or in a `briefing-config.md` file next to the source list:
+Use these defaults unless the user says otherwise in their request or in the `briefing-config.md` file in the working folder:
 
-- **Working folder:** the folder that holds `news-sources.lst`. If the user doesn't name one, ask once. If the folder has no `news-sources.lst`, create one from the default list below.
+- **Working folder:** the folder that holds `news-sources.lst`. If the user names none, use the current folder when it holds `news-sources.lst`; otherwise ask once, and suggest `~/daily-briefing`. Create the folder if it is missing. See "Starter files" below for the first run.
 - **Audience:** engineers interested in breaking news, technology trends, new releases, hands-on guides, and popular tools.
 - **Item count:** 40.
 - **Window:** the 24 hours before the run starts, in the user's local time zone.
@@ -20,39 +21,22 @@ Use these defaults unless the user says otherwise in their request or in a `brie
 - **Suggestions:** after each summary, add about 100 English words (roughly 150–250 Chinese characters) under the heading 「建議」, covering the likely impact on the reader and concrete actions they could take. Users can turn this off.
 - **Page title:** 科技新聞精選 followed by the date. Leave the audience out of the title.
 - **Output files:** `briefing-YYYY-MM-DD.html` in the working folder, where the date is today's date in the user's time zone, worked out at run time (never a date from an earlier run, an old file name, or this skill's text). Every run also overwrites `briefing-today.html` in the same folder with an exact copy of the file it just made, so the user can reload one fixed file to see the latest briefing. See step 7.
-- **Vercel publishing:** after `briefing-today.html` passes the step 7 check, redeploy it to the Vercel project `daily-briefing` in production, so https://daily-briefing-puce.vercel.app always shows the latest briefing. See step 8. Users can turn this off or name another project in `briefing-config.md`.
+- **Vercel publishing:** after `briefing-today.html` passes the step 7 check, redeploy it to production on the Vercel project named under "Publishing" in `briefing-config.md`, so the live URL always shows the latest briefing. See step 8. If that section is missing or says "Publish to Vercel: no", skip step 8.
 
-## Default source list
+## Starter files
 
-If the working folder has no `news-sources.lst`, write this one, with one feed URL per line:
+This skill folder holds two starter files next to this `SKILL.md`:
 
-```
-https://rsshub.ktachibana.party/36kr/information/AI
-https://paddo.dev/rss.xml
-http://feeds.feedburner.com/MachineLearningMastery
-https://web-proxy-smoky.vercel.app/marktechpost/feed
-https://web-proxy-smoky.vercel.app/google/rss/topics/CAAqIAgKIhpDQkFTRFFvSEwyMHZNRzFyZWhJQ1pXNG9BQVAB?hl=en-US&gl=US&ceid=US:en
-https://rsshub.umzzz.com/juejin/category/ai
-https://www.linuxtoday.com/feed/
-http://devops.com/feed/
-https://tools.wingzero.tw/rss
-http://feeds.feedburner.com/freegroup
-https://www.therundown.ai/feed
-https://techcrunch.com/category/artificial-intelligence/feed/
-https://cyberq.tw/category/news/feed/
-https://simonwillison.net/atom/everything/
-https://www.theverge.com/rss/index.xml
-https://feeds.arstechnica.com/arstechnica/index
-https://www.theregister.com/headlines.atom
-https://thehackernews.com/feeds/posts/default
-https://www.404media.co/rss/
-https://krebsonsecurity.com/feed/
-https://hnrss.org/frontpage
-```
+- `news-sources.lst`: the feed list, one URL per line. Lines that are blank or start with `#` are not feeds.
+- `briefing-config.md`: publishing settings and per-feed notes.
 
-The Google News entry gives only headlines and redirect links, so it serves as a topic signal (see step 2). The direct feeds after Simon Willison's give real article links, and most carry the full text.
+On every run, before step 1, check the working folder. If it has no `news-sources.lst` or no `briefing-config.md`, copy the missing file from this skill folder, and tell the user you did. Never overwrite a copy that is already there, because the user may have edited it. After that, read both files from the working folder only.
 
-The two `web-proxy-smoky.vercel.app` entries go through a personal Vercel proxy run by the author of this skill, and it may not stay available. Tell users who share this skill that they can deploy their own proxy (see "Setting up your own proxy" at the end) and swap the URLs. Lines that are blank or start with `#` are not feeds.
+About the starter feed list:
+
+- The Google News entry gives only headlines and redirect links, so it serves as a topic signal (see step 2). The direct feeds after Simon Willison's give real article links, and most carry the full text.
+- The two `web-proxy-smoky.vercel.app` entries go through a personal Vercel proxy run by the author of this skill, and it may not stay available. Tell users who share this skill that they can deploy their own proxy (see "Setting up your own proxy" at the end) and swap the URLs.
+- The `rsshub-sand-nine.vercel.app` entries use a public RSSHub mirror. If it stops working, swap in another RSSHub mirror with the same path.
 
 ## How to run it
 
@@ -62,8 +46,9 @@ Read every feed in `news-sources.lst`. Use whatever fetch tool the environment h
 
 - Long feeds come back cut off. Keep reading at later offsets until you reach items older than the window, or the end of the feed.
 - If a feed fails, try it twice more before giving up.
-- RSSHub mirrors (any feed whose host name contains `rsshub`, such as `rsshub.ktachibana.party` and `rsshub.umzzz.com`) often fail to respond for a while and then recover. Try each one once in the first pass. If it fails, move on without the immediate retries, and come back after every other feed has been read. Then retry it up to 3 more times, with a short pause between tries and a fresh-copy parameter each time (`?v=2`, `?v=3`, `?v=4`, or `&v=N` when the URL already has a query string). Give up only after all 3 retries fail, and report how many attempts were made.
+- RSSHub mirrors (any feed whose host name contains `rsshub`, such as `rsshub-sand-nine.vercel.app`) often fail to respond for a while and then recover. Try each one once in the first pass. If it fails, move on without the immediate retries, and come back after every other feed has been read. Then retry it up to 3 more times, with a short pause between tries and a fresh-copy parameter each time (`?v=2`, `?v=3`, `?v=4`, or `&v=N` when the URL already has a query string). Give up only after all 3 retries fail, and report how many attempts were made.
 - Some fetch tools cache results for several minutes. If a feed failed and you are retrying, add a dummy query parameter (such as `?v=2`, or `&v=2` when the URL already has a query string) so you get a fresh copy.
+- If a feed returns a Cloudflare check page (HTTP 403 with the title "Just a moment..."), it needs a real browser. Don't try other tools, mirrors, or relay services to get around it. Mark it failed, and in the report suggest replacing it with a similar feed that loads.
 - Record which feeds worked, which failed and why, and which had no items in the window.
 
 Keep items whose publish date falls in the window. Convert every date to UTC before comparing, because feeds use different time zones.
@@ -134,16 +119,16 @@ This step is required on every run. The run isn't finished until `briefing-today
 
 ### 8. Redeploy to Vercel
 
-Run this step only after step 7 confirmed that `briefing-today.html` holds today's briefing. If step 7 failed, skip it, so the live site never shows a broken or old briefing, and say so in the report.
+Run this step only when `briefing-config.md` says "Publish to Vercel: yes", and only after step 7 confirmed that `briefing-today.html` holds today's briefing. If step 7 failed, skip it, so the live site never shows a broken or old briefing, and say so in the report.
 
 1. **Copy.** Copy `briefing-today.html` to `vercel-site/index.html` inside the working folder (create `vercel-site/` if it is missing). Only that one file goes in `vercel-site/`, so nothing else from the working folder is uploaded.
 2. **Check login.** Run `vercel whoami`. If the CLI is missing or logged out, don't deploy. Tell the user to run `! vercel login` (or install the CLI with `npm i -g vercel`), and report that the site was not updated.
 3. **Deploy.** From `vercel-site/`, run:
    ```
-   vercel deploy --prod --yes --project daily-briefing
+   vercel deploy --prod --yes --project <Vercel project>
    ```
-   This updates the existing production site. The user approved production deploys of this project for this skill. If the project is missing (for example, a new account), add `--create-if-missing`.
-4. **Verify.** Fetch https://daily-briefing-puce.vercel.app/ with `curl`. It must return HTTP 200, the same byte size as `briefing-today.html`, and a `<title>` with today's date. A CDN cache can serve the old page for a short time: if the check fails, wait about 10 seconds and fetch again, up to 3 times.
+   where `<Vercel project>` is the name from `briefing-config.md`. This updates the existing production site. The user approved production deploys of that project for this skill. If the project is missing (for example, a new account), add `--create-if-missing`.
+4. **Verify.** Fetch the live URL from `briefing-config.md` with `curl` (if it is blank, use the production URL the deploy command printed). It must return HTTP 200, the same byte size as `briefing-today.html`, and a `<title>` with today's date. A CDN cache can serve the old page for a short time: if the check fails, wait about 10 seconds and fetch again, up to 3 times.
 5. **On failure.** If the deploy command fails or the check still fails, run `vercel inspect <deployment-url>` and `vercel logs <deployment-url>`, show the error lines, and tell the user plainly that the live site still shows the older briefing. Don't retry the deploy more than once.
 
 The local files from step 7 are the main output. A failed deploy never undoes them.

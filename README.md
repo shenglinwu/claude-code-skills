@@ -89,8 +89,8 @@ Some skills contain absolute paths that only exist on the author's machine. Fix 
 | `skills/prompt-clarity/SKILL.md` | `/mnt/c/Program Files/Vim/vim92/gvim.exe` | The editor opened by the "Edit for next prompt" choice. |
 | `skills/prompt-optimization/SKILL.md` | `/mnt/c/Program Files/Vim/vim92/gvim.exe` | Same editor, same choice. |
 | `output-styles/plain/hooks/settings.json` | `/root/.claude/hooks/style-reminder.sh` | The hook script that injects the active style's checklist before every reply. |
-| `skills/daily-briefing/SKILL.md` | Vercel project `daily-briefing` and `https://daily-briefing-puce.vercel.app` | Where the finished page is published. Turn it off or name your own project in `briefing-config.md`. |
-| `skills/daily-briefing/SKILL.md` | `web-proxy-smoky.vercel.app` | The author's own feed proxy. The end of `SKILL.md` shows how to deploy your own. |
+| `skills/daily-briefing/briefing-config.md` | Vercel project `daily-briefing` and `https://daily-briefing-puce.vercel.app` | Where the finished page is published. The first run copies this file into the working folder; set your own project there, or set "Publish to Vercel" to no. |
+| `skills/daily-briefing/news-sources.lst` | `web-proxy-smoky.vercel.app` | The author's own feed proxy. The end of `SKILL.md` shows how to deploy your own. |
 
 The Vim path is a Windows program reached from WSL, which is Linux running inside Windows. On a plain Linux or Mac machine, replace it with your own editor command.
 
@@ -122,7 +122,9 @@ claude-code-skills/
     │   ├── README.md
     │   └── SKILL.md
     ├── daily-briefing/
-    │   └── SKILL.md
+    │   ├── SKILL.md
+    │   ├── news-sources.lst        ← starter feed list, copied on first run
+    │   └── briefing-config.md      ← starter settings, copied on first run
     ├── eli8/
     │   └── SKILL.md
     ├── nice-document/
