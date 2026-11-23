@@ -43,7 +43,12 @@ def palette(base):
         '--text-2': hx(hsl(H, min(S, 0.26), 0.31)), '--text-3': hx(hsl(H, min(S, 0.15), 0.50)),
         '--letterbox': hx(mix(W, base, 0.25)),
     }
-    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink')):
+    # Dark blocks (bands, table headers, quotes, banners) use a soft gray, not near-black ink
+    dark = hsl(H, min(S, 0.10), 0.33)
+    on_dark = rgb(t['--accent-light'])
+    while contrast(on_dark, dark) < 4.5: on_dark = mix(on_dark, W, 0.08)  # accent text readable on gray
+    t['--dark'] = hx(dark); t['--on-dark'] = hx(on_dark)
+    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink'), ('--dark-rgb', '--dark')):
         t[k] = ','.join(map(str, rgb(t[src])))
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
