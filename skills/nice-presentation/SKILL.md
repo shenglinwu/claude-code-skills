@@ -14,11 +14,12 @@ There is **no style-discovery phase**. The look is fixed; your job is content, s
 ## Non-negotiables
 
 1. **One self-contained HTML file.** Inline CSS + JS. Only external resource: the Google Fonts link. Images go in an `assets/` folder next to the file (or base64 if the user wants a single file).
-2. **Fixed 1920×1080 stage**, scaled as a whole by JS. Never reflow content per device, never use media-query breakpoints for slide content. Author every size in px at 1920×1080.
+2. **Fixed 1920×1080 stage**, scaled as a whole by JS. Never reflow content per device, never use media-query breakpoints for slide content. Author every size in px at 1920×1080. The Base CSS draws slide content at `--zoom` (1.25×) so text, icons and boxes fill the page; the tall layouts (`.wave`, `.process`, `.tree`, `.quotes`, `.phones`) use `--zoom-tall` (1.08×) so they still fit the height. Keep both, and size deck-specific parts with them in mind (a 400px box shows as 500px).
 3. **Copy the Base CSS and Controller JS below verbatim.** Only edit the `:root` tokens and add small slide-specific rules in a clearly marked `/* === DECK-SPECIFIC === */` block at the end of the `<style>`.
 4. **Slide switching** uses `.active`/`.visible` (visibility + opacity). Never `display:none`.
 5. **No overflow, no overlap, no scrolling.** Content must sit between y≈150 (below the deck nav) and y≈960 (above the progress dots). If it doesn't fit, split the slide.
-6. Never put workflow text on slides ("template", "layout", "option A" as a design label, file names).
+6. **Chinese text uses a sans font only.** Set `<html lang>` to the deck language (`zh-Hant` for Traditional Chinese). The shell loads Noto Sans TC and `--font-cjk` puts it behind every font stack, so CJK glyphs are always sans, also inside the Playfair accent words. Never add a serif CJK font (Noto Serif TC, PMingLiU, Ming/Song styles). In CJK decks hero titles (cover, section divider, thank-you) render at 0.74× size because full-width glyphs look bigger, and the `<em>` accent is upright sans in the base colour with a soft highlighter band under it, since colour alone is too weak with a dark base such as galaxy slate.
+7. Never put workflow text on slides ("template", "layout", "option A" as a design label, file names).
 
 ## Workflow
 
@@ -40,7 +41,7 @@ Skip questions the user already answered. If the user gave content up front and 
 ### Phase 2 — Outline
 Map the content to layouts from the catalog. A good default arc:
 Title (hero, dark) → Agenda → [Section divider → Feature / Points / Stats / Chart / Diagram / Cards …]×N → Statement → Table/Timeline → Q&A → Closing CTA → Thank-you (dark).
-Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ; use a section divider every 4–6 slides in long decks; make the title slide and the thank-you slide `slide dark` (the only dark full slides) and one CTA box; use the featured dark card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
+Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ (light slides carry a soft shape pattern, mirrored on `.alt`); use a section divider every 4–6 slides in long decks; make the title slide and the thank-you slide `slide dark` (the only dark full slides) and one CTA box; use the featured dark card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
 
 ### Phase 3 — Generate
 If a palette argument (or a colour from Phase 1) was given, generate the tokens first (see Palette argument) and replace the matching lines in the Base CSS `:root`; otherwise keep the galaxy default.
@@ -84,7 +85,7 @@ async def main(path, outdir):
 asyncio.run(main(sys.argv[1], sys.argv[2]))
 ```
 
-Fix anything flagged, then **look at the PNGs** (contact sheets of 4 help) for overlap, cramped text, orphaned single words in headlines, and empty-looking slides. Also load once at 390×844 to confirm the stage letterboxes rather than reflows.
+Fix anything flagged, then **look at the PNGs** (contact sheets of 4 help) for overlap, cramped text, orphaned single words in headlines, and empty-looking slides. Content should fill most of the area between the nav and the dots: if a slide shows a small cluster with wide empty margins, use a fuller layout (add icons, a side panel or a note band) rather than shrinking anything. Also load once at 390×844 to confirm the stage letterboxes rather than reflows.
 
 ### Phase 5 — Deliver
 - Save as `<deck-name>.html` (+ `assets/`) in the user's folder if one is connected; otherwise send the file.
@@ -208,7 +209,7 @@ A brand colour is just a palette argument: pass its hex to the generator.
 
 ## Layout catalog
 Class reference (all defined in the Base CSS):
-- **Structure**: `.slide` (`.alt` lighter bg, `.dark` ink bg, `.center` centred), `.head` (+`.center`) wrapper for label/title/lead, `.split` 2-col (`.wide-left`, `.reverse`), `.grid-2/3/4`, `.row`, decorative `.orb .orb-a|b|c|d` (first children of the slide), tones `.tone-*` and `.mono` (see Colour system).
+- **Structure**: `.slide` (`.alt` lighter bg with the pattern mirrored, `.dark` ink bg with no pattern; on dark slides the badge, `.window`, mini-stats and `.float` turn to dark glass, `.center` centred), `.head` (+`.center`) wrapper for label/title/lead, `.split` 2-col (`.wide-left`, `.reverse`), `.grid-2/3/4`, `.row`, decorative `.orb .orb-a|b|c|d` (first children of the slide), tones `.tone-*` and `.mono` (see Colour system).
 - **Type**: `.label` (spaced caps), `.kicker`, `.title` (`.hero` bigger), `.h3`, `.lead`, `.body`, `.statement`, `em` accent. `.points` > `.point` (`.point-icon`, `.point-k`, `.point-d`) for an icon list.
 - **Panels**: `.side-panel` (first child of the slide: tinted block over the right 44%, holds `.panel-text`, `.panel-cta`, `.panel-sub`; the next element is the left content), `.note-band` (`.note-band-k` + `.note-band-d`), `.panel` (feature panel, see Visuals).
 - **Hero bits**: `.badge` (+`.badge-dot`), `.trust` > `.trust-item` + `.trust-divider`, `.btn .btn-primary|.btn-outline|.btn-ghost-dark`.
@@ -694,7 +695,7 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
 <title>Atlas Platform Review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,600;1,700&display=swap" rel="stylesheet">
 <style>
 ```
 
@@ -735,10 +736,11 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --silk-dur:     0.8s;
   --radius:       24px;
   --radius-lg:    36px;
-  --font-sans:    'DM Sans', sans-serif;
-  --font-serif:   'Playfair Display', serif;
+  --font-cjk:     'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans CJK TC', sans-serif;   /* Chinese text: always a sans font, never a serif (Ming) font */
+  --font-sans:    'DM Sans', var(--font-cjk);
+  --font-serif:   'Playfair Display', var(--font-cjk);   /* Latin accent words only; CJK glyphs fall through to the sans CJK font */
   /* Type scale, authored at 1920×1080 */
-  --fs-hero:      112px;
+  --fs-hero:      100px;
   --fs-title:     76px;
   --fs-h3:        52px;
   --fs-lead:      30px;
@@ -754,6 +756,8 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --c-cinnabar: #E34234; --c-cinnabar-rgb: 227,66,52; --c-cinnabar-ink: #BD372B;
   --c-gray:     #999B9B; --c-gray-rgb:     153,155,155; --c-gray-ink:    #656666;
   --c-grape:    #D66C44; --c-grape-rgb:    214,108,68; --c-grape-ink:    #9D4F32;
+  --zoom:         1.25;                /* content scale: every slide's content renders 25% larger than its authored px sizes */
+  --zoom-tall:    1.08;                /* tall layouts (wave, process, tree, quotes, phones) already fill the height */
   --pad-x:        128px;
   --pad-top:      150px;
   --pad-bottom:   120px;
@@ -785,6 +789,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }   /* icon <symbol> sheet */
 .ico { width: 46%; height: 46%; flex-shrink: 0; }                         /* <svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg> */
 em { font-style: italic; font-family: var(--font-serif); color: var(--accent); font-weight: 600; }
+/* Chinese / Japanese / Korean decks: accent words stay upright sans and are marked by colour only (no slanted or serif CJK) */
+:is(:lang(zh), :lang(ja), :lang(ko)) em { font-style: normal; font-family: var(--font-sans); font-weight: 700; color: var(--accent-mid);
+  background: linear-gradient(transparent 62%, rgba(var(--light-rgb),0.42) 62%, rgba(var(--light-rgb),0.42) 92%, transparent 92%); padding: 0 0.06em; }
+:is(:lang(zh), :lang(ja), :lang(ko)) :is(.slide.dark, .cta-box) em { color: color-mix(in srgb, var(--accent-light), #fff 45%); background: linear-gradient(transparent 62%, rgba(var(--light-rgb),0.30) 62%, rgba(var(--light-rgb),0.30) 92%, transparent 92%); }
+/* CJK glyphs are full-width and look about a third bigger than Latin at the same px size: hero titles step down */
+:is(:lang(zh), :lang(ja), :lang(ko)) .title.hero { font-size: calc(var(--fs-hero) * 0.74); letter-spacing: -0.01em; line-height: 1.18; }
+:is(:lang(zh), :lang(ja), :lang(ko)) :is(.quote-text, .card-big small) { font-style: normal; font-family: var(--font-sans); }
 
 /* === 3. FIXED STAGE (do not change) === */
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--letterbox); }
@@ -809,6 +820,17 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 .slide.active { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; transition: opacity 0.6s var(--silk); }
 .slide.alt     { background: var(--surface); }
 .slide > *     { position: relative; z-index: 1; }
+/* Content scale. zoom (not transform) so the layout reflows: grids still span the full width, text and boxes grow. */
+.slide > :not(.orb, .side-panel, .notes), .side-panel > * { zoom: var(--zoom); }
+.slide > :is(.wave, .process, .tree, .quotes, .phones, .phones-ctl) { zoom: var(--zoom-tall); }
+
+/* Background pattern (light slides only): two soft organic shapes, top-right and bottom-left, a shade darker than the slide.
+   Drawn with a mask so it follows the theme colour; .alt slides get the mirror image so neighbours differ. */
+.slide:not(.dark)::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: rgba(var(--mid-rgb),0.075);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080' preserveAspectRatio='none'%3E%3Cpath d='M1235 0C1300 95 1290 250 1385 380C1490 520 1700 545 1920 590V0Z'/%3E%3Cpath d='M0 455C150 420 290 470 330 600C375 745 250 860 285 1080H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080' preserveAspectRatio='none'%3E%3Cpath d='M1235 0C1300 95 1290 250 1385 380C1490 520 1700 545 1920 590V0Z'/%3E%3Cpath d='M0 455C150 420 290 470 330 600C375 745 250 860 285 1080H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+.slide.alt:not(.dark)::before { transform: scaleX(-1); }
 
 /* Decorative glow orbs (ClearWave hero circles). Add <div class="orb orb-a"></div> etc. */
 .orb { position: absolute !important; z-index: 0 !important; border-radius: 50%; pointer-events: none; }
@@ -827,22 +849,22 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
   display: flex; align-items: center; justify-content: space-between; padding: 0 var(--pad-x);
   pointer-events: none;
 }
-.deck-logo { font-size: 30px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-1); }
+.deck-logo { font-size: 36px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-1); }
 .deck-logo span { color: var(--accent); }
 .deck-meta { display: flex; align-items: center; gap: 18px; }
 .deck-section {
-  font-size: 18px; font-weight: 500; color: var(--text-2); padding: 10px 24px; border-radius: 100px;
+  font-size: 22px; font-weight: 500; color: var(--text-2); padding: 12px 28px; border-radius: 100px;
   background: var(--accent-ghost); box-shadow: inset 0 0 0 1px var(--accent-border);
   transition: opacity 0.4s var(--silk);
 }
-.deck-count { font-size: 18px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; min-width: 72px; text-align: right; }
+.deck-count { font-size: 22px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; min-width: 72px; text-align: right; }
 .deck-dots {
   position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); z-index: 40;
   display: flex; gap: 12px; align-items: center;
 }
 .deck-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-border); cursor: pointer; transition: width 0.4s var(--silk), background-color 0.4s var(--silk); }
 .deck-dot.active { background: var(--accent); width: 40px; border-radius: 6px; }
-.deck-stage.on-dark .deck-logo { color: #fff; }
+.deck-stage.on-dark .deck-logo { color: #fff; } .deck-stage.on-dark .deck-logo span { color: var(--accent-light); }
 .deck-stage.on-dark .deck-section { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
 .deck-stage.on-dark .deck-dot { background: rgba(255,255,255,0.18); }
 .deck-stage.on-dark .deck-dot.active { background: var(--accent-light); }
@@ -862,7 +884,7 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 .kicker { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tone-ink, var(--c-orange-ink)); margin-bottom: 22px; }
 .center { text-align: center; align-items: center; }
 .center .lead { margin-left: auto; margin-right: auto; }
-.head { margin-bottom: 64px; display: flex; flex-direction: column; }
+.head { margin-bottom: 48px; display: flex; flex-direction: column; }
 .head.center .lead { text-align: center; }
 
 /* === 6. REVEAL ANIMATION (fires when a slide becomes active) === */
@@ -1003,7 +1025,7 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 .stats.three { grid-template-columns: repeat(3, 1fr); }
 .stat { display: flex; flex-direction: column; }
 .stat-value { align-self: flex-start; display: flex; align-items: baseline; gap: 4px; margin-bottom: 26px;
-  font-size: 96px; font-weight: 700; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums;
+  font-size: 88px; font-weight: 700; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap;
   padding: 22px 32px 18px 26px; color: var(--tone-ink, var(--accent));
   background: rgba(var(--tone-rgb, var(--accent-rgb)),0.13); border-left: 10px solid var(--tone, var(--accent)); }
 .stat-suffix { font-size: 50%; font-weight: 600; letter-spacing: -0.02em; }
@@ -1013,7 +1035,7 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 /* 7i. Cards (pricing-card style) — options, comparisons, pillars */
 /* a card is a tinted column between two thick tone rules (template pricing columns); text is centred */
 .card { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 46px 40px 44px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.07);
+  padding: 36px 36px 34px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.07);
   border-top: 7px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.55); border-bottom: 7px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.55); }
 .card-tier { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); margin-bottom: 16px; }
 .card-big { font-size: 84px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
@@ -1039,11 +1061,11 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
   font-size: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 26px; white-space: nowrap; }
 
 /* 7j. Quotes (testimonials) */
-.quotes { display: grid; grid-template-columns: 1.15fr 1fr 1fr; grid-template-rows: auto auto; gap: 32px; }
-.quote { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); padding: 44px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.quotes { display: grid; grid-template-columns: 1.15fr 1fr 1fr; grid-template-rows: auto auto; gap: 24px; }
+.quote { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); padding: 32px 36px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
 .quote.tall { grid-row: span 2; justify-content: space-between; }
 .quote-mark { font-family: var(--font-serif); font-size: 96px; line-height: 0.6; color: var(--tone, var(--accent-light)); height: 40px; }
-.quote-text { font-size: 23px; line-height: 1.6; color: var(--text-2); font-style: italic; margin: 18px 0 30px; flex: 1; }
+.quote-text { font-size: 23px; line-height: 1.6; color: var(--text-2); font-style: italic; margin: 14px 0 22px; flex: 1; }
 .quote.tall .quote-text { font-size: 30px; }
 .author { display: flex; align-items: center; gap: 16px; }
 .avatar { width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.30); background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10);
@@ -1088,7 +1110,7 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 
 /* 7o. Wave timeline — icon circles alternate high/low along a wide gray ribbon; text sits above high
    circles and below low ones (template "timeline planning"). Set --n to the number of steps. */
-.wave { --row: 176px; --band: 270px; --dot: 132px; display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); position: relative; }
+.wave { --row: 150px; --band: 250px; --dot: 132px; display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); position: relative; }
 .wave::before { content: ''; position: absolute; left: 0; right: 0; z-index: 0;
   top: calc(var(--row) + var(--dot) / 2 - (var(--band) - var(--dot)) / 8); height: calc((var(--band) - var(--dot)) * 1.25);
   background: var(--track);
@@ -1110,7 +1132,7 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 
 /* 7o-2. Process diagram — a row of thick toothed rings (template "process gear"); text alternates above/below */
 .process { display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); }
-.pnode { display: grid; grid-template-rows: 186px auto 186px; justify-items: center; text-align: center; }
+.pnode { display: grid; grid-template-rows: 160px auto 160px; justify-items: center; text-align: center; }
 .pnode-ring { grid-row: 2; position: relative; width: min(268px, calc(100% - 26px)); aspect-ratio: 1; border-radius: 50%;
   background: var(--surface-2); border: 24px solid var(--tone, var(--accent)); outline: 15px dashed var(--tone, var(--accent)); outline-offset: -2px;
   box-shadow: var(--badge-shadow); color: var(--tone-ink, var(--accent)); display: flex; align-items: center; justify-content: center; margin: 15px 0; }
@@ -1188,7 +1210,7 @@ table.data .num { text-align: right; }
 .dc-d { font-size: 20px; line-height: 1.45; color: var(--text-2); margin-top: 6px; }
 /* line chart: soft gridlines, one coloured line + tint per series, end-value bubbles, tinted icon legend on the right */
 .line-chart { display: grid; grid-template-columns: 1fr 420px; column-gap: 140px; align-items: center; }
-.lc-plot { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 440px auto; column-gap: 26px; row-gap: 22px; padding-top: 30px; }
+.lc-plot { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 340px auto; column-gap: 26px; row-gap: 22px; padding-top: 30px; }
 .lc-y { display: flex; flex-direction: column; justify-content: space-between; text-align: right; font-size: 17px; font-weight: 700; color: var(--text-3); font-variant-numeric: tabular-nums; }
 .lc-y span { line-height: 0; }
 .lc-area { position: relative; background: linear-gradient(rgba(var(--ink-rgb),0.09) 2px, transparent 2px) 0 0 / 100% 33.333%; border-bottom: 3px solid rgba(var(--ink-rgb),0.22); }
@@ -1253,7 +1275,27 @@ table.data .num { text-align: right; }
 .slide.dark em { color: var(--accent-light); }
 .slide.dark .lead, .slide.dark .body { color: rgba(255,255,255,0.62); }
 .slide.dark .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
-.slide.dark :is(.window, .float:not(.solid)) { color: var(--text-1); }
+.slide.dark { --glass: rgba(255,255,255,0.06); --glass-line: rgba(255,255,255,0.12); }
+/* on dark slides the hero badge, window, tiles and floating card become dark glass, not white */
+.slide.dark .badge { background: var(--glass); border-color: var(--glass-line); color: rgba(255,255,255,0.78); box-shadow: none; }
+.slide.dark .badge strong { color: var(--accent-light); }
+.slide.dark .badge-dot { background: var(--accent-mid); }
+.slide.dark .window { background: rgba(255,255,255,0.05); border-color: var(--glass-line); color: #fff; box-shadow: 0 36px 96px rgba(0,0,0,0.35); }
+.slide.dark .window-bar { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+.slide.dark .tag { color: var(--accent-light); background: rgba(var(--light-rgb),0.12); border-color: rgba(var(--light-rgb),0.28); }
+.slide.dark .bar { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.10); }
+.slide.dark .bar.on { background: var(--accent-mid); border-color: var(--accent-mid); }
+.slide.dark .mini-stat { background: var(--glass); border-color: rgba(255,255,255,0.08); }
+.slide.dark :is(.mini-val small, .mini-chg) { color: color-mix(in srgb, var(--tone, var(--accent-light)), #fff 40%); }
+.slide.dark .mini-label { color: rgba(255,255,255,0.55); }
+.slide.dark :is(.fv-item) { border-color: rgba(255,255,255,0.08); }
+.slide.dark .fv-item span:first-child { color: rgba(255,255,255,0.78); }
+.slide.dark .pill.blue  { background: rgba(var(--light-rgb),0.16); color: var(--accent-light); }
+.slide.dark .pill.warn  { background: rgba(var(--c-orange-rgb),0.18); color: color-mix(in srgb, var(--c-orange), #fff 40%); }
+.slide.dark .pill.grape { background: rgba(var(--c-grape-rgb),0.32); color: color-mix(in srgb, var(--c-grape), #fff 50%); }
+.slide.dark .pill.green { background: rgba(var(--c-mint-rgb),0.18); color: color-mix(in srgb, var(--c-mint), #fff 50%); }
+.slide.dark .float:not(.solid) { background: color-mix(in srgb, var(--ink), #fff 9%); border-color: var(--glass-line); color: #fff; box-shadow: 0 18px 48px rgba(0,0,0,0.4); }
+.slide.dark .float-text strong { color: #fff; } .slide.dark .float-text span { color: rgba(255,255,255,0.6); }
 .slide.dark .trust-item { color: rgba(255,255,255,0.7); } .slide.dark .trust-item svg { color: var(--accent-light); }
 .slide.dark .trust-divider { background: rgba(255,255,255,0.18); }
 .slide.dark .orb-a { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.16) 0%, transparent 70%); }
