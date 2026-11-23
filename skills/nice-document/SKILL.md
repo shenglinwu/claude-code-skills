@@ -52,7 +52,7 @@ Cover → Contents → Executive summary → [section pages]×N → Conclusion a
 Rules: one section per page in short papers; a long section may take two pages with the same band title and number. Every content page has 3 to 6 blocks and opens with the main point (a panel with a `.key` line, a `.lead` paragraph or a stat row), then shows the evidence. Use a dark `.quote` or `.banner` at most once per page. For documents over 8 pages, show the outline (one line per page) and get a quick OK before generating.
 
 ### Phase 3: Generate
-Assemble: head (title + fonts link) → copied `<style>` → `<body><main class="doc">` → pages → `</main>` → copied `<script>` → `</body></html>`. If a palette argument was given, run `python3 palette.py <hex or preset>` from this skill folder and paste its token lines over the same-named lines in `:root` (ignore `--letterbox` and `--shell`).
+Assemble: head (title + fonts link) → copied `<style>` → `<body><main class="doc">` → pages → `</main>` → copied `<script>` → `</body></html>`. If a palette argument was given, run `python3 palette.py <hex or preset>` from this skill folder and paste its token lines over the same-named lines in `:root`. Use its `--letterbox` value for `--desk` (the screen colour behind the pages) and ignore `--shell`.
 
 Copy the structure of the patterns you need from the sample, **never its wording or numbers**.
 
