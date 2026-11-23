@@ -9,7 +9,7 @@ Generates single-file HTML documents with two views of the same markup:
 
 | View | When | Layout |
 |---|---|---|
-| **Web (default)** | Opening the HTML file | One continuous page in a 210 mm column on white. No A4 sheet edges, no dark page bands, no footers, no contents page numbers. Each section title shows once as a plain heading (number + title). The cover spans the full width. One column on phones |
+| **Web (default)** | Opening the HTML file | One continuous page in a 210 mm column on white. No A4 sheet edges, no dark page bands, no footers, no contents page numbers. Each section title shows once as a plain heading (number + title). The cover spans the full width. A **contents sidebar** stays on screen while you scroll and marks the current section (beside the text on wide screens, behind a round ☰ button under 1100 px). One column on phones |
 | **A4 pages** | Print, PDF, or `?view=pages` in the URL | Fixed **A4 pages (210 × 297 mm)**, one page per sheet, dark header band on every page, numbered footers |
 
 You author A4 pages; the web view comes from the CSS, so plan and verify every page against A4.
@@ -28,7 +28,7 @@ There is **no style-discovery phase**. The look is fixed; your job is content, s
 1. **One self-contained HTML file.** Inline CSS and JS. The only external resource is the Google Fonts link. Images go in an `assets/` folder next to the file, or are inlined as base64 if the user wants one file.
 2. **Copy the whole `<style>` block and the closing `<script>` from `nice-document-sample.html` verbatim.** Edit only `:root` tokens, and put any document-specific rules in a `/* === DOCUMENT-SPECIFIC === */` block at the end of the `<style>`.
 3. **Every page is a `<section class="page">` inside `<main class="doc">`.** In print, pages have a fixed A4 height. Nothing flows from one page to the next: when content does not fit, you move blocks to a new page yourself. On screen the same sections join into one web page; a section continued on a second page gets `class="page cont"` so its repeated title is hidden in the web view (leave `cont` off when the band has its own sub-title).
-4. **Every contents row is a working link.** Give each section's first page an id (`<section class="page" id="s03">`, from the band number) and wrap each `.toc` row in `<a href="#s03">`. The link scrolls in the web view and becomes a clickable PDF link (Chrome and Edge keep internal links when printing). The script rewrites each `.toc-p` page number from the A4 page that holds the target, so the numbers are always right; still write the expected number as a fallback.
+4. **Every contents row is a working link.** Give each section's first page an id (`<section class="page" id="s03">`, from the band number) and wrap each `.toc` row in `<a href="#s03">`. The link scrolls in the web view and becomes a clickable PDF link (Chrome and Edge keep internal links when printing). The script also builds the web view's contents sidebar from these same rows (number + title), so the sidebar needs no markup of its own; the sidebar heading is the page `<title>`. The script rewrites each `.toc-p` page number from the A4 page that holds the target, so the numbers are always right; still write the expected number as a fallback.
 5. **Author sizes in mm and pt**, never px or vw. Never set fixed heights on panels, cards, stats or table cells; let them grow to fit their text. Charts and figures are the only blocks with a set height (`--lc-h`, `--h`, `--fig-h`).
 6. **No overflow, no clipped text.** Text must never run outside its card or panel, and tables must never be cut off at the bottom. The self-check script outlines any block that spills (see Verify).
 7. Never put workflow text in the document ("template", "layout", "placeholder", file names). Never invent statistics: use the user's numbers, or label sample figures as illustrative.
@@ -93,7 +93,7 @@ Pass criteria:
 - `broken contents links: 0`, and `pdf contents links` equals the number of contents rows. A broken row gets a dashed red outline; fix its `href` or the target `id`.
 - `pdf pages` equals `html pages`. One more PDF page than HTML pages means a page overflowed in print.
 - No page under 70% full (`data-underfilled`). Fix by enlarging charts (`--lc-h`, `--h`, `--fig-h`), adding a block that carries real content, merging with the next page, or adding `.spread` to `.content` to share the spare room evenly.
-- Look at `web.png` for the web view: one continuous page with no sheet edges, dark bands or footers; each section title appears once as a plain heading.
+- Look at `web.png` for the web view: one continuous page with no sheet edges, dark bands or footers; each section title appears once as a plain heading; the contents sidebar shows every section and nothing in it is cut off.
 - Look at every page picture for cramped text, single orphan words in headings, tables with one-word columns, and empty-looking areas.
 
 ### Phase 5: Deliver
