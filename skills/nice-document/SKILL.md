@@ -1,11 +1,18 @@
 ---
 name: "nice-document"
-description: "Create high-quality A4 documents (white papers, business reports, research briefs, executive summaries) as one HTML file that prints cleanly to PDF: dark section bands, stat tiles, charts, tables, pull quotes and process flows in nice-palette colours, DM Sans + Playfair. Use when the user asks for a white paper, report, brief or other polished multi-page document. Optional argument: base colour hex or preset."
+description: "Create high-quality A4 documents (white papers, business reports, research briefs, executive summaries) as one HTML file that reads as a single scrolling web page on screen and prints to A4 pages in PDF, with a linked table of contents: dark section bands, stat tiles, charts, tables, pull quotes and process flows in nice-palette colours, DM Sans + Playfair. Use when the user asks for a white paper, report, brief or other polished multi-page document. Optional argument: base colour hex or preset."
 ---
 
 # Nice Document
 
-Generates single-file HTML documents laid out as fixed **A4 pages (210 × 297 mm)** that look finished on screen and print to PDF one page per sheet. The look is a corporate white-paper style: a full-width dark header band on every page with the section name and number, light rounded panels, big-number stat tiles, simple bar and line charts, dark-header tables, dark pull-quote panels with Playfair Display text, arrow process flows and one-line takeaway banners. Colours come from the **nice-palette** skill, and the DM Sans + Playfair italic accent words, icon circles and side-colour cycle make it a sibling of **nice-presentation**. Colour never appears as a stripe or edge: no multi-colour strips, no coloured top borders, no short bars above titles.
+Generates single-file HTML documents with two views of the same markup:
+
+| View | When | Layout |
+|---|---|---|
+| **Web (default)** | Opening the HTML file | One continuous page, 210 mm wide column, no page breaks, page footers and contents page numbers hidden, one column on phones |
+| **A4 pages** | Print, PDF, or `?view=pages` in the URL | Fixed **A4 pages (210 × 297 mm)**, one page per sheet, numbered footers |
+
+You author A4 pages; the web view comes from the CSS, so plan and verify every page against A4. The look is a corporate white-paper style: a full-width dark header band on every page with the section name and number, light rounded panels, big-number stat tiles, simple bar and line charts, dark-header tables, dark pull-quote panels with Playfair Display text, arrow process flows and one-line takeaway banners. Colours come from the **nice-palette** skill, and the DM Sans + Playfair italic accent words, icon circles and side-colour cycle make it a sibling of **nice-presentation**. Colour never appears as a stripe or edge: no multi-colour strips, no coloured top borders, no short bars above titles.
 
 There is **no style-discovery phase**. The look is fixed; your job is content, structure and choosing the right page pattern for each page. The only variations are the base colour (palette argument) and how side colours are spread across items.
 
@@ -18,10 +25,11 @@ There is **no style-discovery phase**. The look is fixed; your job is content, s
 
 1. **One self-contained HTML file.** Inline CSS and JS. The only external resource is the Google Fonts link. Images go in an `assets/` folder next to the file, or are inlined as base64 if the user wants one file.
 2. **Copy the whole `<style>` block and the closing `<script>` from `nice-document-sample.html` verbatim.** Edit only `:root` tokens, and put any document-specific rules in a `/* === DOCUMENT-SPECIFIC === */` block at the end of the `<style>`.
-3. **Every page is a `<section class="page">` inside `<main class="doc">`.** Pages have a fixed height. Nothing flows from one page to the next: when content does not fit, you move blocks to a new page yourself.
-4. **Author sizes in mm and pt**, never px or vw. Never set fixed heights on panels, cards, stats or table cells; let them grow to fit their text. Charts and figures are the only blocks with a set height (`--lc-h`, `--h`, `--fig-h`).
-5. **No overflow, no clipped text.** Text must never run outside its card or panel, and tables must never be cut off at the bottom. The self-check script outlines any block that spills (see Verify).
-6. Never put workflow text in the document ("template", "layout", "placeholder", file names). Never invent statistics: use the user's numbers, or label sample figures as illustrative.
+3. **Every page is a `<section class="page">` inside `<main class="doc">`.** In print, pages have a fixed A4 height. Nothing flows from one page to the next: when content does not fit, you move blocks to a new page yourself. On screen the same sections join into one web page; a section continued on a second page gets `class="page cont"` so its repeated band is hidden in the web view.
+4. **Every contents row is a working link.** Give each section's first page an id (`<section class="page" id="s03">`, from the band number) and wrap each `.toc` row in `<a href="#s03">`. The link scrolls in the web view and becomes a clickable PDF link (Chrome and Edge keep internal links when printing). The script rewrites each `.toc-p` page number from the A4 page that holds the target, so the numbers are always right; still write the expected number as a fallback.
+5. **Author sizes in mm and pt**, never px or vw. Never set fixed heights on panels, cards, stats or table cells; let them grow to fit their text. Charts and figures are the only blocks with a set height (`--lc-h`, `--h`, `--fig-h`).
+6. **No overflow, no clipped text.** Text must never run outside its card or panel, and tables must never be cut off at the bottom. The self-check script outlines any block that spills (see Verify).
+7. Never put workflow text in the document ("template", "layout", "placeholder", file names). Never invent statistics: use the user's numbers, or label sample figures as illustrative.
 
 ## Workflow
 
@@ -59,28 +67,35 @@ async def main(path, outdir):
         pg = await b.new_page(viewport={'width': 900, 'height': 1200}, device_scale_factor=1.5); errs = []
         pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.goto('file://' + path); await pg.wait_for_timeout(1500)
-        print('overflow blocks:', await pg.evaluate("document.documentElement.dataset.overflow"))
-        print('under-filled pages:', await pg.evaluate("document.documentElement.dataset.underfilled") or 'none')
+        await pg.screenshot(path=f'{outdir}/web.png', full_page=True)   # default web view: one page
+        await pg.goto('file://' + path + '?view=pages'); await pg.wait_for_timeout(1500)
+        ds = lambda k: pg.evaluate(f"document.documentElement.dataset.{k}")
+        print('overflow blocks:', await ds('overflow'))
+        print('under-filled pages:', await ds('underfilled') or 'none')
+        print('broken contents links:', await ds('badlinks'))
         pages = await pg.query_selector_all('.page')
         for i, el in enumerate(pages): await el.screenshot(path=f'{outdir}/page-{i+1:02d}.png')
         await pg.emulate_media(media='print')
         await pg.pdf(path=f'{outdir}/document.pdf', prefer_css_page_size=True, print_background=True)
         pdf = open(f'{outdir}/document.pdf', 'rb').read()
         print('html pages:', len(pages), 'pdf pages:', pdf.count(b'/MediaBox'))
+        print('pdf contents links:', pdf.count(b'/Subtype /Link'), 'of', await pg.evaluate("document.querySelectorAll('.toc a').length"))
         print('JS errors:', errs); await b.close()
 asyncio.run(main(sys.argv[1], sys.argv[2]))
 ```
 
-Without Playwright, any Chrome or Edge can do the PDF part: `chrome --headless=new --no-pdf-header-footer --virtual-time-budget=8000 --print-to-pdf=out.pdf file:///path/doc.html`, and `--dump-dom` shows the `data-overflow` and `data-underfilled` attributes on `<html>`. Every PDF page should have `/MediaBox [0 0 595 842]` (A4 in points, give or take a fraction).
+Without Playwright, any Chrome or Edge can do the PDF part: `chrome --headless=new --no-pdf-header-footer --virtual-time-budget=8000 --print-to-pdf=out.pdf file:///path/doc.html`, and `--dump-dom` shows the `data-overflow`, `data-underfilled` and `data-badlinks` attributes on `<html>`. The self-check always measures the A4 layout, even in the web view. Every PDF page should have `/MediaBox [0 0 595 842]` (A4 in points, give or take a fraction).
 
 Pass criteria:
 - `overflow blocks: 0`. If not, the flagged block has a dashed red outline on screen: shorten it, move a block to another page, or split the page.
+- `broken contents links: 0`, and `pdf contents links` equals the number of contents rows. A broken row gets a dashed red outline; fix its `href` or the target `id`.
 - `pdf pages` equals `html pages`. One more PDF page than HTML pages means a page overflowed in print.
 - No page under 70% full (`data-underfilled`). Fix by enlarging charts (`--lc-h`, `--h`, `--fig-h`), adding a block that carries real content, merging with the next page, or adding `.spread` to `.content` to share the spare room evenly.
+- Look at `web.png` for the web view: one continuous page, no page gaps, cover on top, sections in order.
 - Look at every page picture for cramped text, single orphan words in headings, tables with one-word columns, and empty-looking areas.
 
 ### Phase 5: Deliver
-Save `<document-name>.html` (plus `assets/` if any) where the user asked, or next to their files. Tell the user the page count, that **Ctrl+P → Save as PDF** with margins "None" and "Background graphics" on gives the PDF (A4 is set by the page), and offer to export the PDF yourself with the script above. Mention the base colour used.
+Save `<document-name>.html` (plus `assets/` if any) where the user asked, or next to their files. Tell the user that opening the file shows one scrolling web page with a clickable contents list, the A4 page count, that **Ctrl+P → Save as PDF** with margins "None" and "Background graphics" on gives the PDF (A4 is set by the page, and the contents links stay clickable in the PDF), and offer to export the PDF yourself with the script above. Mention the base colour used.
 
 ## Colour system
 
@@ -114,7 +129,7 @@ Each pattern below is used in the sample; find it by the comment above each `<se
 
 1. **Cover** (`.page.cover`, sample page 1): the page is split, light `--bg` on top and the base colour below. A white rounded card floats across the split. Inside the card: a spaced caps eyebrow (`.cover-eyebrow`, series or organisation), a large Playfair title (`.cover-title`, with one `<em>` word), the document kind in spaced caps at the bottom of the card (`.cover-kind`, for example "White paper"), and a 2 to 3 sentence abstract (`.cover-abstract`). Under the card, white text on the base colour: organisation and website on the left, date and edition on the right (`.cover-foot`). The cover has no band and no footer.
 2. **Section page shell** (every other page): `header.band` with `.band-t` (section name, set in spaced caps) and `.band-n` (two-digit section number), then `.content` with the blocks, then `footer.foot` with "Document title · Year". The page number is added automatically and counts the cover as page 1.
-3. **Contents** (sample page 2): `ol.toc` rows with section number, title, a short description and page number, followed by an "About this paper" panel.
+3. **Contents** (sample page 2): `ol.toc` rows, each `<li><a href="#sNN">` holding section number, title, a short description and page number, followed by an "About this paper" panel. Every link target must exist (`data-badlinks` must be 0).
 4. **Executive summary** (sample page 3): a 2 × 2 grid of stat tiles beside a horizontal bar chart, then a table beside a text panel that ends in a bold `.key` finding, then a dark pull quote.
 5. **Text page** (sample page 4): a `.lead` paragraph, two-column prose (`.prose.cols-2` with `.h3` subheads, paragraphs and lists), a small chart or panel, and a `.note` summary. Use this for narrative sections; the reference templates have no long prose, so this page keeps the same components around the text.
 6. **Landscape page** (sample page 5): text panel and figure on the left, line chart on the right, then a full-width table with a highlighted row, a note, and a row of three stats.

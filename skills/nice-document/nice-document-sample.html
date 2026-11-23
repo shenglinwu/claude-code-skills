@@ -81,6 +81,37 @@ body { background: var(--desk); color: var(--text-1); font-family: var(--font-sa
   .nd-over { outline: none !important; }
 }
 
+/* === 3b. WEB VIEW (screen default): one continuous page instead of A4 sheets.
+   Print and PDF always use the A4 pages above. <html class="paged"> or ?view=pages shows A4 sheets on screen. === */
+@media screen {
+  html:not(.paged) .doc { display: block; width: 100%; max-width: var(--page-w); margin: 8mm auto; padding: 0; background: #fff; box-shadow: 0 4px 24px rgba(var(--ink-rgb),0.18); }
+  html:not(.paged) .page { width: auto; height: auto; overflow: visible; box-shadow: none; }
+  html:not(.paged) .content { flex: none; padding-bottom: 9mm; }
+  html:not(.paged) .page.cont .band { display: none; }
+  html:not(.paged) .page.cont .content { padding-top: 0; }
+  html:not(.paged) .foot { display: none; }
+  html:not(.paged) .page:last-child .foot { display: flex; }
+  html:not(.paged) .foot::after { content: none; }
+  html:not(.paged) .toc-p { display: none; }
+  html:not(.paged) .cover { padding: 30mm 20mm 14mm; }
+  html:not(.paged) .cover-card { position: relative; inset: auto; padding: 16mm 15mm 14mm; }
+  html:not(.paged) .cover-title { margin-top: 10mm; }
+  html:not(.paged) .cover-kind { margin-top: 12mm; }
+  html:not(.paged) .cover-foot { position: static; margin-top: 10mm; }
+  html:not(.paged) [id] { scroll-margin-top: 4mm; }
+}
+@media screen and (max-width: 820px) {
+  html:not(.paged) .doc { margin: 0; box-shadow: none; }
+  html:not(.paged) { --mx: 5mm; }
+  html:not(.paged) .row { grid-template-columns: 1fr !important; }
+  html:not(.paged) .cols-2 { column-count: 1; }
+  html:not(.paged) .cover { padding: 14mm 5mm 10mm; }
+  html:not(.paged) .cover-card { padding: 10mm 8mm; }
+  html:not(.paged) .cover-title { font-size: 30pt; }
+  html:not(.paged) .cover-foot { flex-direction: column; align-items: flex-start; gap: 2mm; }
+  html:not(.paged) .toc-d { display: none; }
+}
+
 /* Header band: section name left, section number right */
 .band { flex: none; height: var(--band-h); background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--mx); position: relative; }
 .band-t { font-size: 10pt; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
@@ -271,7 +302,9 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 
 /* === 13. CONTENTS AND CLOSING === */
 .toc { list-style: none; }
-.toc li { display: flex; align-items: baseline; gap: 3mm; padding: 3.2mm 0; border-bottom: 0.25mm solid var(--border); font-size: 11.5pt; }
+.toc li { border-bottom: 0.25mm solid var(--border); font-size: 11.5pt; }
+.toc a { display: flex; align-items: baseline; gap: 3mm; padding: 3.2mm 0; color: inherit; text-decoration: none; }
+.toc a:hover .toc-t { color: var(--accent); text-decoration: underline; }
 .toc-n { width: 9mm; flex: none; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
 .toc-t { font-weight: 600; color: var(--ink); }
 .toc-d { flex: 1; color: var(--text-3); font-size: 9pt; }
@@ -320,17 +353,17 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= CONTENTS ======================= -->
-<section class="page">
+<section class="page" id="s01">
   <header class="band"><span class="band-t">Contents</span><span class="band-n">01</span></header>
   <div class="content spread">
     <ol class="toc">
-      <li><span class="toc-n">02</span><span class="toc-t">Executive summary</span><span class="toc-d">Key numbers and the main finding</span><span class="toc-p">3</span></li>
-      <li><span class="toc-n">03</span><span class="toc-t">Background</span><span class="toc-d">Why cloud bills grow faster than usage</span><span class="toc-p">4</span></li>
-      <li><span class="toc-n">04</span><span class="toc-t">Spend landscape</span><span class="toc-d">Where the money goes today</span><span class="toc-p">5</span></li>
-      <li><span class="toc-n">05</span><span class="toc-t">Operating model</span><span class="toc-d">Roles, loops and controls</span><span class="toc-p">6</span></li>
-      <li><span class="toc-n">06</span><span class="toc-t">Metrics and analytics</span><span class="toc-d">What to measure each month</span><span class="toc-p">7</span></li>
-      <li><span class="toc-n">07</span><span class="toc-t">Roadmap</span><span class="toc-d">Actions by time horizon</span><span class="toc-p">8</span></li>
-      <li><span class="toc-n">08</span><span class="toc-t">Conclusion and references</span><span class="toc-d">Takeaways and sources</span><span class="toc-p">9</span></li>
+      <li><a href="#s02"><span class="toc-n">02</span><span class="toc-t">Executive summary</span><span class="toc-d">Key numbers and the main finding</span><span class="toc-p">3</span></a></li>
+      <li><a href="#s03"><span class="toc-n">03</span><span class="toc-t">Background</span><span class="toc-d">Why cloud bills grow faster than usage</span><span class="toc-p">4</span></a></li>
+      <li><a href="#s04"><span class="toc-n">04</span><span class="toc-t">Spend landscape</span><span class="toc-d">Where the money goes today</span><span class="toc-p">5</span></a></li>
+      <li><a href="#s05"><span class="toc-n">05</span><span class="toc-t">Operating model</span><span class="toc-d">Roles, loops and controls</span><span class="toc-p">6</span></a></li>
+      <li><a href="#s06"><span class="toc-n">06</span><span class="toc-t">Metrics and analytics</span><span class="toc-d">What to measure each month</span><span class="toc-p">7</span></a></li>
+      <li><a href="#s07"><span class="toc-n">07</span><span class="toc-t">Roadmap</span><span class="toc-d">Actions by time horizon</span><span class="toc-p">8</span></a></li>
+      <li><a href="#s08"><span class="toc-n">08</span><span class="toc-t">Conclusion and references</span><span class="toc-d">Takeaways and sources</span><span class="toc-p">9</span></a></li>
     </ol>
     <div class="row wide-l">
       <div class="panel">
@@ -352,7 +385,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= EXECUTIVE SUMMARY ======================= -->
-<section class="page">
+<section class="page" id="s02">
   <header class="band"><span class="band-t">Executive summary</span><span class="band-n">02</span></header>
   <div class="content spread">
     <div class="row">
@@ -403,7 +436,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= BACKGROUND (PROSE) ======================= -->
-<section class="page">
+<section class="page" id="s03">
   <header class="band"><span class="band-t">Background</span><span class="band-n">03</span></header>
   <div class="content spread">
     <p class="lead">Cloud bills grow for three plain reasons: resources are easy to start, hard to see, and nobody is asked to stop them. This section explains each reason and why a monthly bill review does not catch them.</p>
@@ -445,7 +478,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= SPEND LANDSCAPE ======================= -->
-<section class="page">
+<section class="page" id="s04">
   <header class="band"><span class="band-t">Spend landscape</span><span class="band-n">04</span></header>
   <div class="content spread">
     <div class="row">
@@ -503,7 +536,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= OPERATING MODEL ======================= -->
-<section class="page">
+<section class="page" id="s05">
   <header class="band"><span class="band-t">Operating model</span><span class="band-n">05</span></header>
   <div class="content spread">
     <div class="row">
@@ -552,7 +585,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= METRICS ======================= -->
-<section class="page">
+<section class="page" id="s06">
   <header class="band"><span class="band-t">Metrics and analytics</span><span class="band-n">06</span></header>
   <div class="content spread">
     <div class="row c4 tone-cycle">
@@ -600,7 +633,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= ROADMAP ======================= -->
-<section class="page">
+<section class="page" id="s07">
   <header class="band"><span class="band-t">Roadmap</span><span class="band-n">07</span></header>
   <div class="content spread">
     <div class="row wide-l">
@@ -646,7 +679,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 </section>
 
 <!-- ======================= CONCLUSION ======================= -->
-<section class="page">
+<section class="page" id="s08">
   <header class="band"><span class="band-t">Conclusion and references</span><span class="band-n">08</span></header>
   <div class="content spread">
     <h2 class="closing-h">Cloud cost is an engineering signal, <em>not a finance report.</em></h2>
@@ -684,10 +717,29 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 
 </main>
 <script>
-/* Overflow self-check: outlines (screen only) any block that runs past its page area.
-   Result is also in <html data-overflow="N"> and the console. */
+/* Self-check. On screen the document is one continuous web page, so the A4 checks switch
+   to page layout (html.paged) while they measure and switch back before the browser paints.
+   - Overflow: outlines any block that runs past its A4 page area. <html data-overflow="N">
+   - Under-filled A4 pages: <html data-underfilled="page:percent,...">
+   - Contents links: every .toc link must point to an existing id. <html data-badlinks="N">
+     Each .toc-p page number is rewritten from the A4 page that holds the link target.
+   ?view=pages in the URL keeps the A4 sheets on screen. Results are also in the console. */
 (function () {
+  var root = document.documentElement;
+  if (/[?&]view=pages(&|$)/.test(location.search)) root.classList.add('paged');
+  function links() {
+    var pages = Array.prototype.slice.call(document.querySelectorAll('.page')), broken = [];
+    document.querySelectorAll('.toc a').forEach(function (a) {
+      var href = a.getAttribute('href') || '', id = href.charAt(0) === '#' ? decodeURIComponent(href.slice(1)) : '';
+      var target = id && document.getElementById(id), page = target && target.closest('.page');
+      if (!page) { broken.push(href); a.classList.add('nd-over'); console.warn('nice-document: contents link has no target:', href); return; }
+      var num = a.querySelector('.toc-p'); if (num) num.textContent = pages.indexOf(page) + 1;
+    });
+    root.dataset.badlinks = broken.length;
+  }
   function check() {
+    var wasPaged = root.classList.contains('paged');
+    root.classList.add('paged');
     var bad = [];
     document.querySelectorAll('.nd-over').forEach(function (el) { el.classList.remove('nd-over'); });
     document.querySelectorAll('.page').forEach(function (page, i) {
@@ -715,7 +767,10 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
       if (used / avail < 0.7 && !page.classList.contains('last')) { thin.push((i + 1) + ':' + Math.round(used / avail * 100) + '%'); console.warn('nice-document: page ' + (i + 1) + ' is only ' + Math.round(used / avail * 100) + '% full'); }
     });
     document.documentElement.dataset.underfilled = thin.join(',');
+    if (!wasPaged) root.classList.remove('paged');
+    links();
   }
+  links();
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () { setTimeout(check, 50); });
 })();
 </script>
