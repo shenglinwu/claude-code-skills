@@ -32,22 +32,11 @@ Before you write, make sure you fully understand the topic:
 - No everyday-life analogies. Compare to engineering ideas instead (hash map, queue, HTTP request).
 - Be confident and clear. Treat the reader as smart, and fill their knowledge gaps without talking down.
 - Make it read smoothly from top to bottom. Open each part with a short sentence on what it covers and how it follows from the part before. Explain each diagram, table, and example in plain words, so the reader never has to guess why it is there.
-
-## Answer shape
-
-By default, write a tutorial document: an HTML page that reads from top to bottom like a guided lesson. Build it with the nice-document skill, then give the user the link.
-
-Write it as paragraphs under section headings. Each section opens with a sentence that ties it to the one before. A good default order:
-
-1. **What it is**: a short paragraph on what it is and why it exists.
-2. **The big picture**: a diagram of the parts or the flow, with a paragraph that walks through it. In HTML, slides, or any other visual output, draw it as a real graphic (inline SVG with boxes, arrows, and labels). Use a text diagram only in a terminal answer.
-3. **How it works**: the theory, in paragraphs, with the key implementation details.
-4. **Using it**: one small real example, as code or a command. Say what the example shows before it, and explain the result after it.
-5. **Common mistakes**: 1 to 3, each with what goes wrong and how to avoid it.
-
-Add a key terms table (term | meaning) where it helps most, for example after the section that brings in most of the terms. Move the diagram or the table to another place if it makes the explanation clearer.
+- Use diagrams, tables, and charts where they help the reader understand the explanation more easily. In HTML, slides, or any other visual output, draw a diagram as a real graphic (inline SVG with boxes, arrows, and labels). Use a text diagram only in a terminal answer. Pick the sections and their order to fit the topic.
 
 ## Output type and skill
+
+By default, write a tutorial document: an HTML page that reads from top to bottom like a guided lesson. Build it with the nice-document skill, then give the user the link.
 
 Pick the output type and the skill that builds it:
 
@@ -58,4 +47,4 @@ Pick the output type and the skill that builds it:
 | Another type of document (for example a cheatsheet) | That type | The skill that fits that type, if there is one |
 | A named skill | What that skill makes | The named skill |
 
-A named type or skill always wins over the defaults. For any output, keep the same teaching content and all the rules above. For a presentation, put one idea on each slide, and keep the order of the sections above.
+A named type or skill always wins over the defaults. For any output, keep the same teaching content and all the rules above. For a presentation, put one idea on each slide.
