@@ -6,7 +6,7 @@
 <title>Cloud Cost Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,700;1,600;1,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ==========================================================
    NICE-DOCUMENT: A4 white paper / report design system.
@@ -44,6 +44,8 @@
   --desk:         #CCD1D5;             /* screen-only colour behind the pages */
   --font-sans:    'DM Sans', sans-serif;
   --font-serif:   'Playfair Display', serif;
+  --font-mono:    'DM Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --code-bg:      color-mix(in srgb, var(--dark) 40%, var(--ink));   /* code and terminal blocks: darker than --dark so code reads like an editor */
   /* A4 geometry, authored in mm and pt */
   --page-w:       210mm;
   --page-h:       297mm;
@@ -55,6 +57,7 @@
   --fs-body:      10pt;
   --fs-small:     8.5pt;
   --fs-tiny:      7.5pt;
+  --fs-code:      8.5pt;
 }
 
 /* === 2. TONES (one colour per item; fills use --tone, text uses --tone-ink) === */
@@ -181,6 +184,12 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 600; color
 .cols-2 { column-count: 2; column-gap: 8mm; }
 .cols-2 .h3 { break-after: avoid; }
 .cols-2 p, .cols-2 li { orphans: 3; widows: 3; }
+/* Inline code and links in running text */
+code { font-family: var(--font-mono); font-size: 0.9em; background: rgba(var(--mid-rgb),0.10); color: var(--accent); padding: 0.2mm 1.2mm; border-radius: 1mm; overflow-wrap: anywhere; }
+:is(.panel.dark, .quote, .banner, .flow.dark, .stat.hl, table.data th) code { background: rgba(255,255,255,0.14); color: #fff; }
+.content a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(var(--accent-rgb),0.35); text-underline-offset: 0.6mm; }
+.content a:hover { text-decoration-color: var(--accent); }
+:is(.panel.dark, .quote, .banner, .flow.dark, .stat.hl, table.data th) a { color: #fff; text-decoration-color: rgba(255,255,255,0.5); }
 
 /* === 6. PANELS === */
 .panel { background: var(--surface); border-radius: var(--r); padding: 5.5mm 6mm; }
@@ -339,6 +348,48 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
 .toc-p { font-weight: 700; color: var(--text-2); font-variant-numeric: tabular-nums; }
 .closing-h { font-family: var(--font-serif); font-size: 25pt; font-weight: 700; line-height: 1.18; text-align: center; color: var(--ink); padding: 2mm 6mm 0; }
 
+/* === 14. CODE AND TERMINAL BLOCKS ===
+   <div class="code"><span class="lang">bash</span><pre>...</pre></div>. The script adds the Copy button.
+   Spans inside <pre>: .k keyword, .c comment, .hl highlight, .ok success, .err error,
+   .p prompt and .out output for terminal blocks (Copy then takes only the commands). */
+.code { position: relative; min-width: 0; display: flex; flex-direction: column; }
+.code pre { flex: 1; background: var(--dark); background: var(--code-bg); color: #E9EDEF; border-radius: var(--r); padding: 8.5mm 5mm 4mm; font-family: var(--font-mono); font-size: var(--fs-code); line-height: 1.6; white-space: pre; overflow-x: auto; tab-size: 2; }
+.code .lang { position: absolute; top: 3mm; left: 5mm; font-family: var(--font-mono); font-size: 7pt; font-weight: 500; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.code .k   { color: var(--c-orange); color: color-mix(in srgb, var(--c-orange) 65%, #fff); }
+.code .c   { color: rgba(255,255,255,0.48); }
+.code .hl  { background: rgba(255,255,255,0.13); color: #fff; border-radius: 0.8mm; }
+.code .ok  { color: var(--c-mint); color: color-mix(in srgb, var(--c-mint) 70%, #fff); }
+.code .err { color: var(--c-cinnabar); color: color-mix(in srgb, var(--c-cinnabar) 60%, #fff); }   /* errors only: cinnabar stays a problem colour */
+.code .p   { color: rgba(255,255,255,0.45); user-select: none; }
+.code .out { color: rgba(255,255,255,0.68); }
+.code .copy { position: absolute; top: 2.2mm; right: 2.5mm; font: 500 7.5pt/1.3 var(--font-sans); color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.08); border: 0.25mm solid rgba(255,255,255,0.14); border-radius: 1.5mm; padding: 0.8mm 2.6mm; cursor: pointer; transition: color .15s, background .15s; }
+.code .copy:hover, .code .copy:focus-visible { color: #fff; background: rgba(255,255,255,0.16); }
+.code .copy:focus-visible { outline: 0.5mm solid rgba(255,255,255,0.6); outline-offset: 0.3mm; }
+/* A4 pages (print, PDF, ?view=pages and the self-check): long lines wrap instead of scrolling, no Copy button */
+html.paged .code pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: visible; }
+html.paged .code .copy { display: none; }
+@media print {
+  .code pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: visible; }
+  .code .copy, .nd-progress { display: none !important; }
+}
+
+/* === 15. WEB POLISH (web view on screen only; print and ?view=pages stay plain) === */
+.nd-progress { display: none; }
+@media screen {
+  html:not(.paged) { scroll-behavior: smooth; }
+  html:not(.paged) .nd-progress { display: block; position: fixed; top: 0; left: 0; height: 0.8mm; width: 0; background: var(--accent-mid); z-index: 30; pointer-events: none; }
+}
+@media screen and (hover: hover) {
+  html:not(.paged) :is(.card, .stat) { transition: transform .18s ease, box-shadow .18s ease; }
+  html:not(.paged) :is(.card, .stat):hover { transform: translateY(-0.6mm); box-shadow: 0 2mm 5mm rgba(var(--ink-rgb),0.10); }
+  html:not(.paged) table.data tbody tr { transition: background-color .15s; }
+  html:not(.paged) table.data tbody tr:not(.hl):hover td { background: rgba(var(--mid-rgb),0.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.paged) { scroll-behavior: auto; }
+  html:not(.paged) :is(.card, .stat, table.data tbody tr) { transition: none; }
+}
+
 /* Overflow self-check marker (screen only) */
 .nd-over { outline: 0.8mm dashed var(--c-cinnabar) !important;   /* screen-only warning marker, never printed */ outline-offset: 0.5mm; }
 </style>
@@ -475,7 +526,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
       <h3 class="h3">Hard to see</h3>
       <p>Most bills group cost by service, not by team or product. A finance analyst sees "compute" rise by 12% but cannot tell which team caused it. Engineers see their systems but not their prices.</p>
       <ul>
-        <li>Shared accounts hide which team owns a cost.</li>
+        <li>Shared accounts hide which team owns a cost unless every resource carries a <code>team</code> tag.</li>
         <li>Discounts are applied after the fact, so list prices mislead.</li>
         <li>Data transfer charges appear far from their cause.</li>
       </ul>
@@ -499,6 +550,18 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
         <div class="panel-t">Study method</div>
         <p>Twelve product teams shared twelve months of billing exports and answered a short survey about how they review cost.</p>
       </div>
+    </div>
+    <div class="row">
+      <div class="code"><span class="lang">yaml · tag policy</span><pre><span class="c"># every resource says who pays for it</span>
+<span class="k">required_tags:</span> [team, product, env]
+<span class="k">on_missing:</span>
+  <span class="k">warn_after:</span> 1d
+  <span class="k">stop_after:</span> <span class="hl">7d</span>   <span class="c"># test hosts only</span>
+<span class="k">report:</span> daily</pre></div>
+      <div class="code"><span class="lang">terminal · daily check</span><pre><span class="p">$ </span>cloudcost untagged --older-than 30d
+<span class="out">test-cluster-07   41 days   </span><span class="err">no team tag</span>
+<span class="out">gpu-sandbox-2     33 days   </span><span class="err">no owner</span>
+<span class="ok">2 resources found, owners notified</span></pre></div>
     </div>
     <div class="note">In short: <b>visibility, ownership and a daily loop</b> matter more than any single saving technique.</div>
   </div>
@@ -751,7 +814,8 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
    - Under-filled A4 pages: <html data-underfilled="page:percent,...">
    - Contents links: every .toc link must point to an existing id. <html data-badlinks="N">
      Each .toc-p page number is rewritten from the A4 page that holds the link target.
-   ?view=pages in the URL keeps the A4 sheets on screen. Results are also in the console. */
+   ?view=pages in the URL keeps the A4 sheets on screen. Results are also in the console.
+   Web view extras: a Copy button on every .code block and a reading progress bar (screen only). */
 (function () {
   var root = document.documentElement;
   if (/[?&]view=pages(&|$)/.test(location.search)) root.classList.add('paged');
@@ -797,6 +861,7 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
     document.documentElement.dataset.underfilled = thin.join(',');
     if (!wasPaged) root.classList.remove('paged');
     links();
+    progressUpdate();
   }
   /* Contents sidebar for the web view: copies the .toc rows, marks the section on screen.
      Hidden in print and in ?view=pages. */
@@ -830,7 +895,58 @@ table.data td:first-child { font-weight: 600; color: var(--ink); }
     addEventListener('scroll', spy, { passive: true });
     addEventListener('resize', spy); spy();
   }
+  /* Copy buttons on code blocks. A terminal block with prompts (.p) copies only its commands. */
+  function codeText(pre) {
+    var prompts = Array.prototype.map.call(pre.querySelectorAll('.p'), function (p) { return p.textContent; });
+    var text = pre.textContent.replace(/\r\n?/g, '\n').replace(/\n+$/, '');
+    if (!prompts.length) return text;
+    var out = [], more = false;
+    text.split('\n').forEach(function (line) {
+      var p = prompts.filter(function (s) { return s && line.indexOf(s) === 0; })[0];
+      if (p !== undefined) line = line.slice(p.length).replace(/^\s+/, '');
+      else if (!more) return;
+      out.push(line); more = /\\\s*$/.test(line);
+    });
+    return out.join('\n');
+  }
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallback(); });
+    return Promise.resolve(fallback());
+    function fallback() {
+      var ta = document.createElement('textarea'), ok = false;
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove(); return ok;
+    }
+  }
+  function codeCopy() {
+    document.querySelectorAll('.code').forEach(function (block) {
+      var pre = block.querySelector('pre'); if (!pre || block.querySelector('.copy')) return;
+      pre.tabIndex = 0;   /* lets keyboard users scroll long lines */
+      var btn = document.createElement('button'), timer;
+      btn.type = 'button'; btn.className = 'copy'; btn.textContent = 'Copy';
+      btn.addEventListener('click', function () {
+        copyText(codeText(pre)).then(function (ok) {
+          btn.textContent = ok ? 'Copied' : 'Copy failed';
+          clearTimeout(timer); timer = setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
+        });
+      });
+      block.appendChild(btn);
+    });
+  }
+  /* Reading progress bar along the top of the web view */
+  var progressUpdate = function () {};
+  function progress() {
+    var bar = document.createElement('div'); bar.className = 'nd-progress'; bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+    function update() { var h = root.scrollHeight - innerHeight; bar.style.width = (h > 0 ? Math.min(100, scrollY / h * 100) : 0) + '%'; }
+    addEventListener('scroll', update, { passive: true }); addEventListener('resize', update); addEventListener('load', update); update();
+    progressUpdate = update;
+  }
   sidebar();
+  codeCopy();
+  progress();
   links();
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () { setTimeout(check, 50); });
 })();
