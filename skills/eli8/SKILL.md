@@ -47,4 +47,15 @@ Write it as paragraphs under section headings. Each section opens with a sentenc
 
 Add a key terms table (term | meaning) where it helps most, for example after the section that brings in most of the terms. Move the diagram or the table to another place if it makes the explanation clearer.
 
-If the topic says the goal is a presentation or another kind of document (for example slides or a cheatsheet), keep the same teaching content and all the rules above, and shape the output as that type.
+## Output type and skill
+
+Pick the output type and the skill that builds it:
+
+| The user asks for | Output | Build it with |
+|---|---|---|
+| Nothing special (default) | Tutorial document | nice-document skill |
+| A presentation (slides, a deck, a talk) | Slide deck | nice-presentation skill |
+| Another type of document (for example a cheatsheet) | That type | The skill that fits that type, if there is one |
+| A named skill | What that skill makes | The named skill |
+
+A named type or skill always wins over the defaults. For any output, keep the same teaching content and all the rules above. For a presentation, put one idea on each slide, and keep the order of the sections above.
