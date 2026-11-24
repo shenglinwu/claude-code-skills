@@ -40,7 +40,7 @@ By default, write a tutorial document: an HTML page that reads from top to botto
 Write it as paragraphs under section headings. Each section opens with a sentence that ties it to the one before. A good default order:
 
 1. **What it is**: a short paragraph on what it is and why it exists.
-2. **The big picture**: a text diagram of the parts or the flow, with a paragraph that walks through it.
+2. **The big picture**: a diagram of the parts or the flow, with a paragraph that walks through it. In HTML, slides, or any other visual output, draw it as a real graphic (inline SVG with boxes, arrows, and labels). Use a text diagram only in a terminal answer.
 3. **How it works**: the theory, in paragraphs, with the key implementation details.
 4. **Using it**: one small real example, as code or a command. Say what the example shows before it, and explain the result after it.
 5. **Common mistakes**: 1 to 3, each with what goes wrong and how to avoid it.
