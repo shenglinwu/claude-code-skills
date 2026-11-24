@@ -11,7 +11,7 @@ A **skill** is a folder of instructions that Claude Code loads when the task mat
 | `skills/arch-flow-explainer/` | arch-flow-explainer | Draws system architecture and call flows as a single self-contained HTML file with an inline SVG picture. |
 | `skills/cortex-palette/` | cortex-palette The older brand colors (Cortex Blue plus named accents). Used only when you ask for Cortex colors by name. `nice-palette` is the default. |
 | `skills/daily-briefing/` | daily-briefing | Reads a list of news feeds, picks 40 tech items from the past 24 hours, summarizes and translates them, and builds one HTML page with the source links. It can also publish that page to Vercel. |
-| `skills/eli8/` | eli8 | A thin wrapper around an `eli5` skill for engineers: same simple explainer, but it keeps the real technical terms instead of everyday comparisons. |
+| `skills/eli8/` | eli8 | Explains a technical topic to an engineer who is new to it, in plain words but with the real technical terms. Writes a tutorial document with `nice-document` by default, or a slide deck with `nice-presentation` when you ask for a presentation. A different document type or skill you name wins. |
 | `skills/nice-document/` | nice-document | Builds polished A4 documents (white papers, reports, briefs) as one HTML file. On screen it is one long web page with a linked contents list and a contents sidebar that stays in view. A PDF with A4 pages is optional and made only when asked. Uses the nice-palette base color plus orange, grape and mint only, with red kept for problem tags. Ships with a 9-page sample and a small color script. |
 | `skills/nice-palette/` | nice-palette | The default colors for any HTML Claude builds. The default palette is `galaxy`: a slate base color (`#324856`) with ochre, terracotta and sage side colors. You can pick another named palette: `blue-green` (the old default, with mint, orange, cinnabar, gold, grape, amber-brown and gray), `steel-blue`, or `natural` (gray-blue base with copper, mauve, taupe). |
 | `skills/nice-presentation/` | nice-presentation | Builds colorful 16:9 HTML slide decks in the nice-palette colors. Takes an optional base color or palette name (such as `galaxy` or `natural`), and ships with three sample decks and a small color script. |
@@ -43,7 +43,8 @@ The older folders have their own `README.md` with the details. For `daily-briefi
    nice-presentation ── takes its colors from ─────────────┤
    nice-document ────── takes its colors from ─────────────┘
    cortex-palette ── only when you ask for Cortex colors
-   eli8 ── hands the topic to ──▶ eli5 skill (not in this repo)
+   eli8 ── document by default ──▶ nice-document
+        └─ presentation ────────▶ nice-presentation
    daily-briefing ── works on its own, can publish to Vercel
 ```
 
