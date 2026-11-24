@@ -40,11 +40,22 @@ By default, write a tutorial document: an HTML page that reads from top to botto
 Write it as paragraphs under section headings. Each section opens with a sentence that ties it to the one before. A good default order:
 
 1. **What it is**: a short paragraph on what it is and why it exists.
-2. **The big picture**: a text diagram of the parts or the flow, with a paragraph that walks through it.
+2. **The big picture**: a diagram of the parts or the flow, with a paragraph that walks through it. In HTML, slides, or any other visual output, draw it as a real graphic (inline SVG with boxes, arrows, and labels). Use a text diagram only in a terminal answer.
 3. **How it works**: the theory, in paragraphs, with the key implementation details.
 4. **Using it**: one small real example, as code or a command. Say what the example shows before it, and explain the result after it.
 5. **Common mistakes**: 1 to 3, each with what goes wrong and how to avoid it.
 
 Add a key terms table (term | meaning) where it helps most, for example after the section that brings in most of the terms. Move the diagram or the table to another place if it makes the explanation clearer.
 
-If the topic says the goal is a presentation or another kind of document (for example slides or a cheatsheet), keep the same teaching content and all the rules above, and shape the output as that type.
+## Output type and skill
+
+Pick the output type and the skill that builds it:
+
+| The user asks for | Output | Build it with |
+|---|---|---|
+| Nothing special (default) | Tutorial document | nice-document skill |
+| A presentation (slides, a deck, a talk) | Slide deck | nice-presentation skill |
+| Another type of document (for example a cheatsheet) | That type | The skill that fits that type, if there is one |
+| A named skill | What that skill makes | The named skill |
+
+A named type or skill always wins over the defaults. For any output, keep the same teaching content and all the rules above. For a presentation, put one idea on each slide, and keep the order of the sections above.
