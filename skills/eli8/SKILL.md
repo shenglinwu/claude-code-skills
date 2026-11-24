@@ -35,10 +35,16 @@ Before you write, make sure you fully understand the topic:
 
 ## Answer shape
 
-1. One line: what it is.
-2. A text diagram of the parts or the flow.
-3. How it works (the theory): 3 to 6 short steps, with the key implementation details.
-4. Key terms: table of term | meaning.
-5. How it is used (the practice): one small real example, as code or a command.
-6. Performance and maintainability: what it costs and what to watch over time. Skip this part when it does not apply.
-7. Common mistakes: 1 to 3.
+By default, write a tutorial document: an HTML page that reads from top to bottom like a guided lesson. Build it with the nice-document skill, then give the user the link.
+
+Write it as paragraphs under section headings. Each section opens with a sentence that ties it to the one before. A good default order:
+
+1. **What it is**: a short paragraph on what it is and why it exists.
+2. **The big picture**: a text diagram of the parts or the flow, with a paragraph that walks through it.
+3. **How it works**: the theory, in paragraphs, with the key implementation details.
+4. **Using it**: one small real example, as code or a command. Say what the example shows before it, and explain the result after it.
+5. **Common mistakes**: 1 to 3, each with what goes wrong and how to avoid it.
+
+Add a key terms table (term | meaning) where it helps most, for example after the section that brings in most of the terms. Move the diagram or the table to another place if it makes the explanation clearer.
+
+If the topic says the goal is a presentation or another kind of document (for example slides or a cheatsheet), keep the same teaching content and all the rules above, and shape the output as that type.
