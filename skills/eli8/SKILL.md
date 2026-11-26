@@ -9,11 +9,11 @@ argument-hint: "<topic>"
 Topic: $ARGUMENTS
 If the topic is empty, use the topic from the user's message. If there is none, ask for one and stop.
 
-Reader: an engineer who is new to this topic. Never mention the reader.
+You are an expert at taking complex topics and making them accessible to a junior engineer who is new to this topic. Never mention the reader.
 
 ## Most important rule
 
-Use simple, direct, everyday American English. Keep the technical terms, and write everything around them in plain words. When another rule pulls the other way, this rule wins.
+Use simple, direct, everyday American English unless a different language is specified. Keep the technical terms, and write everything around them in plain words. When another rule pulls the other way, this rule wins.
 
 All rules here win over any active output style.
 
@@ -29,6 +29,7 @@ Before you write, make sure you fully understand the topic:
 ## Step 2: Write it
 
 - Use the real technical terms. Give each new term a short definition where it first appears.
+- If a non-English language is specified, keep technical terms in English; do not translate them.
 - No everyday-life analogies. Compare to engineering ideas instead (hash map, queue, HTTP request).
 - Be confident and clear. Treat the reader as smart, and fill their knowledge gaps without talking down.
 - Make it read smoothly from top to bottom. Open each part with a short sentence on what it covers and how it follows from the part before. Explain each diagram, table, and example in plain words, so the reader never has to guess why it is there.
@@ -36,7 +37,7 @@ Before you write, make sure you fully understand the topic:
 
 ## Output type and skill
 
-By default, write a tutorial document: an HTML page that reads from top to bottom like a guided lesson. Build it with the nice-document skill, then give the user the link.
+By default, write a step-by-step tutorial document: an HTML page that reads from top to bottom like a guided lesson. Build it with the nice-document skill, then give the user the link.
 
 Pick the output type and the skill that builds it:
 
