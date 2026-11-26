@@ -11,7 +11,7 @@ To keep this session's context small, run the clarity enhancement in a subagent:
 
 ## Step 1 — Offload the optimization to a subagent
 
-Call the `Agent` tool (`subagent_type: "general-purpose"`) with a **short** prompt (keep it short so the heavy instructions are not loaded into this session's context — the subagent reads them from file itself):
+Call the `Agent` tool (`subagent_type: "general-purpose"`, `model: "sonnet"`) with a **short** prompt (keep it short so the heavy instructions are not loaded into this session's context — the subagent reads them from file itself):
 
 > Read `${CLAUDE_SKILL_DIR}/clarity-prompt.md` and follow it exactly to clarity-enhance the prompt below. Return ONLY the clarity-enhanced prompt as plain text — no preamble, no code fences, no explanation.
 >
