@@ -1,5 +1,6 @@
 ---
 name: "nice-document"
+model: sonnet
 description: "Create high-quality A4 documents (white papers, business reports, research briefs, executive summaries) as one HTML file that reads as a single scrolling web page on screen, with a linked table of contents; it also prints to A4 pages, so a PDF is available on request (not made by default): dark section bands, stat tiles, charts, tables, pull quotes, process flows and code or terminal blocks with Copy buttons in nice-palette colours, DM Sans + Playfair. Use when the user asks for a white paper, report, brief or other polished multi-page document. Optional argument: base colour hex or preset."
 ---
 
