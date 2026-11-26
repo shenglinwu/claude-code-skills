@@ -28,8 +28,10 @@ def slots(name, bg):
         while contrast(ink, bg) < 4.5: ink = tuple(v * 0.95 for v in ink)  # readable text on bg
         out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {hx(ink)};')
     return out
-def palette(base):
-    base = rgb(base_hex(base))
+# Hand-set values for named palettes whose nice-palette design fixes them exactly
+OVERRIDES = {'galaxy': {'--paper': '#F5F7F8', '--rule': '#DCE1E4'}}
+def palette(name):
+    base = rgb(base_hex(name))
     H, L, S = colorsys.rgb_to_hls(*(v / 255 for v in base))
     W = (255, 255, 255)
     bg = mix(W, base, 0.12)
@@ -42,8 +44,15 @@ def palette(base):
         '--ink': hx(ink), '--text-1': hx(ink),
         '--text-2': hx(hsl(H, min(S, 0.26), 0.31)), '--text-3': hx(hsl(H, min(S, 0.15), 0.50)),
         '--letterbox': hx(mix(W, base, 0.25)),
+        '--paper': hx(mix(W, base, 0.045)),          # slide paper: tinted off-white, never pure white
+        '--surface-2': hx(mix(W, base, 0.015)),      # light tile surface
+        '--rule': hx(mix(W, base, 0.165)),           # 1px frames and row lines
     }
-    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink')):
+    t.update(OVERRIDES.get(name.lower(), {}))
+    field = base                                       # base-colour field: light text must read on it
+    while contrast(rgb(t['--paper']), field) < 4.5: field = tuple(v * 0.95 for v in field)
+    t['--field'] = hx(field)
+    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink'), ('--paper-rgb', '--paper'), ('--field-rgb', '--field')):
         t[k] = ','.join(map(str, rgb(t[src])))
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell

@@ -1,24 +1,34 @@
 ---
 name: "nice-presentation"
-description: "Create colourful ClearWave-style HTML slide decks: galaxy palette by default (slate base with ochre, terracotta and sage side colours), DM Sans + Playfair italic, 16:9 stage. Optional argument: base colour hex or palette name (galaxy, blue-green, steel-blue, natural, ...)."
+description: "Create calm, editorial HTML slide decks: galaxy palette by default (slate base with ochre, terracotta and sage side colours), Playfair Display titles and big numbers, DM Sans body, soft tinted tiles, 16:9 stage. Optional argument: base colour hex or palette name (galaxy, blue-green, steel-blue, natural, ...)."
 ---
 
 # Nice Presentation
 
-Generates single-file, zero-dependency HTML presentations that all share one design system, ported from the ClearWave template (TemplateMo 622): light surfaces tinted with the base colour (galaxy slate #324856 by default), a dark ink accent surface, DM Sans for everything with **one italic Playfair Display phrase per headline**, glow orbs, a faint noise texture, and slow "silk" easing (`cubic-bezier(0.16,1,0.3,1)`).
+Generates single-file, zero-dependency HTML presentations that all share one design system: paper tinted with the base colour (galaxy paper `#F5F7F8`, slate base `#324856` by default), **Playfair Display 700** for slide titles and big numbers, **DM Sans** for body text, DM Mono only for code, a base-colour field on the title and section slides, a faint noise texture, and slow "silk" easing (`cubic-bezier(0.16,1,0.3,1)`).
 
-Text, tables, charts, diagrams, timelines, panels and cards use a bold **business-infographic** build: spaced caps labels in the base colour, solid icon circles with a white ring and soft shadow, thick coloured bars on light gray rails, tinted colour blocks for key numbers, and diagrams drawn as rings, waves and connected boxes. Every repeated item takes its own side colour, so slides are full and colourful rather than sparse.
+The look is a quiet **tile-and-table** build, translated from the approved document style to 16:9:
+
+- **Blocks** (cards, panels, stat tiles, notes, callouts, quote boxes, info boxes) are plain soft tinted tiles with round corners (8px at the stage size) and no borders. There is never a thick or coloured line on the top, left or any other edge, no short coloured bar above a title and no left-border callout. A block's tone shows only as a light tint of its colour (8 to 14% over the paper, `--tint` and `--tint-strong`) and the block title in the tone's `-ink` colour. Icon circles may stay beside text, but never as decoration-only tiles above every heading.
+- **Tables** have a thin 1px frame in the `--rule` colour with round corners, a light-grey header row (base colour at 7%) with secondary-ink header text (weight 600, sentence case, one step smaller than body), thin 1px row lines, no dark header, no thick rule under the header and no zebra stripes. A highlighted row (`tr.hl`) is a light tint of the orange slot.
+- **Labels** (captions, table heads, tags, kickers) are sentence case, untracked and one step smaller than body; there are no spaced capitals anywhere. There is no eyebrow or kicker line above a heading: fold its words into the heading or put them in a line below it. No middle-dot-joined meta strings with two or more dots. A heading is one style: never one italic word inside a roman heading.
+- **Type**: Playfair Display 700 for titles and big numbers (lining, tabular numerals), DM Sans for body, DM Mono only for code. Section and agenda numbers are large Playfair numerals in the accent-ink colour (galaxy ochre ink `#925B26`), hanging to the left of the title under a thin 1px rule.
+- **Title slide**: the whole slide is the base-colour field (`slide dark title-slide`), so the deck opens and closes on the same dark colour. Left about 6/12: Playfair title, one subtitle sentence, a small muted meta line (no dots). Right: the deck's one strongest real visual as soft tiles with a soft shadow (layered tiles allowed). Never draw browser or OS window chrome (three dots, a title bar) around a visual.
+- **Section dividers**: the whole slide is the base colour; the Playfair title sits on the left (about 7/12); on the right one short line in light text and a small muted range line such as "Slides 5 to 11"; title and short line share a baseline.
+- **Colour**: paper is a tinted off-white (`--paper`), never pure white or black outside the `:root` token block; every colour and font family goes through a `:root` token. The accent hue (orange slot) is used sparingly. Every repeated item still takes its own side colour as a tint, so slides stay colourful without edges or bars.
+- **Scale**: the whole design is drawn at 85% of the earlier size (`--zoom` 1.0625, `--zoom-tall` 0.918, padding tokens 109/128/102px). If a slide looks empty, enlarge the visual (chart, tiles, window) rather than the text.
+- **Craft**: every interactive control has a `:focus-visible` style; never `transition: all`; animate only `transform` and `opacity` (colour fades are fine); every animation has a `prefers-reduced-motion` fallback.
 
 There is **no style-discovery phase**. The look is fixed; your job is content, structure, and choosing the right layout for each slide. Never swap in other fonts, gradients-on-white, neon, or "creative" alternatives. The only allowed variations are the base colour, set by the palette argument (see Palette argument), and how the side colours are spread across items (see Colour system).
 
 ## Non-negotiables
 
 1. **One self-contained HTML file.** Inline CSS + JS. Only external resource: the Google Fonts link. Images go in an `assets/` folder next to the file (or base64 if the user wants a single file).
-2. **Fixed 1920×1080 stage**, scaled as a whole by JS. Never reflow content per device, never use media-query breakpoints for slide content. Author every size in px at 1920×1080. The Base CSS draws slide content at `--zoom` (1.25×) so text, icons and boxes fill the page; the tall layouts (`.wave`, `.process`, `.tree`, `.quotes`, `.phones`) use `--zoom-tall` (1.08×) so they still fit the height. Keep both, and size deck-specific parts with them in mind (a 400px box shows as 500px).
+2. **Fixed 1920×1080 stage**, scaled as a whole by JS. Never reflow content per device, never use media-query breakpoints for slide content. Author every size in px at 1920×1080. The Base CSS draws slide content at `--zoom` (1.0625×, which is 85% of the former 1.25×) so text, icons and tiles fill the page; the tall layouts (`.wave`, `.process`, `.tree`, `.quotes`, `.phones`) use `--zoom-tall` (0.918×) so they still fit the height. Keep both, and size deck-specific parts with them in mind (a 400px box shows as 425px).
 3. **Copy the Base CSS and Controller JS below verbatim.** Only edit the `:root` tokens and add small slide-specific rules in a clearly marked `/* === DECK-SPECIFIC === */` block at the end of the `<style>`.
 4. **Slide switching** uses `.active`/`.visible` (visibility + opacity). Never `display:none`.
-5. **No overflow, no overlap, no scrolling.** Content must sit between y≈150 (below the deck nav) and y≈960 (above the progress dots). If it doesn't fit, split the slide.
-6. **Chinese text uses a sans font only.** Set `<html lang>` to the deck language (`zh-Hant` for Traditional Chinese). The shell loads Noto Sans TC and `--font-cjk` puts it behind every font stack, so CJK glyphs are always sans, also inside the Playfair accent words. Never add a serif CJK font (Noto Serif TC, PMingLiU, Ming/Song styles). In CJK decks hero titles (cover, section divider, thank-you) render at 0.74× size because full-width glyphs look bigger, and the `<em>` accent is upright sans in the base colour with a soft highlighter band under it, since colour alone is too weak with a dark base such as galaxy slate.
+5. **No overflow, no overlap, no scrolling.** Content must sit between y≈130 (below the deck nav) and y≈975 (above the progress dots). If it doesn't fit, split the slide.
+6. **Chinese text uses a sans font only.** Set `<html lang>` to the deck language (`zh-Hant` for Traditional Chinese). The shell loads Noto Sans TC and `--font-cjk` puts it behind every font stack, so CJK glyphs are always sans. Never add a serif CJK font (Noto Serif TC, PMingLiU, Ming/Song styles). In CJK decks titles use the sans CJK font instead of Playfair, and hero titles (cover, section divider, thank-you) render at 0.74× size because full-width glyphs look bigger.
 7. Never put workflow text on slides ("template", "layout", "option A" as a design label, file names).
 
 ## Workflow
@@ -40,8 +50,8 @@ Skip questions the user already answered. If the user gave content up front and 
 
 ### Phase 2 — Outline
 Map the content to layouts from the catalog. A good default arc:
-Title (hero, dark) → Agenda → [Section divider → Feature / Points / Stats / Chart / Diagram / Cards …]×N → Statement → Table/Timeline → Q&A → Closing CTA → Thank-you (dark).
-Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ (light slides carry a soft shape pattern, mirrored on `.alt`); use a section divider every 4–6 slides in long decks; make the title slide and the thank-you slide `slide dark` (the only dark full slides) and one CTA box; use the featured dark card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
+Title (asymmetric split with a base-colour field) → Agenda → [Section divider (full base colour) → Feature / Points / Stats / Chart / Diagram / Cards …]×N → Statement → Table/Timeline → Q&A → Closing CTA → Thank-you (dark).
+Rules: alternate `slide` and `slide alt` backgrounds so neighbours differ (light slides carry a very faint soft shape pattern, mirrored on `.alt`); use a section divider (`slide dark section`) every 4–6 slides in long decks; make the title slide a `.title-slide` (paper left, `.ts-field` right), the thank-you slide `slide dark` and add one CTA box; use the featured solid card only for the recommended item. For decks over ~12 slides, show the outline (one line per slide: layout + headline) and get a quick OK before generating.
 
 ### Phase 3 — Generate
 If a palette argument (or a colour from Phase 1) was given, generate the tokens first (see Palette argument) and replace the matching lines in the Base CSS `:root`; otherwise keep the galaxy default.
@@ -49,14 +59,14 @@ If a palette argument (or a colour from Phase 1) was given, generate the tokens 
 Assemble: `Document shell (head)` → Base CSS → (deck-specific CSS) → `Document shell (body start)` → slides → `Document shell (end)` with the Controller JS.
 
 Writing rules for this style:
-- Every slide headline gets **one** `<em>` phrase (2–4 words) — it renders in Playfair italic in the accent colour. Not more than one per headline.
-- Each content slide opens with a `.label` (1–3 words, uppercased) or a `.kicker` ("01 — Topic") above the `.title`.
+- Headlines are one style: no `<em>` phrase, no italic word, no colour change inside a heading. Say the point in plain words (a sentence or fragment, sentence case).
+- A heading may be followed by a `.label` or `.kicker` line below it (1–3 words, sentence case, untracked, for example the topic or chapter name); never put one above the heading. Fold a would-be eyebrow into the heading itself. Do not join meta strings with middle dots (write "Platform engineering, Q4 all-hands, November 2026" or use two lines). Agenda lists use `.checklist.two-col.agenda` so the numbers become large Playfair numerals; a section slide gets one `.section-num`.
 - `data-section` on each `<section>` fills the pill in the top-right nav. Use short chapter names; reuse the same name for slides in one chapter.
 - Add `reveal` + stagger classes `d1`…`d6` to elements in reading order. Containers like `.stats`, `.panel`, `.window` get one reveal, not every child.
 - Numbers that should count up: `<span data-count="34">34</span>` (keep the real value as text so print/PDF is correct). Bars/progress fills: `style="--h:75%"` / `style="--w:72%"`.
 - Speaker notes: `<div class="notes">…</div>` inside the slide (never displayed).
 - Icons: inline SVG, stroke `currentColor`, `stroke-width 2–2.5` (Heroicons-outline style). The body-start shell has an icon sheet (`<svg class="sprite">` with `<symbol id="i-…">`); use one with `<svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg>` and add a `<symbol>` for any other icon you need. Put icons inside the circle holders (`.point-icon`, `.card-icon`, `.hbar-icon`, `.wstep-dot`, `.pnode-ring`, `.tnode-icon`, `.meter-knob`, `.lc-icon`), which size them. No emoji except the ✦ glyph used by the template and ✓ in checks.
-- Infographic parts: give every repeated item an icon that matches its meaning; keep each circle's text to a caps label (1–3 words) plus one short sentence; let the automatic colour cycle colour the items, and mark the current or recommended item (`.now`, `tr.hl`, `.card.featured`) rather than adding more colours.
+- Infographic parts: give repeated items an icon that matches its meaning where it sits beside text (`.point-icon`, `.card-head`, `.tnode-icon`, chart keys); do not stack an icon tile above every heading. Keep each circle's text to a short sentence-case label (1–3 words) plus one short sentence; let the automatic colour cycle tint the items, and mark the current or recommended item (`.now`, `tr.hl`, `.card.featured`) rather than adding more colours.
 - Density limits — Speaker-led: title + ≤3 checks or ≤3 cards; Reading-first: ≤6 checks (two-col), ≤6 table rows, ≤4 stats, ≤3 cards (or 4 small), ≤4 points, ≤7 bars, ≤4 donut segments, ≤4 meters, ≤4 lines of ≤8 points, 4–6 wave or process steps, 1 root + ≤4 tree nodes.
 - Use `.figure` or `.window` (with `<img>`) for screenshots, `.phones` for mobile screenshots (`<img>` inside `.phone-screen`; 4–6 phones). Never reuse the same image on two slides.
 - Replace the logo text (`deck-logo`) with the deck's short name; the `<span>` part takes the accent colour. For an image logo use `<img src="assets/logo.png" style="height:40px">`.
@@ -85,7 +95,7 @@ async def main(path, outdir):
 asyncio.run(main(sys.argv[1], sys.argv[2]))
 ```
 
-Fix anything flagged, then **look at the PNGs** (contact sheets of 4 help) for overlap, cramped text, orphaned single words in headlines, and empty-looking slides. Content should fill most of the area between the nav and the dots: if a slide shows a small cluster with wide empty margins, use a fuller layout (add icons, a side panel or a note band) rather than shrinking anything. Also load once at 390×844 to confirm the stage letterboxes rather than reflows.
+Fix anything flagged, then **look at the PNGs** (contact sheets of 4 help) for overlap, cramped text, orphaned single words in headlines, and empty-looking slides. Content should fill most of the area between the nav and the dots: if a slide shows a small cluster with wide empty margins, enlarge the visual (bigger chart, tiles, window or icon beside the text) rather than the text. Then grep the deck's CSS: no `border-top`/`border-left` of 2px or more, no `letter-spacing` next to `uppercase`, no `transition: all`, no `#fff`/`#000` literal outside `:root`, and no `<em>` inside a heading. Also load once at 390×844 to confirm the stage letterboxes rather than reflows.
 
 ### Phase 5 — Deliver
 - Save as `<deck-name>.html` (+ `assets/`) in the user's folder if one is connected; otherwise send the file.
@@ -102,15 +112,15 @@ await pg.pdf(path=out_pdf, width='1920px', height='1080px', print_background=Tru
 The colours come from the **nice-palette** skill, the user's default theme. The Base CSS below already contains its values. If nice-palette is available and its values differ (it was updated later), its colours win: copy its base and side-colour values over the matching `:root` tokens here.
 
 Two layers of colour:
-- **Base colour** (galaxy slate `#324856` by default) is the structure: headline `<em>` words, labels, buttons, navigation, links, featured card, dark slides. Never put side colours on these.
+- **Base colour** (galaxy slate `#324856` by default) is the structure: the `--field` surfaces (title-slide field, section and dark slides, featured card, CTA box), buttons, navigation and links. Never put side colours on these.
 - **Side colours** decorate repeated items. A deck uses **at most four colours in total: the base colour plus three side colours**, held in three slots named orange, grape and mint. In the default galaxy palette the slots hold Ochre `#D18237` (orange slot), Terracotta `#D66C44` (grape slot) and Sage `#4A746A` (mint slot); in blue-green they hold Dark Orange `#FF8C00`, Grape `#6F2DA8` and Mint `#00AB78`. nice-palette also defines gold and amber brown; this skill does not use them. Cinnabar `#E34234` is the one exception: it marks failed, negative or high-risk status only (`.pill.red`, `.bad`) and never decorates items. Neutrals (white, `--ink`, the text grays and Metallic Gray `#999B9B` for inactive items) do not count as colours. Each side colour has a `-ink` shade that is readable as text on the light backgrounds. Components use the exact colour for fills and the `-ink` shade for text.
 
 How items get a colour:
-- **Automatic.** Children of `.stats`, `.grid-2/3/4`, `.wave`, `.quotes`, `.checklist`, `.tags`, `.mini-stats`, `.fv-row`, `.ticker-track`, `.points`, `.hbars`, `.meters`, `.process`, `.tree-kids` and table rows (`.data > tbody`) cycle base → orange → grape → mint, then repeat. This colours stat blocks, card columns and icon circles, check circles, point and timeline circles, bars, meters, process rings, tree nodes, table row dots, quote marks and avatars, highlighted tags, mini-stat tops and progress fills. Donut segments and line series take an explicit `.tone-*` each, matching their callout or legend key.
+- **Automatic.** Children of `.stats`, `.grid-2/3/4`, `.wave`, `.quotes`, `.checklist`, `.tags`, `.mini-stats`, `.fv-row`, `.ticker-track`, `.points`, `.hbars`, `.meters`, `.process`, `.tree-kids` and table rows (`.data > tbody`) cycle base → orange → grape → mint, then repeat. This colours stat blocks, card columns and icon circles, check circles, point and timeline circles, bars, meters, process rings, tree nodes, table row dots, quote marks and avatars, highlighted tags, mini-stat tints and progress fills. Every item shows its colour as a light tint of its tile and in its `-ink` title colour, never as an edge or bar. Donut segments and line series take an explicit `.tone-*` each, matching their callout or legend key.
 - **Explicit.** Add `.tone-base`, `.tone-orange`, `.tone-grape`, `.tone-mint` or `.tone-gray` to any item to choose its colour. Use this when colour carries meaning, such as the same team always in grape across slides.
 - **Single colour.** Add `.mono` to a slide to keep all its items in the base colour (for example a sober financial slide).
 - **Semantic pills and table marks.** `.pill.green` (mint slot, done), `.pill.warn` (light orange slot, in progress or medium), `.pill.red` (cinnabar, failed or high risk), `.pill.grape`, `.pill.blue` (base), `.pill.dim` (gray). In tables, `.yes` is mint and `.bad` is cinnabar. Red for problems is the only colour allowed outside the four.
-- **Extras.** `.card.tinted` adds a top border in the card's colour. `.orb-d` is a soft orange glow that pairs with `.orb-a`. `.kicker` text is orange unless a tone is set. `.float-icon` is grape.
+- **Extras.** `.card.tinted` uses the stronger tint. `.orb-d` is a soft orange glow that pairs with `.orb-a`. `.kicker` text is orange ink unless a tone is set. `.float-icon` is grape. Agenda and section numerals use the orange slot (`--c-orange-ink` on paper, `--c-orange` on the field).
 
 Keep it calm: never more than four colours, base plus orange, grape and mint, on any slide or in the deck as a whole. The only exception is cinnabar red on failed or negative status marks. Don't add colours to body text or headlines.
 
@@ -130,7 +140,7 @@ The script always prints the three side-colour lines too (`--c-orange`, `--c-gra
 
 Cinnabar red stays for failed status only. In galaxy, terracotta and red look alike, so avoid terracotta next to failed marks. In natural, taupe is close to metallic gray, so check that done and inactive marks still read as different.
 
-The base colour becomes `--accent-mid`. Everything else is derived from it: a darker `--accent` checked for at least 4.5:1 contrast on the background (used for text, buttons and italic headline words), a lighter `--accent-light`, tinted backgrounds, a near-black ink in the same hue, muted text colours, the letterbox colour and the phone frame. Never hand-pick these values. Run this script and paste its output over the same-named lines in `:root`:
+The base colour becomes `--accent-mid`. Everything else is derived from it: a darker `--accent` checked for at least 4.5:1 contrast on the background (used for text and buttons), a lighter `--accent-light`, tinted backgrounds, the `--paper` off-white, the near-white tile surface `--surface-2`, the 1px `--rule` colour, the `--field` base-colour surface (the base darkened until paper text reads on it at 4.5:1), a near-black ink in the same hue, muted text colours, the letterbox colour and the phone frame (galaxy keeps the hand-set `--paper` `#F5F7F8` and `--rule` `#DCE1E4`). Never hand-pick these values. Run this script and paste its output over the same-named lines in `:root`:
 
 ```python
 import colorsys, sys
@@ -163,8 +173,10 @@ def slots(name, bg):
         while contrast(ink, bg) < 4.5: ink = tuple(v * 0.95 for v in ink)  # readable text on bg
         out.append(f'  --c-{slot}: {h}; --c-{slot}-rgb: {",".join(map(str, rgb(h)))}; --c-{slot}-ink: {hx(ink)};')
     return out
-def palette(base):
-    base = rgb(base_hex(base))
+# Hand-set values for named palettes whose nice-palette design fixes them exactly
+OVERRIDES = {'galaxy': {'--paper': '#F5F7F8', '--rule': '#DCE1E4'}}
+def palette(name):
+    base = rgb(base_hex(name))
     H, L, S = colorsys.rgb_to_hls(*(v / 255 for v in base))
     W = (255, 255, 255)
     bg = mix(W, base, 0.12)
@@ -177,8 +189,15 @@ def palette(base):
         '--ink': hx(ink), '--text-1': hx(ink),
         '--text-2': hx(hsl(H, min(S, 0.26), 0.31)), '--text-3': hx(hsl(H, min(S, 0.15), 0.50)),
         '--letterbox': hx(mix(W, base, 0.25)),
+        '--paper': hx(mix(W, base, 0.045)),          # slide paper: tinted off-white, never pure white
+        '--surface-2': hx(mix(W, base, 0.015)),      # light tile surface
+        '--rule': hx(mix(W, base, 0.165)),           # 1px frames and row lines
     }
-    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink')):
+    t.update(OVERRIDES.get(name.lower(), {}))
+    field = base                                       # base-colour field: light text must read on it
+    while contrast(rgb(t['--paper']), field) < 4.5: field = tuple(v * 0.95 for v in field)
+    t['--field'] = hx(field)
+    for k, src in (('--accent-rgb', '--accent'), ('--mid-rgb', '--accent-mid'), ('--light-rgb', '--accent-light'), ('--ink-rgb', '--ink'), ('--paper-rgb', '--paper'), ('--field-rgb', '--field')):
         t[k] = ','.join(map(str, rgb(t[src])))
     shell = hx(mix(W, hsl(H, min(S, 0.2), 0.6), 0.55))
     return t, shell
@@ -209,15 +228,15 @@ A brand colour is just a palette argument: pass its hex to the generator.
 
 ## Layout catalog
 Class reference (all defined in the Base CSS):
-- **Structure**: `.slide` (`.alt` lighter bg with the pattern mirrored, `.dark` ink bg with no pattern; on dark slides the badge, `.window`, mini-stats and `.float` turn to dark glass, `.center` centred), `.head` (+`.center`) wrapper for label/title/lead, `.split` 2-col (`.wide-left`, `.reverse`), `.grid-2/3/4`, `.row`, decorative `.orb .orb-a|b|c|d` (first children of the slide), tones `.tone-*` and `.mono` (see Colour system).
-- **Type**: `.label` (spaced caps), `.kicker`, `.title` (`.hero` bigger), `.h3`, `.lead`, `.body`, `.statement`, `em` accent. `.points` > `.point` (`.point-icon`, `.point-k`, `.point-d`) for an icon list.
+- **Structure**: `.slide` (`.alt` slightly deeper paper with the faint pattern mirrored, `.dark` base-colour field bg with no pattern, `.center` centred; on dark slides the badge, `.window`, mini-stats and `.float` turn to soft translucent tiles), `.slide.dark.title-slide` (the whole slide dark; children `.ts-field` = right-hand area holding a `.visual`, and `.ts-left` = title, `.lead`, `.ts-meta`), `.slide.dark.section` (child `.section-grid` > `.section-num`, `.title.hero`, `.section-line`, `.section-range`), `.head` (+`.center`) wrapper for title/label/lead, `.split` 2-col (`.wide-left`, `.reverse`), `.grid-2/3/4`, `.row`, decorative `.orb .orb-a|b|c|d` (first children of the slide), tones `.tone-*` and `.mono` (see Colour system).
+- **Type**: `.label` and `.kicker` (a sentence-case line below the title, never above), `.title` (`.hero` bigger; Playfair 700), `.h3`, `.lead`, `.body`, `.statement`, `em` (plain emphasis in body text only, never inside a heading). `.points` > `.point` (`.point-icon`, `.point-k`, `.point-d`) for an icon list.
 - **Panels**: `.side-panel` (first child of the slide: tinted block over the right 44%, holds `.panel-text`, `.panel-cta`, `.panel-sub`; the next element is the left content), `.note-band` (`.note-band-k` + `.note-band-d`), `.panel` (feature panel, see Visuals).
 - **Hero bits**: `.badge` (+`.badge-dot`), `.trust` > `.trust-item` + `.trust-divider`, `.btn .btn-primary|.btn-outline|.btn-ghost-dark`.
-- **Visuals**: `.window` (`.window-bar` with three `<i>`, `.window-body`, or a direct `<img>`), `.bars` > `.bar[.on]` with `--h`, `.mini-stats`, `.visual` + `.float` / `.float.solid` floating badges, `.panel` > `.fv-row` / `.fv-card[.wide]` / `.fv-track > .fv-fill` / `.fv-list > .fv-item` + `.pill .green|.blue|.dim|.warn|.red|.grape`, `.figure` + `.caption`.
-- **Content**: `.checklist[.two-col]` > `.check` (`.check-icon` ✓ or 01…), `.stats[.three]` > `.stat`, `.card[.featured|.tinted]` (`.card-flag`, `.card-tier`, `.card-big`, `.card-title`, `.card-desc`, `.card-icon`, `.card-divider`), `.quotes` > `.quote[.tall]`, `.tags` > `.tag-pill[.hl]`, `.ticker` (items listed twice for a seamless loop), `.faq` > `.faq-item[.open]` (`button.faq-q`), `.phones` + `.phones-ctl`, `.cta-box` + `.cta-actions`, `.contact`.
+- **Visuals**: `.window` (a plain soft tile: `.window-body`, or a direct `<img>`; no window bar or dots), `.bars` > `.bar[.on]` with `--h`, `.mini-stats`, `.visual` + `.float` / `.float.solid` floating tiles (keep them inside their own field, never across a split), `.panel` > `.fv-row` / `.fv-card[.wide]` / `.fv-track > .fv-fill` / `.fv-list > .fv-item` + `.pill .green|.blue|.dim|.warn|.red|.grape`, `.figure` + `.caption`.
+- **Content**: `.checklist[.two-col][.agenda]` > `.check` (`.check-icon` ✓ or 01…; `.agenda` turns the numbers into large Playfair numerals under a 1px rule), `.stats[.three]` > `.stat`, `.card[.featured|.tinted]` (`.card-flag`, `.card-tier`, `.card-big`, `.card-title`, `.card-desc`, `.card-head` > `.card-icon` + `.card-title` (icon beside the title), `.card-divider`), `.quotes` > `.quote[.tall]`, `.tags` > `.tag-pill[.hl]`, `.ticker` (items listed twice for a seamless loop), `.faq` > `.faq-item[.open]` (`button.faq-q`), `.phones` + `.phones-ctl`, `.cta-box` + `.cta-actions`, `.contact`.
 - **Tables**: `.table-wrap > table.data` (`tr.hl`, `.num`, `.yes`, `.no`, `.bad`). The first column is the row label and gets a coloured dot.
-- **Charts**: `.chart-k` caps caption, then `.hbars` > `.hbar` (`style="--v:72%"`; `.hbar-icon`, `.hbar-label`, `.hbar-track > .hbar-fill`, `.hbar-val`) · `.donut-chart` = `.donut-side` + `.donut` (SVG with `.dn-track` and one `.dn-seg.tone-*` per segment, `pathLength="100"`, `style="--p:58;--o:0"` = length and start in %, + `.donut-center` > `.dc-big` + `.dc-cap`) + `.donut-side.right`; each side holds `.dc` (`.dc-head` > `.dc-k` + `.dc-v`, `.dc-d`) · `.meters` > `.meter` (`style="--v:72%"`; `.meter-val`, `.meter-track > .meter-fill > .meter-knob`, `.meter-k`, `.meter-d`) · `.line-chart` = `.lc-plot` + `.lc-legend`. The plot holds `.lc-y` (axis numbers, top to bottom), `.lc-area` and `.lc-x` (labels with `style="--x:40%"`). `.lc-area` holds one SVG (`viewBox="0 0 100 100" preserveAspectRatio="none"`) with a `g.lc-series.tone-*` per line: `.lc-fill` (area under the line, closed to y=100), `.lc-line`, and `.lc-pts` (`M x,y h0` per point, drawn as round dots). Then one `.lc-end.tone-*` per line (`style="--x:100%;--y:16%"`) with the last value in `<b>`. Coordinates: x = 0–100 across, y = 100 − value ÷ axis max × 100. The legend holds `.lc-key.tone-*` (`.lc-icon`, `div` > `.lc-k` + `.lc-d`, `.lc-v`).
-- **Diagrams**: `.process` (set `style="--n:5"`) > `.pnode` (`.pnode-text` > `.pnode-k` + `.pnode-d`, `.pnode-ring` with an icon) · `.tree` > `.tree-root > .tnode` + `.tree-kids` (set `style="--n:3"`) > `.tree-kid > .tnode` (`.tnode-icon`, `.tnode-k`, `.tnode-t`, `.tnode-d`).
+- **Charts**: `.chart-k` sentence-case caption (commas, not middle dots, between its parts), then `.hbars` > `.hbar` (`style="--v:72%"`; `.hbar-icon`, `.hbar-label`, `.hbar-track > .hbar-fill`, `.hbar-val`) · `.donut-chart` = `.donut-side` + `.donut` (SVG with `.dn-track` and one `.dn-seg.tone-*` per segment, `pathLength="100"`, `style="--p:58;--o:0"` = length and start in %, + `.donut-center` > `.dc-big` + `.dc-cap`) + `.donut-side.right`; each side holds `.dc` (`.dc-head` > `.dc-k` + `.dc-v`, `.dc-d`) · `.meters` > `.meter` (`style="--v:72%"`; `.meter-val`, `.meter-track > .meter-fill > .meter-knob`, `.meter-k`, `.meter-d`) · `.line-chart` = `.lc-plot` + `.lc-legend`. The plot holds `.lc-y` (axis numbers, top to bottom), `.lc-area` and `.lc-x` (labels with `style="--x:40%"`). `.lc-area` holds one SVG (`viewBox="0 0 100 100" preserveAspectRatio="none"`) with a `g.lc-series.tone-*` per line: `.lc-fill` (area under the line, closed to y=100), `.lc-line`, and `.lc-pts` (`M x,y h0` per point, drawn as round dots). Then one `.lc-end.tone-*` per line (`style="--x:100%;--y:16%"`) with the last value in `<b>`. Coordinates: x = 0–100 across, y = 100 − value ÷ axis max × 100. The legend holds `.lc-key.tone-*` (`.lc-icon`, `div` > `.lc-k` + `.lc-d`, `.lc-v`).
+- **Diagrams**: `.process` (set `style="--n:5"`) > `.pnode` (`.pnode-text` > `.pnode-k` + `.pnode-d`, `.pnode-ring` = tinted disc with an icon) · `.tree` > `.tree-root > .tnode` + `.tree-kids` (set `style="--n:3"`) > `.tree-kid > .tnode` (`.tnode-icon` beside the text, `.tnode-k`, `.tnode-t`, `.tnode-d`).
 - **Timelines**: `.wave` (set `style="--n:5"`) > `.wstep[.now|.later]` (`.wstep-text` > `.wstep-when` + `.wstep-t` + `.wstep-d`, `.wstep-dot` with an icon). Odd steps sit high with text above; even steps sit low with text below.
 
 The full example deck below uses every layout. Copy the structure of the layout you need, **never the demo wording or numbers**.
@@ -225,25 +244,13 @@ The full example deck below uses every layout. Copy the structure of the layout 
 ### Example deck — every layout (slides go inside `<main class="deck-stage">`)
 
 ```html
-  <!-- ================= 01 · TITLE (hero, full dark) ================= -->
-  <section class="slide dark" data-section="Overview">
-    <div class="orb orb-a"></div><div class="orb orb-b"></div>
-    <div class="split wide-left">
-      <div style="display:flex;flex-direction:column">
-        <div class="badge reveal"><div class="badge-dot">✦</div><span>Platform Review · <strong>November 2026</strong></span></div>
-        <h1 class="title hero reveal d1">Your platform,<br><em>finally clear.</em></h1>
-        <p class="lead reveal d2">How Atlas unified twelve internal tools into one calm, observable surface — and what we ship next.</p>
-        <div class="trust reveal d3">
-          <div class="trust-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Platform Engineering</span></div>
-          <div class="trust-divider"></div>
-          <div class="trust-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span>Q4 All-Hands</span></div>
-        </div>
-      </div>
+  <!-- ================= 01 · TITLE (asymmetric split: text left, base-colour field right) ================= -->
+  <section class="slide dark title-slide" data-section="Overview">
+    <div class="ts-field">
       <div class="visual reveal d2">
         <div class="window">
-          <div class="window-bar"><i></i><i></i><i></i></div>
           <div class="window-body">
-            <div class="win-head"><div class="win-title">Cluster Utilization</div><div class="tag">Live</div></div>
+            <div class="win-head"><div class="win-title">Cluster utilization</div><div class="tag">Live</div></div>
             <div class="bars">
               <div class="bar" style="--h:35%"></div><div class="bar" style="--h:55%"></div><div class="bar" style="--h:42%"></div><div class="bar on" style="--h:75%"></div>
               <div class="bar" style="--h:60%"></div><div class="bar on" style="--h:88%"></div><div class="bar" style="--h:70%"></div><div class="bar on" style="--h:92%"></div>
@@ -251,13 +258,18 @@ The full example deck below uses every layout. Copy the structure of the layout 
             <div class="mini-stats">
               <div class="mini-stat"><div class="mini-val">94<small>%</small></div><div class="mini-label">GPU usage</div><div class="mini-chg">+12%</div></div>
               <div class="mini-stat"><div class="mini-val">2.4<small>k</small></div><div class="mini-label">Workloads</div><div class="mini-chg">+8%</div></div>
-              <div class="mini-stat"><div class="mini-val">18<small>h</small></div><div class="mini-label">Saved / wk</div><div class="mini-chg">+24%</div></div>
+              <div class="mini-stat"><div class="mini-val">18<small>h</small></div><div class="mini-label">Saved per week</div><div class="mini-chg">+24%</div></div>
             </div>
           </div>
         </div>
-        <div class="float" style="bottom:-28px;left:-44px"><div class="float-icon">✦</div><div class="float-text"><strong>Autoscaler on</strong><span>prod-east · just now</span></div></div>
-        <div class="float solid" style="top:40px;right:-36px"><div class="fv">↑ 34%</div><div class="fl">Throughput this quarter</div></div>
+        <div class="float" style="bottom:-30px;left:-34px"><div class="float-icon">✦</div><div class="float-text"><strong>Autoscaler on</strong><span>prod-east, just now</span></div></div>
+        <div class="float solid" style="top:-26px;right:-8px"><div class="fv">↑ 34%</div><div class="fl">Throughput this quarter</div></div>
       </div>
+    </div>
+    <div class="ts-left">
+      <h1 class="title hero reveal">Your platform,<br>finally clear.</h1>
+      <p class="lead reveal d1">How Atlas unified twelve internal tools into one calm, observable surface, and what we ship next.</p>
+      <p class="ts-meta reveal d2">Platform engineering, Q4 all-hands, November 2026</p>
     </div>
     <div class="notes">Open with the headline number; the dashboard is illustrative.</div>
   </section>
@@ -265,10 +277,10 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 02 · AGENDA (checklist two-col) ================= -->
   <section class="slide alt" data-section="Agenda">
     <div class="head">
-      <div class="label reveal">Agenda</div>
-      <h2 class="title reveal d1">What we’ll <em>cover</em> today</h2>
+      <h2 class="title reveal">What we’ll cover today</h2>
+      <div class="label reveal d1">Agenda</div>
     </div>
-    <div class="checklist two-col">
+    <div class="checklist two-col agenda">
       <div class="check reveal d2"><div class="check-icon">01</div><span><b>Where we started</b> — twelve tools, no single view</span></div>
       <div class="check reveal d3"><div class="check-icon">02</div><span><b>What we built</b> — the unified control plane</span></div>
       <div class="check reveal d3"><div class="check-icon">03</div><span><b>Results</b> — utilization, cost and uptime</span></div>
@@ -286,8 +298,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
       <p class="panel-sub">than the 2025 baseline, at higher utilization</p>
     </div>
     <div>
-      <div class="label reveal">Why it matters</div>
-      <h2 class="title reveal d1">Three things <em>changed</em></h2>
+      <h2 class="title reveal">Three things changed</h2>
+      <div class="label reveal d1">Why it matters</div>
       <div class="points reveal d2" style="margin-top:52px">
         <div class="point"><div class="point-icon"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg></div><div><div class="point-k">Visibility</div><p class="point-d">Every team sees its own cost and capacity, live.</p></div></div>
         <div class="point"><div class="point-icon"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></div><div><div class="point-k">Speed</div><p class="point-d">New clusters arrive in minutes instead of days.</p></div></div>
@@ -296,13 +308,13 @@ The full example deck below uses every layout. Copy the structure of the layout 
     </div>
   </section>
 
-  <!-- ================= 04 · SECTION DIVIDER ================= -->
-  <section class="slide alt center" data-section="Chapter 1">
-    <div class="orb orb-c"></div>
-    <div class="head center" style="margin:0">
-      <div class="label reveal">Chapter 01</div>
-      <h2 class="title hero reveal d1">Built for <em>clarity</em><br>at every scale</h2>
-      <p class="lead reveal d2">Every feature reduces friction and surfaces what matters. No bloat, no configuration maze.</p>
+  <!-- ================= 04 · SECTION DIVIDER (full base colour) ================= -->
+  <section class="slide dark section" data-section="Chapter 1">
+    <div class="section-grid">
+      <div class="section-num reveal">01</div>
+      <h2 class="title hero reveal d1">Built for clarity<br>at every scale</h2>
+      <p class="section-line reveal d2">Every feature reduces friction and surfaces what matters.</p>
+      <p class="section-range reveal d3">Slides 5 to 11</p>
     </div>
   </section>
 
@@ -310,8 +322,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <section class="slide" data-section="What we built">
     <div class="split">
       <div>
-        <div class="kicker reveal">01 — Unified Dashboard</div>
-        <h2 class="title reveal d1">Every metric, one <em>calm</em> surface</h2>
+        <h2 class="title reveal">Every metric, one calm surface</h2>
+        <div class="kicker reveal d1">Unified dashboard</div>
         <p class="lead reveal d2">Pull data from any source into a single composable view. Share live dashboards — no exports, no screenshots.</p>
         <div class="checklist">
           <div class="check reveal d3"><div class="check-icon">✓</div><span>Drag-and-drop widget builder</span></div>
@@ -336,12 +348,12 @@ The full example deck below uses every layout. Copy the structure of the layout 
     </div>
   </section>
 
-  <!-- ================= 06 · FEATURE (reverse, with screenshot window) ================= -->
+  <!-- ================= 06 · FEATURE (reverse, with a screenshot tile) ================= -->
   <section class="slide alt" data-section="What we built">
     <div class="split reverse">
       <div>
-        <div class="kicker reveal">02 — Smart Automation</div>
-        <h2 class="title reveal d1">Routines that run <em>themselves</em></h2>
+        <h2 class="title reveal">Routines that run themselves</h2>
+        <div class="kicker reveal d1">Smart automation</div>
         <p class="lead reveal d2">Describe the intent in plain language; Atlas proposes the flow and keeps an audit trail of every action.</p>
         <div class="checklist">
           <div class="check reveal d3"><div class="check-icon">✓</div><span>Natural-language flow builder</span></div>
@@ -349,7 +361,6 @@ The full example deck below uses every layout. Copy the structure of the layout 
         </div>
       </div>
       <div class="window reveal d2">
-        <div class="window-bar"><i></i><i></i><i></i></div>
         <div class="window-body">
           <div class="win-head"><div class="win-title">Active automations</div><div class="tag">24 flows</div></div>
           <div class="fv-list">
@@ -367,8 +378,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 07 · STATS ================= -->
   <section class="slide" data-section="Results">
     <div class="head">
-      <div class="label reveal">Results</div>
-      <h2 class="title reveal d1">Twelve months, <em>measured</em></h2>
+      <h2 class="title reveal">Twelve months, measured</h2>
+      <div class="label reveal d1">Results</div>
     </div>
     <div class="stats reveal d2">
       <div class="stat"><div class="stat-value"><span data-count="50">50</span><span class="stat-suffix">k+</span></div><div class="stat-label">Workloads managed</div><div class="stat-sub">Across 14 clusters</div></div>
@@ -382,11 +393,11 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 08 · CHART — HORIZONTAL BARS ================= -->
   <section class="slide alt" data-section="Results">
     <div class="head">
-      <div class="label reveal">Cost by team</div>
-      <h2 class="title reveal d1">Search spends <em>twice</em> what anyone else does</h2>
+      <h2 class="title reveal">Search spends twice what anyone else does</h2>
+      <div class="label reveal d1">Cost by team</div>
     </div>
     <div class="reveal d2">
-      <div class="chart-k">Monthly GPU spend · US$ thousands · October 2026</div>
+      <div class="chart-k">Monthly GPU spend, US$ thousands, October 2026</div>
       <div class="hbars">
         <div class="hbar" style="--v:100%"><div class="hbar-icon"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></div><span class="hbar-label">Search</span><div class="hbar-track"><div class="hbar-fill"></div></div><span class="hbar-val">26.1</span></div>
         <div class="hbar" style="--v:49%"><div class="hbar-icon"><svg class="ico" aria-hidden="true"><use href="#i-trend"/></svg></div><span class="hbar-label">Ads ranking</span><div class="hbar-track"><div class="hbar-fill"></div></div><span class="hbar-val">12.8</span></div>
@@ -400,8 +411,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 09 · CHART — DONUT WITH CALLOUTS ================= -->
   <section class="slide" data-section="Results">
     <div class="head center" style="margin-bottom:40px">
-      <div class="label reveal">Where the money goes</div>
-      <h2 class="title reveal d1">Compute is <em>most</em> of the bill</h2>
+      <h2 class="title reveal">Compute is most of the bill</h2>
+      <div class="label reveal d1">Where the money goes</div>
     </div>
     <div class="donut-chart reveal d2">
       <div class="donut-side">
@@ -423,8 +434,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <section class="slide alt" data-section="Results">
     <div class="split" style="grid-template-columns:0.9fr 1.1fr">
       <div>
-        <div class="label reveal">Adoption</div>
-        <h2 class="title reveal d1">Most teams are <em>already in</em></h2>
+        <h2 class="title reveal">Most teams are already in</h2>
+        <div class="label reveal d1">Adoption</div>
         <p class="lead reveal d2">Share of each group running production work on Atlas, October 2026.</p>
       </div>
       <div class="meters reveal d2">
@@ -438,11 +449,11 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 11 · CHART — LINES OVER TIME ================= -->
   <section class="slide" data-section="Results">
     <div class="head">
-      <div class="label reveal">Delivery</div>
-      <h2 class="title reveal d1">Deploys <em>tripled</em> in six months</h2>
+      <h2 class="title reveal">Deploys tripled in six months</h2>
+      <div class="label reveal d1">Delivery</div>
     </div>
     <div class="reveal d2">
-      <div class="chart-k">Production deploys per week · May – October 2026</div>
+      <div class="chart-k">Production deploys per week, May to October 2026</div>
       <div class="line-chart">
         <div class="lc-plot">
           <div class="lc-y"><span>150</span><span>100</span><span>50</span><span>0</span></div>
@@ -470,12 +481,12 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 12 · CARDS (options, one featured) ================= -->
   <section class="slide alt" data-section="Options">
     <div class="head center">
-      <div class="label reveal">Options for 2027</div>
-      <h2 class="title reveal d1">Three paths, one <em>recommendation</em></h2>
+      <h2 class="title reveal">Three paths, one recommendation</h2>
+      <div class="label reveal d1">Options for 2027</div>
     </div>
     <div class="grid-3" style="align-items:stretch">
       <div class="card reveal d2">
-        <div class="card-tier">Option A · Hold</div>
+        <div class="card-tier">Option A: hold</div>
         <div class="card-big">$1.2<small>M / yr</small></div>
         <p class="card-desc">Keep today’s footprint and focus on reliability work.</p>
         <div class="card-divider"></div>
@@ -483,14 +494,14 @@ The full example deck below uses every layout. Copy the structure of the layout 
       </div>
       <div class="card featured reveal d3">
         <div class="card-flag">Recommended</div>
-        <div class="card-tier">Option B · Expand</div>
+        <div class="card-tier">Option B: expand</div>
         <div class="card-big">$2.0<small>M / yr</small></div>
         <p class="card-desc">Add a second GPU region and self-service onboarding.</p>
         <div class="card-divider"></div>
         <div class="checklist"><div class="check"><div class="check-icon">✓</div><span>2× capacity by Q3</span></div><div class="check"><div class="check-icon">✓</div><span>Payback in 14 months</span></div><div class="check"><div class="check-icon">✓</div><span>Four new hires</span></div></div>
       </div>
       <div class="card reveal d4">
-        <div class="card-tier">Option C · Rebuild</div>
+        <div class="card-tier">Option C: rebuild</div>
         <div class="card-big">$3.4<small>M / yr</small></div>
         <p class="card-desc">Re-platform onto a new scheduler and storage layer.</p>
         <div class="card-divider"></div>
@@ -502,13 +513,13 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 13 · ICON CARDS (pillars) ================= -->
   <section class="slide" data-section="Principles">
     <div class="head">
-      <div class="label reveal">Principles</div>
-      <h2 class="title reveal d1">How we <em>decide</em></h2>
+      <h2 class="title reveal">How we decide</h2>
+      <div class="label reveal d1">Principles</div>
     </div>
     <div class="grid-3">
-      <div class="card reveal d2"><div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></div><div class="card-title">Safe by default</div><p class="card-desc">Every change is reversible, reviewed and observable before it reaches production.</p></div>
-      <div class="card reveal d3"><div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></div><div class="card-title">Fast feedback</div><p class="card-desc">Teams see the cost and performance of a change within minutes, not at month-end.</p></div>
-      <div class="card reveal d4"><div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></div><div class="card-title">One layer</div><p class="card-desc">A single control plane over compute, storage and network — no parallel tooling.</p></div>
+      <div class="card reveal d2"><div class="card-head"><div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></div><div class="card-title">Safe by default</div></div><p class="card-desc">Every change is reversible, reviewed and observable before it reaches production.</p></div>
+      <div class="card reveal d3"><div class="card-head"><div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></div><div class="card-title">Fast feedback</div></div><p class="card-desc">Teams see the cost and performance of a change within minutes, not at month-end.</p></div>
+      <div class="card reveal d4"><div class="card-head"><div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></div><div class="card-title">One layer</div></div><p class="card-desc">A single control plane over compute, storage and network — no parallel tooling.</p></div>
     </div>
   </section>
 
@@ -516,8 +527,7 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <section class="slide alt center" data-section="Insight">
     <div class="orb orb-c"></div>
     <div class="center" style="display:flex;flex-direction:column">
-      <div class="label reveal">Key insight</div>
-      <p class="statement reveal d1">The bottleneck was never compute. It was <em>knowing what we already had.</em></p>
+      <p class="statement reveal d1">The bottleneck was never compute. It was knowing what we already had.</p>
       <div class="author statement-by reveal d2" style="justify-content:center"><div class="avatar">SW</div><div style="text-align:left"><div class="author-name">Platform team retro</div><div class="author-role">September 2026</div></div></div>
     </div>
   </section>
@@ -525,23 +535,23 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 15 · QUOTES ================= -->
   <section class="slide" data-section="Feedback">
     <div class="head">
-      <div class="label reveal">What teams say</div>
-      <h2 class="title reveal d1">Teams that <em>love</em> the change</h2>
+      <h2 class="title reveal">Teams that love the change</h2>
+      <div class="label reveal d1">What teams say</div>
     </div>
     <div class="quotes">
-      <div class="quote tall reveal d2"><div class="quote-mark">“</div><p class="quote-text">We replaced three separate tools and actually have fewer meetings now. The automation handles the hand-offs we used to sort out every morning.</p><div class="author"><div class="avatar">SL</div><div><div class="author-name">Sarah Lin</div><div class="author-role">Head of Operations · Data</div></div></div></div>
+      <div class="quote tall reveal d2"><div class="quote-mark">“</div><p class="quote-text">We replaced three separate tools and actually have fewer meetings now. The automation handles the hand-offs we used to sort out every morning.</p><div class="author"><div class="avatar">SL</div><div><div class="author-name">Sarah Lin</div><div class="author-role">Head of Operations, Data</div></div></div></div>
       <div class="quote reveal d3"><div class="quote-mark">“</div><p class="quote-text">I can review capacity and approve changes between meetings.</p><div class="author"><div class="avatar">MR</div><div><div class="author-name">Marcus Reyes</div><div class="author-role">Product Director</div></div></div></div>
       <div class="quote reveal d4"><div class="quote-mark">“</div><p class="quote-text">Onboarding a 30-person team took one afternoon.</p><div class="author"><div class="avatar">PK</div><div><div class="author-name">Priya Kapoor</div><div class="author-role">Engineering Lead</div></div></div></div>
       <div class="quote reveal d4"><div class="quote-mark">“</div><p class="quote-text">We show stakeholders live data instead of preparing decks.</p><div class="author"><div class="avatar">TW</div><div><div class="author-name">Tom Wang</div><div class="author-role">Finance</div></div></div></div>
-      <div class="quote reveal d5"><div class="quote-mark">“</div><p class="quote-text">Support answered an integration question in two hours.</p><div class="author"><div class="avatar">AN</div><div><div class="author-name">Aiko Nakamura</div><div class="author-role">CTO · Labs</div></div></div></div>
+      <div class="quote reveal d5"><div class="quote-mark">“</div><p class="quote-text">Support answered an integration question in two hours.</p><div class="author"><div class="avatar">AN</div><div><div class="author-name">Aiko Nakamura</div><div class="author-role">CTO, Labs</div></div></div></div>
     </div>
   </section>
 
   <!-- ================= 16 · PHONE SHOWCASE ================= -->
   <section class="slide alt" data-section="Mobile">
     <div class="head center" style="margin-bottom:0">
-      <div class="label reveal">Mobile app</div>
-      <h2 class="title reveal d1">Your cluster, <em>in your pocket</em></h2>
+      <h2 class="title reveal">Your cluster, in your pocket</h2>
+      <div class="label reveal d1">Mobile app</div>
     </div>
     <div class="phones reveal d2">
       <div class="phone"><div class="phone-shell"><div class="phone-screen"><div class="mock"><div class="mock-h">Overview</div><div class="mock-card"><div class="mock-big">94%</div><div class="mock-line a"></div><div class="mock-line s"></div></div><div class="mock-card"><div class="mock-line s"></div><div class="mock-line"></div></div><div class="mock-nav"><i class="on"></i><i></i><i></i><i></i></div></div></div></div><div class="phone-cap">Overview</div></div>
@@ -556,8 +566,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 17 · TABLE ================= -->
   <section class="slide" data-section="Comparison">
     <div class="head">
-      <div class="label reveal">Comparison</div>
-      <h2 class="title reveal d1">Before and <em>after</em> Atlas</h2>
+      <h2 class="title reveal">Before and after Atlas</h2>
+      <div class="label reveal d1">Comparison</div>
     </div>
     <div class="table-wrap reveal d2">
       <table class="data">
@@ -576,8 +586,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 18 · TIMELINE ================= -->
   <section class="slide alt" data-section="Roadmap">
     <div class="head">
-      <div class="label reveal">Roadmap</div>
-      <h2 class="title reveal d1">The next <em>five</em> quarters</h2>
+      <h2 class="title reveal">The next five quarters</h2>
+      <div class="label reveal d1">Roadmap</div>
     </div>
     <div class="wave reveal d2" style="--n:5">
       <div class="wstep"><div class="wstep-text"><div class="wstep-when">Q4 2026</div><div class="wstep-t">Unify</div><p class="wstep-d">Retire the last three legacy dashboards.</p></div><div class="wstep-dot"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></div></div>
@@ -590,27 +600,27 @@ The full example deck below uses every layout. Copy the structure of the layout 
 
   <!-- ================= 19 · DIAGRAM — PROCESS RINGS ================= -->
   <section class="slide" data-section="How it works">
-    <div class="head center" style="margin-bottom:0">
-      <div class="label reveal">Request path</div>
-      <h2 class="title reveal d1">From request to running job in <em>five steps</em></h2>
+    <div class="head center" style="margin-bottom:48px">
+      <h2 class="title reveal">From request to running job in five steps</h2>
+      <div class="label reveal d1">Request path</div>
     </div>
     <div class="process reveal d2" style="--n:5">
-      <div class="pnode"><div class="pnode-text"><div class="pnode-k">1 · Request</div><p class="pnode-d">Ask for capacity in plain terms.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></div></div>
-      <div class="pnode"><div class="pnode-text"><div class="pnode-k">2 · Check</div><p class="pnode-d">Quota, budget and security rules run.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></div></div>
-      <div class="pnode"><div class="pnode-text"><div class="pnode-k">3 · Place</div><p class="pnode-d">Pick the cheapest region that fits.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg></div></div>
-      <div class="pnode"><div class="pnode-text"><div class="pnode-k">4 · Run</div><p class="pnode-d">The job starts with metrics wired in.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></div></div>
-      <div class="pnode"><div class="pnode-text"><div class="pnode-k">5 · Bill</div><p class="pnode-d">Cost lands on the team’s budget.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-cash"/></svg></div></div>
+      <div class="pnode"><div class="pnode-text"><div class="pnode-k">1. Request</div><p class="pnode-d">Ask for capacity in plain terms.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></div></div>
+      <div class="pnode"><div class="pnode-text"><div class="pnode-k">2. Check</div><p class="pnode-d">Quota, budget and security rules run.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></div></div>
+      <div class="pnode"><div class="pnode-text"><div class="pnode-k">3. Place</div><p class="pnode-d">Pick the cheapest region that fits.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg></div></div>
+      <div class="pnode"><div class="pnode-text"><div class="pnode-k">4. Run</div><p class="pnode-d">The job starts with metrics wired in.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></div></div>
+      <div class="pnode"><div class="pnode-text"><div class="pnode-k">5. Bill</div><p class="pnode-d">Cost lands on the team’s budget.</p></div><div class="pnode-ring"><svg class="ico" aria-hidden="true"><use href="#i-cash"/></svg></div></div>
     </div>
   </section>
 
   <!-- ================= 20 · DIAGRAM — TREE (org / architecture) ================= -->
   <section class="slide alt" data-section="How it works">
     <div class="head center" style="margin-bottom:76px">
-      <div class="label reveal">Architecture</div>
-      <h2 class="title reveal d1">One control plane over <em>every layer</em></h2>
+      <h2 class="title reveal">One control plane over every layer</h2>
+      <div class="label reveal d1">Architecture</div>
     </div>
     <div class="tree reveal d2">
-      <div class="tree-root"><div class="tnode"><span class="tnode-icon"><svg class="ico" aria-hidden="true"><use href="#i-cube"/></svg></span><div class="tnode-k">Control</div><div class="tnode-t">Atlas control plane</div><p class="tnode-d">Policy · scheduling · cost tagging</p></div></div>
+      <div class="tree-root"><div class="tnode"><span class="tnode-icon"><svg class="ico" aria-hidden="true"><use href="#i-cube"/></svg></span><div class="tnode-k">Control</div><div class="tnode-t">Atlas control plane</div><p class="tnode-d">Policy, scheduling, cost tagging</p></div></div>
       <div class="tree-kids" style="--n:3">
         <div class="tree-kid"><div class="tnode"><span class="tnode-icon"><svg class="ico" aria-hidden="true"><use href="#i-server"/></svg></span><div class="tnode-k">Compute</div><div class="tnode-t">Kubernetes</div><p class="tnode-d">14 clusters in 2 regions</p></div></div>
         <div class="tree-kid"><div class="tnode"><span class="tnode-icon"><svg class="ico" aria-hidden="true"><use href="#i-database"/></svg></span><div class="tnode-k">Storage</div><div class="tnode-t">Ceph &amp; object store</div><p class="tnode-d">Hot, warm and cold tiers</p></div></div>
@@ -622,8 +632,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <!-- ================= 21 · TAG CLOUD + TICKER ================= -->
   <section class="slide" data-section="Ecosystem">
     <div class="head center" style="margin-bottom:56px">
-      <div class="label reveal">Integrations</div>
-      <h2 class="title reveal d1">Connects with your <em>existing stack</em></h2>
+      <h2 class="title reveal">Connects with your existing stack</h2>
+      <div class="label reveal d1">Integrations</div>
     </div>
     <div class="tags reveal d2">
       <span class="tag-pill hl">Kubernetes</span><span class="tag-pill">Prometheus</span><span class="tag-pill">Grafana</span><span class="tag-pill hl">NVIDIA DCGM</span>
@@ -643,8 +653,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <section class="slide alt" data-section="Q&amp;A">
     <div class="faq">
       <div>
-        <div class="label reveal">Q&amp;A</div>
-        <h2 class="title reveal d1">Questions,<br><em>answered</em></h2>
+        <h2 class="title reveal">Questions,<br>answered</h2>
+        <div class="label reveal d1">Q&amp;A</div>
         <p class="lead reveal d2">Click a question to open it. Anything else — ask now.</p>
       </div>
       <div class="reveal d2">
@@ -660,9 +670,8 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <section class="slide" data-section="Next steps">
     <div class="cta-box reveal">
       <div style="max-width:900px">
-        <div class="label">Decision needed</div>
-        <h2 class="title">Ready for a<br><em>clearer platform?</em></h2>
-        <p class="lead">Approve Option B today and we start the second region in January.</p>
+        <h2 class="title">Ready for a<br>clearer platform?</h2>
+        <p class="lead">Decision needed: approve Option B today and we start the second region in January.</p>
       </div>
       <div class="cta-actions">
         <span class="btn btn-primary">Approve Option B <span>→</span></span>
@@ -675,9 +684,9 @@ The full example deck below uses every layout. Copy the structure of the layout 
   <section class="slide dark center" data-section="">
     <div class="orb orb-a"></div><div class="orb orb-b"></div>
     <div class="center" style="display:flex;flex-direction:column">
-      <div class="label reveal">Thank you</div>
-      <h2 class="title hero reveal d1">Less noise,<br><em>more done.</em></h2>
-      <div class="contact reveal d2" style="margin-top:56px;align-items:center"><span><b>Presenter Name</b> · Team</span><span>contact@example.com</span></div>
+      <h2 class="title hero reveal">Less noise,<br>more done.</h2>
+      <div class="label reveal d1">Thank you</div>
+      <div class="contact reveal d2" style="margin-top:56px;align-items:center"><span><b>Presenter Name</b>, Team</span><span>contact@example.com</span></div>
     </div>
   </section>
 ```
@@ -695,7 +704,7 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
 <title>Atlas Platform Review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
 ```
 
@@ -712,7 +721,15 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --bg:           #E6E9EB;
   --bg-alt:       #DADEE1;
   --surface:      #F3F4F5;
-  --surface-2:    #FFFFFF;
+  --surface-2:    #FCFCFC;             /* light tile surface (never pure white) */
+  --paper:        #F5F7F8;             /* slide paper: tinted off-white */
+  --paper-rgb:    245,247,248;         /* = --paper as r,g,b */
+  --on-field:     var(--paper);        /* text and marks on the base-colour field */
+  --rule:         #DCE1E4;             /* 1px frames, table and row lines */
+  --field:        #324856;             /* base-colour field: title-slide right side, section and dark slides */
+  --field-rgb:    50,72,86;            /* = --field as r,g,b */
+  --tint:         0.10;                /* tile tint over the paper (8 to 14%) */
+  --tint-strong:  0.14;
   --accent:       #283A45;
   --accent-mid:   #324856;
   --accent-light: #7A8891;
@@ -721,24 +738,25 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --light-rgb:    122,136,145;          /* = --accent-light as r,g,b */
   --accent-ghost: rgba(var(--accent-rgb),0.08);
   --accent-border:rgba(var(--accent-rgb),0.15);
-  --ink:          #131B20;             /* dark surfaces (CTA, featured card) */
+  --ink:          #131B20;             /* darkest text and shadow colour */
   --ink-rgb:      19,27,32;            /* = --ink as r,g,b */
   --text-1:       #131B20;
   --text-2:       #3A5464;
   --text-3:       #6C8493;
   --border:       rgba(var(--ink-rgb),0.08);
   --track:        rgba(var(--ink-rgb),0.08);   /* light gray rails, tracks and the timeline ribbon */
-  --badge-shadow: 0 8px 22px rgba(var(--ink-rgb),0.16);   /* soft drop shadow under icon circles */
-  --shadow-sm:    0 3px 18px rgba(var(--ink-rgb),0.06);
-  --shadow-md:    0 12px 48px rgba(var(--ink-rgb),0.10);
-  --shadow-lg:    0 36px 96px rgba(var(--ink-rgb),0.13);
+  --badge-shadow: 0 3px 10px rgba(var(--ink-rgb),0.10);   /* soft drop shadow under small floating marks */
+  --shadow-sm:    0 2px 12px rgba(var(--ink-rgb),0.06);
+  --shadow-md:    0 8px 28px rgba(var(--ink-rgb),0.09);
+  --shadow-lg:    0 18px 48px rgba(var(--ink-rgb),0.14);   /* soft tile shadow */
   --silk:         cubic-bezier(0.16, 1, 0.3, 1);
   --silk-dur:     0.8s;
-  --radius:       24px;
-  --radius-lg:    36px;
+  --radius:       8px;
+  --radius-lg:    8px;
   --font-cjk:     'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans CJK TC', sans-serif;   /* Chinese text: always a sans font, never a serif (Ming) font */
   --font-sans:    'DM Sans', var(--font-cjk);
-  --font-serif:   'Playfair Display', var(--font-cjk);   /* Latin accent words only; CJK glyphs fall through to the sans CJK font */
+  --font-serif:   'Playfair Display', var(--font-cjk);   /* slide titles and big numbers (700); CJK glyphs fall through to the sans CJK font */
+  --font-mono:    'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;   /* code only */
   /* Type scale, authored at 1920×1080 */
   --fs-hero:      100px;
   --fs-title:     76px;
@@ -746,7 +764,7 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --fs-lead:      30px;
   --fs-body:      26px;
   --fs-small:     21px;
-  --fs-label:     17px;
+  --fs-label:     20px;
   --letterbox:    #CCD1D5;             /* color around the stage on non-16:9 screens */
   --shell:        #BCC9D2;             /* phone frame */
   /* Side colours: decorate repeated items. Exact colour for fills; -ink = darker shade readable as text on light bg */
@@ -756,11 +774,11 @@ Change `<title>`. Then the Base CSS goes inside `<style>`.
   --c-cinnabar: #E34234; --c-cinnabar-rgb: 227,66,52; --c-cinnabar-ink: #BD372B;
   --c-gray:     #999B9B; --c-gray-rgb:     153,155,155; --c-gray-ink:    #656666;
   --c-grape:    #D66C44; --c-grape-rgb:    214,108,68; --c-grape-ink:    #9D4F32;
-  --zoom:         1.25;                /* content scale: every slide's content renders 25% larger than its authored px sizes */
-  --zoom-tall:    1.08;                /* tall layouts (wave, process, tree, quotes, phones) already fill the height */
-  --pad-x:        128px;
-  --pad-top:      150px;
-  --pad-bottom:   120px;
+  --zoom:         1.0625;              /* content scale: 85% of the former 1.25 */
+  --zoom-tall:    0.918;               /* tall layouts (wave, process, tree, quotes, phones): 85% of the former 1.08 */
+  --pad-x:        109px;
+  --pad-top:      128px;
+  --pad-bottom:   102px;
 }
 
 /* === 1b. TONES — per-item colour. Components read --tone (fill), --tone-rgb, --tone-ink (text).
@@ -785,23 +803,26 @@ body { font-family: var(--font-sans); color: var(--text-1); -webkit-font-smoothi
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
-:is(button, a, [tabindex]):focus-visible { outline: 3px solid var(--accent-mid); outline-offset: 4px; border-radius: 6px; }
+:is(button, a, [tabindex]):focus-visible { outline: 2px solid var(--accent-mid); outline-offset: 3px; border-radius: 6px; }
+:is(button, a, [tabindex], [role="button"]):focus-visible { outline: 2px solid var(--accent-mid); outline-offset: 3px; border-radius: 6px; }
+.slide.dark :focus-visible, .deck-stage.on-dark :focus-visible { outline-color: var(--on-field); }
+code, pre, .code { font-family: var(--font-mono); font-size: 0.9em; }
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }   /* icon <symbol> sheet */
 .ico { width: 46%; height: 46%; flex-shrink: 0; }                         /* <svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg> */
-em { font-style: italic; font-family: var(--font-serif); color: var(--accent); font-weight: 600; }
-/* Chinese / Japanese / Korean decks: accent words stay upright sans and are marked by colour only (no slanted or serif CJK) */
-:is(:lang(zh), :lang(ja), :lang(ko)) em { font-style: normal; font-family: var(--font-sans); font-weight: 700; color: var(--accent-mid);
-  background: linear-gradient(transparent 62%, rgba(var(--light-rgb),0.42) 62%, rgba(var(--light-rgb),0.42) 92%, transparent 92%); padding: 0 0.06em; }
-:is(:lang(zh), :lang(ja), :lang(ko)) :is(.slide.dark, .cta-box) em { color: color-mix(in srgb, var(--accent-light), #fff 45%); background: linear-gradient(transparent 62%, rgba(var(--light-rgb),0.30) 62%, rgba(var(--light-rgb),0.30) 92%, transparent 92%); }
-/* CJK glyphs are full-width and look about a third bigger than Latin at the same px size: hero titles step down */
+em { font-style: italic; font-family: inherit; color: inherit; font-weight: inherit; }
+:is(.title, .h3, .statement, .card-title, .stat-value, .panel-text, .panel-cta) em { font-style: normal; }   /* headings are one style: no italic word inside a roman heading */
+
+
+/* CJK glyphs are full-width and look about a third bigger than Latin at the same px size: hero titles step down; titles stay sans */
+:is(:lang(zh), :lang(ja), :lang(ko)) :is(.title, .h3, .statement) { font-family: var(--font-sans); }
 :is(:lang(zh), :lang(ja), :lang(ko)) .title.hero { font-size: calc(var(--fs-hero) * 0.74); letter-spacing: -0.01em; line-height: 1.18; }
-:is(:lang(zh), :lang(ja), :lang(ko)) :is(.quote-text, .card-big small) { font-style: normal; font-family: var(--font-sans); }
+
 
 /* === 3. FIXED STAGE (do not change) === */
 .deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--letterbox); }
 .deck-stage {
   position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
-  overflow: hidden; transform-origin: 0 0; background: var(--bg);
+  overflow: hidden; transform-origin: 0 0; background: var(--paper);
 }
 /* subtle noise texture over everything */
 .deck-stage::after {
@@ -814,20 +835,21 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
   padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
   display: flex; flex-direction: column; justify-content: center;
   visibility: hidden; opacity: 0; pointer-events: none;
-  background: var(--bg);
+  background: var(--paper);
   transition: opacity 0.6s var(--silk), visibility 0s linear 0.6s;
 }
 .slide.active { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; transition: opacity 0.6s var(--silk); }
 .slide.alt     { background: var(--surface); }
 .slide > *     { position: relative; z-index: 1; }
 /* Content scale. zoom (not transform) so the layout reflows: grids still span the full width, text and boxes grow. */
-.slide > :not(.orb, .side-panel, .notes), .side-panel > * { zoom: var(--zoom); }
+.slide > :not(.orb, .side-panel, .ts-field, .notes), .side-panel > * { zoom: var(--zoom); }
+.ts-field > * { zoom: calc(var(--zoom) * 1.14); }   /* the title-slide visual is the deck's strongest: enlarge it rather than the text */
 .slide > :is(.wave, .process, .tree, .quotes, .phones, .phones-ctl) { zoom: var(--zoom-tall); }
 
 /* Background pattern (light slides only): two soft organic shapes, top-right and bottom-left, a shade darker than the slide.
    Drawn with a mask so it follows the theme colour; .alt slides get the mirror image so neighbours differ. */
 .slide:not(.dark)::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background: rgba(var(--mid-rgb),0.075);
+  background: rgba(var(--mid-rgb),0.022);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080' preserveAspectRatio='none'%3E%3Cpath d='M1235 0C1300 95 1290 250 1385 380C1490 520 1700 545 1920 590V0Z'/%3E%3Cpath d='M0 455C150 420 290 470 330 600C375 745 250 860 285 1080H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
           mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080' preserveAspectRatio='none'%3E%3Cpath d='M1235 0C1300 95 1290 250 1385 380C1490 520 1700 545 1920 590V0Z'/%3E%3Cpath d='M0 455C150 420 290 470 330 600C375 745 250 860 285 1080H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
 .slide.alt:not(.dark)::before { transform: scaleX(-1); }
@@ -862,26 +884,23 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
   position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); z-index: 40;
   display: flex; gap: 12px; align-items: center;
 }
-.deck-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-border); cursor: pointer; transition: width 0.4s var(--silk), background-color 0.4s var(--silk); }
+.deck-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-border); cursor: pointer; transition: background-color 0.4s var(--silk); }
 .deck-dot.active { background: var(--accent); width: 40px; border-radius: 6px; }
-.deck-stage.on-dark .deck-logo { color: #fff; } .deck-stage.on-dark .deck-logo span { color: var(--accent-light); }
-.deck-stage.on-dark .deck-section { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
-.deck-stage.on-dark .deck-dot { background: rgba(255,255,255,0.18); }
+.deck-stage.on-dark .deck-logo { color: var(--on-field); } .deck-stage.on-dark .deck-logo span { color: var(--accent-light); }
+.deck-stage.on-dark .deck-section { color: rgba(var(--paper-rgb),0.7); background: rgba(var(--paper-rgb),0.06); box-shadow: inset 0 0 0 1px rgba(var(--paper-rgb),0.12); }
+.deck-stage.on-dark .deck-dot { background: rgba(var(--paper-rgb),0.18); }
 .deck-stage.on-dark .deck-dot.active { background: var(--accent-light); }
+.deck-stage.on-dark .deck-count { color: rgba(var(--paper-rgb),0.72); }
 
 /* === 5. TYPOGRAPHY PRIMITIVES === */
-.label {
-  display: flex; flex-direction: column; align-self: flex-start; width: max-content;
-  font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 26px;
-}
-.center .label { align-self: center; align-items: center; }
-.title { font-size: var(--fs-title); font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; color: var(--text-1); text-wrap: balance; }
-.title.hero { font-size: var(--fs-hero); letter-spacing: -0.045em; line-height: 1.04; }
-.h3 { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
-.lead { font-size: var(--fs-lead); line-height: 1.6; color: var(--text-2); max-width: 1000px; margin-top: 28px; }
+.label { display: block; align-self: flex-start; max-width: 1000px; font-size: var(--fs-label); font-weight: 600; line-height: 1.4; color: var(--text-2); margin: 16px 0 0; text-wrap: balance; }
+.center .label { align-self: center; text-align: center; }
+.title { font-family: var(--font-serif); font-size: var(--fs-title); font-weight: 700; letter-spacing: -0.015em; line-height: 1.12; color: var(--text-1); text-wrap: balance; }
+.title.hero { font-size: var(--fs-hero); letter-spacing: -0.02em; line-height: 1.06; }
+.h3 { font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; text-wrap: balance; }
+.lead { font-size: var(--fs-lead); line-height: 1.6; color: var(--text-2); max-width: 1000px; margin-top: 22px; }
 .body { font-size: var(--fs-body); line-height: 1.65; color: var(--text-2); }
-.kicker { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tone-ink, var(--c-orange-ink)); margin-bottom: 22px; }
+.kicker { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--c-orange-ink)); margin-top: 14px; }
 .center { text-align: center; align-items: center; }
 .center .lead { margin-left: auto; margin-right: auto; }
 .head { margin-bottom: 48px; display: flex; flex-direction: column; }
@@ -896,27 +915,26 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 /* === 7. COMPONENTS === */
 
 /* 7a. Badge pill (hero) */
-.badge {
-  display: inline-flex; align-items: center; gap: 14px; align-self: flex-start;
-  background: var(--surface-2); border: 1.5px solid var(--accent-border); border-radius: 100px;
-  padding: 9px 26px 9px 10px; margin-bottom: 40px; box-shadow: var(--shadow-sm);
+.badge { display: inline-flex; align-items: center; gap: 14px; align-self: flex-start;
+  background: var(--accent-ghost); border-radius: 100px;
+  padding: 9px 26px 9px 10px; margin-bottom: 40px;
   font-size: 21px; font-weight: 500; color: var(--text-2);
 }
-.badge-dot { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: #fff;
+.badge-dot { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: var(--on-field);
   display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; }
 .badge strong { color: var(--accent); }
 
 /* 7b. Buttons / chips */
 .btn { display: inline-flex; align-items: center; gap: 14px; font-size: 24px; font-weight: 600; padding: 22px 46px; border-radius: 100px; }
-.btn-primary { color: #fff; background: var(--accent); box-shadow: 0 10px 36px rgba(var(--accent-rgb),0.30); }
-.btn-outline { color: var(--accent); border: 2px solid var(--accent-border); }
+.btn-primary { color: var(--on-field); background: var(--accent); box-shadow: 0 6px 18px rgba(var(--accent-rgb),0.18); }
+.btn-outline { color: var(--accent); background: var(--accent-ghost); }
 .row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 
 /* 7c. Trust / meta row */
 .trust { display: flex; align-items: center; gap: 30px; margin-top: 64px; }
 .trust-item { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 500; color: var(--text-3); }
 .trust-item svg { color: var(--accent); width: 24px; height: 24px; flex-shrink: 0; }
-.trust-divider { width: 1.5px; height: 30px; background: var(--border); }
+.trust-divider { width: 1px; height: 30px; background: var(--rule); }
 
 /* 7d. Grids */
 .split   { display: grid; grid-template-columns: 1fr 1fr; gap: 110px; align-items: center; }
@@ -931,318 +949,319 @@ em { font-style: italic; font-family: var(--font-serif); color: var(--accent); f
 .check { display: flex; align-items: center; gap: 22px; font-size: var(--fs-body); line-height: 1.45; color: var(--text-2); }
 .check-icon {
   width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
-  background: var(--tone, var(--accent)); box-shadow: var(--badge-shadow);
-  display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums;
+  background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent));
+  display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .check b { color: var(--text-1); font-weight: 600; }
 .checklist.two-col { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; row-gap: 30px; }
+/* agenda: large Playfair numerals in the accent-ink colour hang left of each line, under a thin 1px rule */
+.checklist.agenda { column-gap: 72px; row-gap: 0; }
+.agenda .check { display: grid; grid-template-columns: 96px 1fr; align-items: baseline; padding: 32px 0 34px; border-top: 1px solid var(--rule); }
+.agenda .check-icon { width: auto; height: auto; border-radius: 0; background: none; justify-content: flex-start; font-family: var(--font-serif); font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -0.01em; color: var(--c-orange-ink); font-variant-numeric: lining-nums tabular-nums; }
 
-/* 7e-2. Points — icon circle + coloured caps label + text (template "mind map" column) */
-.points { display: flex; flex-direction: column; gap: 34px; }
+/* 7e-2. Points — tinted icon circle + coloured sentence-case label + text */
+.points { display: flex; flex-direction: column; gap: 44px; }
 .point { display: grid; grid-template-columns: 84px 1fr; column-gap: 28px; align-items: center; }
-.point-icon { width: 84px; height: 84px; border-radius: 50%; background: var(--tone, var(--accent)); color: #fff; border: 6px solid var(--surface-2);
-  box-shadow: var(--badge-shadow); display: flex; align-items: center; justify-content: center; }
-.point-k { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); margin-bottom: 6px; }
+.point-icon { width: 84px; height: 84px; border-radius: 50%; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent));
+  display: flex; align-items: center; justify-content: center; }
+.point-k { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); margin-bottom: 6px; }
 .point-d { font-size: 22px; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
 
-/* 7e-3. Side panel — tinted block filling the right part of the slide, big text (template quote panel) */
+/* 7e-3. Side panel — tinted block filling the right part of the slide, big text */
 .slide > .side-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 44%; z-index: 0;
   background: rgba(var(--mid-rgb),0.14); padding: var(--pad-top) var(--pad-x) var(--pad-bottom) 96px;
   display: flex; flex-direction: column; justify-content: center; }
 .side-panel + * { max-width: 48%; }
-.panel-text { font-size: 48px; line-height: 1.3; font-weight: 400; letter-spacing: -0.015em; color: var(--text-1); text-wrap: pretty; }
-.panel-cta { margin-top: 48px; font-size: 64px; font-weight: 700; letter-spacing: -0.03em; color: var(--accent); }
+.panel-text { font-family: var(--font-serif); font-size: 44px; line-height: 1.3; font-weight: 700; letter-spacing: -0.01em; color: var(--text-1); text-wrap: pretty; }
+.panel-cta { margin-top: 40px; font-family: var(--font-serif); font-size: 60px; font-weight: 700; letter-spacing: -0.01em; color: var(--c-orange-ink); }
 .panel-sub { font-size: 24px; color: var(--text-2); margin-top: 8px; }
 
-/* 7e-4. Note band — gray strip: big label | divider | text (template footer band) */
+/* 7e-4. Note band — soft tinted tile: label | 1px divider | text */
 .note-band { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 40px; margin-top: 48px;
-  background: var(--track); padding: 30px 44px; }
-.note-band-k { font-size: 34px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.1; color: var(--text-1);
-  padding-right: 40px; border-right: 3px solid var(--accent-mid); }
+  background: rgba(var(--mid-rgb),0.08); border-radius: var(--radius); padding: 30px 44px; }
+.note-band-k { font-family: var(--font-serif); font-size: 32px; font-weight: 700; line-height: 1.15; color: var(--text-1);
+  padding-right: 40px; border-right: 1px solid var(--rule); }
 .note-band-d { font-size: 21px; line-height: 1.55; color: var(--text-2); text-wrap: pretty; }
 
 /* 7f. Window / dashboard card (hero visual, screenshots) */
-.window { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); box-shadow: var(--shadow-lg); overflow: hidden; }
-.window-bar { background: var(--bg-alt); padding: 18px 24px; display: flex; gap: 12px; border-bottom: 1.5px solid var(--border); }
-.window-bar i { width: 15px; height: 15px; border-radius: 50%; display: block; }
-.window-bar i:nth-child(1) { background: #FF5F57; } .window-bar i:nth-child(2) { background: #FFBD2E; } .window-bar i:nth-child(3) { background: #28CA41; }
-.window-body { padding: 40px; }
+.window { background: var(--surface-2); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; }
+
+.window-body { padding: 40px; }   /* a plain soft tile: never draw browser or OS window chrome (dots, title bars) */
 .window img { width: 100%; height: auto; display: block; }
 .win-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
 .win-title { font-size: 24px; font-weight: 600; }
-.tag { font-size: 16px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
-  background: var(--accent-ghost); border: 1.5px solid var(--accent-border); padding: 5px 16px; border-radius: 100px; }
+.tag { font-size: var(--fs-label); font-weight: 600; color: var(--accent);
+  background: var(--accent-ghost); padding: 5px 16px; border-radius: 100px; }
 .bars { height: 150px; display: flex; align-items: flex-end; gap: 12px; margin-bottom: 32px; }
-.bar { flex: 1; border-radius: 6px 6px 0 0; background: var(--accent-ghost); border: 1.5px solid var(--accent-border); height: 0; transition: height 1.2s var(--silk) 0.2s; }
-.slide.visible .bar { height: var(--h); }
-.bar.on { background: var(--accent); border-color: var(--accent); }
+.bar { flex: 1; border-radius: 6px 6px 0 0; background: rgba(var(--accent-rgb),0.10); height: var(--h); transform: scaleY(0); transform-origin: bottom; transition: transform 1.2s var(--silk) 0.2s; }
+.slide.visible .bar { transform: none; }
+.bar.on { background: var(--accent); }
 .mini-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
-.mini-stat { background: var(--bg); border-radius: var(--radius); padding: 22px; border: 1.5px solid var(--border); }
-.mini-val { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
-.mini-val small { font-size: 22px; color: var(--tone-ink, var(--accent)); }
-.mini-label { font-size: 17px; color: var(--text-3); margin-top: 4px; }
-.mini-chg { font-size: 17px; font-weight: 600; color: var(--tone-ink, var(--accent)); margin-top: 6px; }
-.mini-stat { border-top: 3px solid var(--tone, var(--accent)) !important; }
 
-/* Floating badges on a visual */
+.mini-val { font-family: var(--font-serif); font-size: 36px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.mini-val small { font-size: 22px; color: var(--tone-ink, var(--accent)); }
+.mini-label { font-size: var(--fs-label); color: var(--text-2); margin-top: 4px; }
+.mini-chg { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); margin-top: 6px; }
+.mini-stat { background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: var(--radius); padding: 22px; }
+
+/* Floating tiles on a visual */
 .visual { position: relative; }
 .float { position: absolute !important; display: flex; align-items: center; gap: 16px; background: var(--surface-2);
-  border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px 24px; box-shadow: var(--shadow-md);
+  border-radius: var(--radius); padding: 18px 24px; box-shadow: var(--shadow-md);
   animation: floaty 4s ease-in-out infinite; z-index: 2; }
-.float-icon { width: 54px; height: 54px; border-radius: 15px; background: var(--tone, var(--c-grape)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.float-icon { width: 54px; height: 54px; border-radius: 50%; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--c-grape-ink)); display: flex; align-items: center; justify-content: center; font-size: 24px; }
 .float-text { font-size: 18px; line-height: 1.35; } .float-text strong { display: block; color: var(--text-1); } .float-text span { color: var(--text-3); }
-.float.solid { background: var(--accent); border-color: var(--accent); box-shadow: 0 14px 40px rgba(var(--accent-rgb),0.35); display: block; animation-delay: 2s; }
-.float.solid .fv { font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -0.03em; }
-.float.solid .fl { font-size: 17px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+.float.solid { background: var(--field); box-shadow: var(--shadow-lg); display: block; animation-delay: 2s; }
+.float.solid .fv { font-family: var(--font-serif); font-size: 38px; font-weight: 700; color: var(--on-field); letter-spacing: -0.01em; }
+.float.solid .fl { font-size: var(--fs-label); color: rgba(var(--paper-rgb),0.78); margin-top: 2px; }
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 
 /* 7g. Feature panel (fv-cards) */
-.panel { background: rgba(var(--mid-rgb),0.13); padding: 52px; display: flex; flex-direction: column; gap: 22px; }
+.panel { background: rgba(var(--mid-rgb),0.09); border-radius: var(--radius); padding: 44px; display: flex; flex-direction: column; gap: 22px; }
 .fv-row { display: flex; gap: 22px; }
-.fv-card { flex: 1; background: var(--surface-2); border-radius: 4px; padding: 26px 28px; box-shadow: 0 6px 20px rgba(var(--ink-rgb),0.07); }
-.fv-row > .fv-card { border-top: 6px solid var(--tone, var(--accent)); }
+.fv-card { flex: 1; background: var(--surface-2); border-radius: var(--radius); padding: 26px 28px; box-shadow: var(--shadow-sm); }
+
 .fv-card.wide { flex: 2; }
-.fv-label { font-size: 16px; color: var(--tone-ink, var(--text-3)); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
-.fv-val { font-size: 44px; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.fv-label { font-size: var(--fs-label); color: var(--tone-ink, var(--text-2)); font-weight: 600; margin-bottom: 10px; }
+.fv-val { font-family: var(--font-serif); font-size: 44px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
 .fv-track { height: 10px; border-radius: 5px; margin-top: 16px; background: var(--track); overflow: hidden; }
-.fv-fill { height: 100%; border-radius: 4px; background: var(--tone, var(--accent)); width: 0; transition: width 1.4s var(--silk) 0.3s; }
-.slide.visible .fv-fill { width: var(--w); }
+.fv-fill { height: 100%; border-radius: 4px; background: var(--tone, var(--accent)); width: var(--w); transform: scaleX(0); transform-origin: left; transition: transform 1.4s var(--silk) 0.3s; }
+.slide.visible .fv-fill { transform: none; }
 .fv-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
-.fv-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1.5px solid var(--border); font-size: 20px; }
+.fv-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--rule); font-size: 20px; }
 .fv-item:last-child { border-bottom: none; }
 .fv-item span:first-child { color: var(--text-2); font-weight: 500; }
-.pill { font-size: 16px; font-weight: 600; padding: 5px 16px; border-radius: 100px; }
+.pill { font-size: var(--fs-label); font-weight: 600; padding: 5px 16px; border-radius: 100px; }
 .pill.green { background: rgba(var(--c-mint-rgb),0.14); color: var(--c-mint-ink); }
 /* failed / high risk: cinnabar, the one allowed exception to the four-colour rule */
 .pill.red   { background: rgba(var(--c-cinnabar-rgb),0.12); color: var(--c-cinnabar-ink); }
 .pill.grape { background: rgba(var(--c-grape-rgb),0.12); color: var(--c-grape-ink); }
 .pill.blue  { background: rgba(var(--mid-rgb),0.12); color: var(--accent-mid); }
-.pill.dim   { background: var(--border); color: var(--text-3); }
+.pill.dim   { background: rgba(var(--ink-rgb),0.07); color: var(--text-3); }
 .pill.warn  { background: rgba(var(--c-orange-rgb),0.14); color: var(--c-orange-ink); }
 
 /* 7h. Stats */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
 .stats.three { grid-template-columns: repeat(3, 1fr); }
-.stat { display: flex; flex-direction: column; }
-.stat-value { align-self: flex-start; display: flex; align-items: baseline; gap: 4px; margin-bottom: 26px;
-  font-size: 88px; font-weight: 700; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap;
-  padding: 22px 32px 18px 26px; color: var(--tone-ink, var(--accent));
-  background: rgba(var(--tone-rgb, var(--accent-rgb)),0.13); border-left: 10px solid var(--tone, var(--accent)); }
-.stat-suffix { font-size: 50%; font-weight: 600; letter-spacing: -0.02em; }
-.stat-label { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); margin-bottom: 10px; }
+.stat { display: flex; flex-direction: column; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: var(--radius); padding: 44px 40px 44px; }
+.stat-value { align-self: flex-start; display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;
+  font-family: var(--font-serif); font-size: 100px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: lining-nums tabular-nums; white-space: nowrap;
+  color: var(--tone-ink, var(--accent)); }
+.stat-suffix { font-size: 50%; font-weight: 700; letter-spacing: 0; }
+.stat-label { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); margin-bottom: 10px; }
 .stat-sub { font-size: 21px; color: var(--text-2); line-height: 1.5; }
 
 /* 7i. Cards (pricing-card style) — options, comparisons, pillars */
-/* a card is a tinted column between two thick tone rules (template pricing columns); text is centred */
-.card { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 36px 36px 34px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.07);
-  border-top: 7px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.55); border-bottom: 7px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.55); }
-.card-tier { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); margin-bottom: 16px; }
-.card-big { font-size: 84px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
-.card-big small { font-family: var(--font-serif); font-style: italic; font-size: 26px; font-weight: 600; color: var(--text-3); letter-spacing: 0; }
-.card-title { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; text-wrap: balance; }
-.card-desc { font-size: 21px; color: var(--text-2); line-height: 1.55; margin-top: 14px; text-wrap: pretty; }
-.card-divider { align-self: stretch; height: 2px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.22); margin: 28px 0 26px; }
+/* a card is a plain soft tinted tile: no border, no coloured edge; its tone shows as the tint and the title ink */
+.card { position: relative; display: flex; flex-direction: column; align-items: flex-start; text-align: left;
+  padding: 44px 40px 42px; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: var(--radius); }
+.card-tier { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); margin-bottom: 16px; }
+.card-big { font-family: var(--font-serif); font-size: 84px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-variant-numeric: lining-nums tabular-nums; }
+.card-big small { font-family: var(--font-sans); font-size: 24px; font-weight: 500; color: var(--text-3); letter-spacing: 0; }
+.card-title { font-family: var(--font-serif); font-size: 36px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px; text-wrap: balance; }
+.card-desc { font-size: 24px; color: var(--text-2); line-height: 1.55; margin-top: 14px; text-wrap: pretty; }
+.card-divider { align-self: stretch; height: 1px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.25); margin: 28px 0 26px; }
 .card .checklist { margin-top: 0; gap: 16px; align-self: stretch; text-align: left; }
 .card .check { font-size: 21px; gap: 16px; }
 .card .check-icon { width: 30px; height: 30px; font-size: 14px; box-shadow: none; }
-.card-icon { width: 112px; height: 112px; border-radius: 50%; background: var(--tone, var(--accent)); color: #fff; border: 7px solid var(--surface-2);
-  box-shadow: var(--badge-shadow); display: flex; align-items: center; justify-content: center; margin-bottom: 28px; }
-.card-icon svg { width: 46px; height: 46px; }
-.card.tinted { background: rgba(var(--tone-rgb, var(--accent-rgb)),0.13); }
+.card-icon { width: 76px; height: 76px; border-radius: 50%; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-icon svg { width: 34px; height: 34px; }
+.card-head { display: flex; align-items: center; gap: 20px; margin-bottom: 18px; }
+.card-head .card-title { margin-bottom: 0; }
+.card.tinted { background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); }
 /* featured = the recommended option: solid base-colour column */
-.card.featured { background: var(--accent); border-color: var(--accent); }
-.card.featured :is(.card-tier, .card-big, .card-title) { color: #fff; }
-.card.featured :is(.card-big small, .card-desc, .check) { color: rgba(255,255,255,0.82); }
-.card.featured .card-divider { background: rgba(255,255,255,0.22); }
-.card.featured .check-icon { background: #fff; color: var(--accent); }
-.card.featured .card-icon { background: #fff; color: var(--accent); }
-.card-flag { position: absolute; top: -7px; left: 50%; transform: translate(-50%, -100%); background: var(--c-orange); color: var(--ink);
-  font-size: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 26px; white-space: nowrap; }
+.card.featured { background: var(--field); }
+.card.featured :is(.card-tier, .card-big, .card-title) { color: var(--on-field); }
+.card.featured :is(.card-big small, .card-desc, .check) { color: rgba(var(--paper-rgb),0.82); }
+.card.featured .card-divider { background: rgba(var(--paper-rgb),0.22); }
+.card.featured .check-icon { background: var(--on-field); color: var(--field); }
+.card.featured .card-icon { background: var(--on-field); color: var(--field); }
+.card-flag { position: absolute; top: 0; right: 24px; transform: translateY(-50%); background: var(--c-orange); color: var(--ink);
+  font-size: var(--fs-label); font-weight: 600; padding: 6px 20px; border-radius: 100px; white-space: nowrap; }
 
 /* 7j. Quotes (testimonials) */
 .quotes { display: grid; grid-template-columns: 1.15fr 1fr 1fr; grid-template-rows: auto auto; gap: 24px; }
-.quote { background: var(--surface-2); border-radius: var(--radius-lg); border: 1.5px solid var(--border); padding: 32px 36px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.quote { background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: var(--radius); padding: 32px 36px; display: flex; flex-direction: column; }
 .quote.tall { grid-row: span 2; justify-content: space-between; }
-.quote-mark { font-family: var(--font-serif); font-size: 96px; line-height: 0.6; color: var(--tone, var(--accent-light)); height: 40px; }
-.quote-text { font-size: 23px; line-height: 1.6; color: var(--text-2); font-style: italic; margin: 14px 0 22px; flex: 1; }
+.quote-mark { font-family: var(--font-serif); font-size: 96px; line-height: 0.6; color: var(--tone-ink, var(--accent)); height: 40px; }
+.quote-text { font-size: 23px; line-height: 1.6; color: var(--text-1); margin: 14px 0 22px; flex: 1; }
 .quote.tall .quote-text { font-size: 30px; }
 .author { display: flex; align-items: center; gap: 16px; }
-.avatar { width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.30); background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10);
+.avatar { width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong));
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; color: var(--tone-ink, var(--accent)); }
 .author-name { font-size: 21px; font-weight: 600; }
-.author-role { font-size: 18px; color: var(--text-3); margin-top: 2px; }
+.author-role { font-size: var(--fs-label); color: var(--text-3); margin-top: 2px; }
 
 /* 7k. Statement (big quote slide) */
-.statement { font-size: 84px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.15; max-width: 1500px; }
+.statement { font-family: var(--font-serif); font-size: 92px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; max-width: 1500px; }
 .statement-by { margin-top: 56px; }
 
 /* 7l. Tag cloud (integration pills) */
 .tags { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; max-width: 1400px; margin: 0 auto; }
-.tag-pill { background: var(--surface-2); border-radius: 100px; border: 1.5px solid var(--border); padding: 18px 36px; box-shadow: var(--shadow-sm);
-  font-size: 24px; font-weight: 600; color: var(--text-2); white-space: nowrap; letter-spacing: -0.01em; }
-.tag-pill.hl { border-color: rgba(var(--tone-rgb, var(--accent-rgb)),0.30); background: rgba(var(--tone-rgb, var(--accent-rgb)),0.10); color: var(--tone-ink, var(--accent)); }
+.tag-pill { background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: 100px; padding: 18px 36px;
+  font-size: 24px; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+.tag-pill.hl { background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent)); }
 
 /* 7m. Ticker (logo strip) */
-.ticker { border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); background: var(--surface); padding: 34px 0; overflow: hidden;
+.ticker { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--surface); padding: 34px 0; overflow: hidden;
   margin: 0 calc(-1 * var(--pad-x)); }
-.ticker-label { text-align: center; font-size: 17px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 600; margin-bottom: 26px; }
+.ticker-label { text-align: center; font-size: var(--fs-label); color: var(--text-3); font-weight: 600; margin-bottom: 26px; }
 .ticker-track { display: flex; align-items: center; gap: 90px; width: max-content; animation: ticker 32s linear infinite; }
 .ticker:hover .ticker-track { animation-play-state: paused; }
 .ticker-item { display: flex; align-items: center; gap: 14px; font-size: 27px; font-weight: 700; letter-spacing: -0.03em; color: var(--text-3); white-space: nowrap; }
-.ticker-item i { width: 44px; height: 44px; border-radius: 12px; background: rgba(var(--tone-rgb, var(--accent-rgb)),0.14); border: 1.5px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.32); display: block; }
+.ticker-item i { width: 44px; height: 44px; border-radius: 8px; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); display: block; }
 .ticker-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-light); opacity: 0.5; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* 7n. FAQ / Q&A accordion */
 .faq { display: grid; grid-template-columns: 1fr 1.6fr; gap: 110px; align-items: start; }
-.faq-item { border-bottom: 1.5px solid var(--border); }
-.faq-item:first-child { border-top: 1.5px solid var(--border); }
+.faq-item { border-bottom: 1px solid var(--rule); }
+.faq-item:first-child { border-top: 1px solid var(--rule); }
 .faq-q { width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 30px 0; cursor: pointer; font-size: 27px; font-weight: 600; transition: color 0.3s; }
 .faq-q:hover { color: var(--accent); }
-.faq-icon { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-  color: var(--accent); font-size: 26px; font-weight: 300; transition: transform 0.5s var(--silk), background 0.4s, color 0.4s; }
-.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); color: #fff; border-color: var(--accent); }
-.faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s var(--silk); }
-.faq-item.open .faq-a { grid-template-rows: 1fr; }
-.faq-a > div { overflow: hidden; font-size: 23px; line-height: 1.65; color: var(--text-2); transition: padding-bottom 0.5s var(--silk); }
+.faq-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-ghost); flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 26px; font-weight: 300; transition: transform 0.5s var(--silk), background-color 0.4s, color 0.4s; }
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); color: var(--on-field); }
+.faq-a { display: none; }
+.faq-item.open .faq-a { display: block; animation: faq-in 0.5s var(--silk); }
+.faq-a > div { font-size: 23px; line-height: 1.65; color: var(--text-2); }
 .faq-item.open .faq-a > div { padding-bottom: 30px; }
+@keyframes faq-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
 /* 7o. Wave timeline — icon circles alternate high/low along a wide gray ribbon; text sits above high
    circles and below low ones (template "timeline planning"). Set --n to the number of steps. */
 .wave { --row: 150px; --band: 250px; --dot: 132px; display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); position: relative; }
 .wave::before { content: ''; position: absolute; left: 0; right: 0; z-index: 0;
   top: calc(var(--row) + var(--dot) / 2 - (var(--band) - var(--dot)) / 8); height: calc((var(--band) - var(--dot)) * 1.25);
-  background: var(--track);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M0 50 C18 22 32 10 50 10 C68 10 82 22 100 50 C118 78 132 90 150 90 C168 90 182 78 200 50' fill='none' stroke='black' stroke-width='34' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") repeat-x 0 0 / calc(200% / var(--n, 5)) 100%;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M0 50 C18 22 32 10 50 10 C68 10 82 22 100 50 C118 78 132 90 150 90 C168 90 182 78 200 50' fill='none' stroke='black' stroke-width='34' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") repeat-x 0 0 / calc(200% / var(--n, 5)) 100%; }
+  background: var(--rule);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M0 50 C18 22 32 10 50 10 C68 10 82 22 100 50 C118 78 132 90 150 90 C168 90 182 78 200 50' fill='none' stroke='black' stroke-width='1.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") repeat-x 0 0 / calc(200% / var(--n, 5)) 100%;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M0 50 C18 22 32 10 50 10 C68 10 82 22 100 50 C118 78 132 90 150 90 C168 90 182 78 200 50' fill='none' stroke='black' stroke-width='1.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") repeat-x 0 0 / calc(200% / var(--n, 5)) 100%; }
 .wstep { display: grid; grid-template-rows: var(--row) var(--band) var(--row); justify-items: center; text-align: center; position: relative; z-index: 1; padding: 0 10px; }
 .wstep-text { grid-row: 1; align-self: end; padding-bottom: 20px; max-width: 290px; }
 .wstep:nth-child(even) .wstep-text { grid-row: 3; align-self: start; padding: 20px 0 0; }
 .wstep-dot { grid-row: 2; align-self: start; width: var(--dot); height: var(--dot); border-radius: 50%;
-  background: var(--tone, var(--accent)); color: #fff; border: 8px solid var(--surface-2); box-shadow: var(--badge-shadow);
+  background: var(--tone, var(--accent)); color: var(--on-field); box-shadow: var(--badge-shadow);
   display: flex; align-items: center; justify-content: center; }
 .wstep:nth-child(even) .wstep-dot { align-self: end; }
-.wstep.later .wstep-dot { background: var(--surface-2); color: var(--tone-ink, var(--accent)); border: 6px solid var(--tone, var(--accent)); }
-.wstep.now .wstep-dot { box-shadow: var(--badge-shadow), 0 0 0 12px rgba(var(--tone-rgb, var(--accent-rgb)),0.22); }
-.wstep-when { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; }
-.wstep.now .wstep-when::after { content: ' · Now'; color: var(--text-1); }
-.wstep-t { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 6px; }
+.wstep.later .wstep-dot { background: var(--surface-2); color: var(--tone-ink, var(--accent)); box-shadow: inset 0 0 0 2px var(--tone, var(--accent)); }
+.wstep.now .wstep-dot { box-shadow: var(--badge-shadow), 0 0 0 12px rgba(var(--tone-rgb, var(--accent-rgb)),0.18); }
+.wstep-when { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; }
+.wstep.now .wstep-when::after { content: ' \2014  now'; color: var(--text-1); }
+.wstep-t { font-family: var(--font-serif); font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin: 6px 0 6px; }
 .wstep-d { font-size: 20px; line-height: 1.45; color: var(--text-2); text-wrap: pretty; }
 
-/* 7o-2. Process diagram — a row of thick toothed rings (template "process gear"); text alternates above/below */
+/* 7o-2. Process diagram — a row of tinted discs with an icon; text alternates above/below, joined by 1px stems */
 .process { display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); }
 .pnode { display: grid; grid-template-rows: 160px auto 160px; justify-items: center; text-align: center; }
-.pnode-ring { grid-row: 2; position: relative; width: min(268px, calc(100% - 26px)); aspect-ratio: 1; border-radius: 50%;
-  background: var(--surface-2); border: 24px solid var(--tone, var(--accent)); outline: 15px dashed var(--tone, var(--accent)); outline-offset: -2px;
-  box-shadow: var(--badge-shadow); color: var(--tone-ink, var(--accent)); display: flex; align-items: center; justify-content: center; margin: 15px 0; }
-.pnode-ring::before { content: ''; position: absolute; inset: -66px; border-radius: 50%; border: 3px solid var(--track); clip-path: inset(0 0 58% 0); }
+.pnode-ring { grid-row: 2; position: relative; width: min(264px, calc(100% - 26px)); aspect-ratio: 1; border-radius: 50%;
+  background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent)); display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+.pnode-ring::before { content: ''; position: absolute; inset: -58px; border-radius: 50%; border: 1px solid var(--rule); clip-path: inset(0 0 58% 0); }
 .pnode:nth-child(even) .pnode-ring::before { clip-path: inset(58% 0 0 0); }
 .pnode-text { grid-row: 1; align-self: end; padding-bottom: 54px; max-width: 280px; position: relative; }
-.pnode-text::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 3px; height: 36px; background: var(--track); }
+.pnode-text::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 1px; height: 36px; background: var(--rule); }
 .pnode:nth-child(even) .pnode-text { grid-row: 3; align-self: start; padding: 54px 0 0; }
 .pnode:nth-child(even) .pnode-text::after { top: 0; bottom: auto; }
-.pnode-k { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); margin-bottom: 8px; }
+.pnode-k { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); margin-bottom: 8px; }
 .pnode-d { font-size: 20px; line-height: 1.45; color: var(--text-2); text-wrap: pretty; }
 
 /* 7o-3. Tree diagram — org chart / architecture: boxed nodes with an icon circle on top, joined by lines */
 .tree { display: flex; flex-direction: column; align-items: center; --gap: 48px; --stem: 50px; }
 .tree-root { position: relative; padding-bottom: var(--stem); }
-.tree-root::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 3px; height: var(--stem); background: var(--accent-mid); transform: translateX(-50%); }
+.tree-root::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 1px; height: var(--stem); background: var(--rule); transform: translateX(-50%); }
 .tree-kids { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); column-gap: var(--gap); width: 100%; }
-.tree-kid { position: relative; padding-top: calc(var(--stem) + 50px); display: flex; justify-content: center; }
-.tree-kid::before { content: ''; position: absolute; top: 0; left: calc(var(--gap) / -2); right: calc(var(--gap) / -2); height: 3px; background: var(--accent-mid); }
+.tree-kid { position: relative; padding-top: calc(var(--stem) + 10px); display: flex; justify-content: center; }
+.tree-kid::before { content: ''; position: absolute; top: 0; left: calc(var(--gap) / -2); right: calc(var(--gap) / -2); height: 1px; background: var(--rule); }
 .tree-kid:first-child::before { left: 50%; } .tree-kid:last-child::before { right: 50%; }
-.tree-kid::after { content: ''; position: absolute; top: 0; left: 50%; width: 3px; height: var(--stem); background: var(--tone, var(--accent-mid)); transform: translateX(-50%); }
-.tnode { position: relative; width: 100%; max-width: 440px; text-align: center; background: var(--surface-2); border: 3px solid var(--tone, var(--accent)); border-radius: 10px;
-  padding: 64px 28px 26px; box-shadow: 0 10px 28px rgba(var(--ink-rgb),0.08); }
+.tree-kid::after { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: var(--stem); background: var(--rule); transform: translateX(-50%); }
+.tnode { position: relative; width: 100%; max-width: 440px; text-align: left; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: var(--radius);
+  padding: 36px 36px; display: grid; grid-template-columns: auto 1fr; column-gap: 28px; align-items: center; }
 .tree-root .tnode { min-width: 520px; }
-.tnode-icon { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; border-radius: 50%;
-  background: var(--tone, var(--accent)); color: #fff; border: 6px solid var(--surface-2); box-shadow: var(--badge-shadow); display: flex; align-items: center; justify-content: center; }
-.tnode-k { font-size: 17px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); }
-.tnode-t { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 6px; }
-.tnode-d { font-size: 19px; line-height: 1.45; color: var(--text-2); }
+.tnode-icon { grid-row: 1 / span 3; width: 88px; height: 88px; border-radius: 50%;
+  background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent)); display: flex; align-items: center; justify-content: center; }
+.tnode-k { grid-column: 2; font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); }
+.tnode-t { grid-column: 2; font-family: var(--font-serif); font-size: 32px; font-weight: 700; letter-spacing: -0.01em; margin: 4px 0 4px; }
+.tnode-d { grid-column: 2; font-size: 21px; line-height: 1.45; color: var(--text-2); }
 
 /* 7p. Table */
-.table-wrap { background: var(--track); padding: 20px 26px; }
-table.data { width: 100%; border-collapse: separate; border-spacing: 10px 10px; font-size: 22px; font-variant-numeric: tabular-nums; }
-table.data th { text-align: left; font-size: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2);
-  background: var(--surface-2); padding: 16px 26px; border-bottom: 4px solid var(--accent-mid); box-shadow: 0 3px 10px rgba(var(--ink-rgb),0.06); }
-table.data td { padding: 18px 26px; background: var(--surface-2); color: var(--text-2); border-radius: 4px; }
-table.data :is(th, td):first-child { background: transparent; box-shadow: none; border-bottom: none; padding-left: 4px; }
-table.data td:first-child { color: var(--text-1); font-weight: 700; display: flex; align-items: center; gap: 16px; }
-table.data td:first-child::before { content: ''; width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; background: var(--tone, var(--accent)); box-shadow: 0 0 0 5px rgba(var(--tone-rgb, var(--accent-rgb)),0.18); }
-table.data tr.hl td:not(:first-child) { background: rgba(var(--tone-rgb, var(--accent-rgb)),0.16); color: var(--text-1); font-weight: 700; }
+.table-wrap { border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface-2); }
+table.data { width: 100%; border-collapse: collapse; font-size: 22px; font-variant-numeric: tabular-nums; }
+table.data th { text-align: left; font-size: var(--fs-label); font-weight: 600; color: var(--text-2);
+  background: rgba(var(--mid-rgb),0.07); padding: 20px 28px; border-bottom: 1px solid var(--rule); }
+table.data td { padding: 26px 28px; color: var(--text-2); border-bottom: 1px solid var(--rule); }
+table.data :is(th, td):first-child { }
+table.data td:first-child { color: var(--text-1); font-weight: 600; display: flex; align-items: center; gap: 14px; }
+table.data td:first-child::before { content: ''; width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--tone, var(--accent)); }
+table.data tbody tr:last-child td { border-bottom: none; }
+table.data tr.hl td { background: rgba(var(--c-orange-rgb),0.12); color: var(--text-1); font-weight: 600; }
+table.data tr.hl td:not(:first-child) { }
 table.data .num { text-align: right; }
 
 /* 7p-2. Charts */
-.chart-k { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); margin-bottom: 26px; }
-/* horizontal bars: icon circle · caps label · thick bar on a light rail · value (template "bar chart") */
-.hbars { display: grid; grid-template-columns: auto max-content 1fr auto; column-gap: 24px; row-gap: 20px; align-items: center; }
+.chart-k { font-size: var(--fs-label); font-weight: 600; color: var(--text-2); margin-bottom: 26px; }
+/* horizontal bars: icon circle, label, bar on a light rail, value */
+.hbars { display: grid; grid-template-columns: auto max-content 1fr auto; column-gap: 24px; row-gap: 30px; align-items: center; }
 .hbar { display: contents; }
-.hbar-icon, .lc-icon { width: 60px; height: 60px; border-radius: 50%; background: var(--surface-2); color: var(--tone-ink, var(--accent)); border: 3px solid var(--tone, var(--accent));
-  box-shadow: var(--badge-shadow); display: flex; align-items: center; justify-content: center; }
-.hbar-label { font-size: 18px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); }
-.hbar-track { height: 34px; background: var(--track); border-radius: 0 8px 8px 0; }
-.hbar-fill { height: 100%; width: 0; border-radius: 0 8px 8px 0; background: var(--tone, var(--accent)); transition: width 1.2s var(--silk) 0.3s;
-  box-shadow: 0 4px 12px rgba(var(--tone-rgb, var(--accent-rgb)),0.30); }
-.slide.visible .hbar-fill { width: var(--v); }
-.hbar-val { font-size: 26px; font-weight: 700; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; min-width: 84px; text-align: right; }
-/* donut: ring of segments in the middle, callouts with dashed leader lines on both sides (template "line and bar chart") */
+.hbar-icon, .lc-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint-strong)); color: var(--tone-ink, var(--accent)); display: flex; align-items: center; justify-content: center; }
+.hbar-label { font-size: var(--fs-small); font-weight: 600; color: var(--text-2); }
+.hbar-track { height: 42px; background: rgba(var(--ink-rgb),0.06); border-radius: 8px; overflow: hidden; }
+.hbar-fill { height: 100%; width: var(--v); border-radius: 8px; background: var(--tone, var(--accent)); transform: scaleX(0); transform-origin: left; transition: transform 1.2s var(--silk) 0.3s; }
+.slide.visible .hbar-fill { transform: none; }
+.hbar-val { font-family: var(--font-serif); font-size: 28px; font-weight: 700; color: var(--tone-ink, var(--accent)); font-variant-numeric: lining-nums tabular-nums; min-width: 84px; text-align: right; }
+/* donut: ring of segments in the middle, callouts with thin leader lines on both sides */
 .donut-chart { display: grid; grid-template-columns: 1fr auto 1fr; column-gap: 40px; align-items: center; }
 .donut { position: relative; width: 500px; aspect-ratio: 1; }
 .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
 .dn-track { fill: none; stroke: var(--track); stroke-width: 26; }
-.dn-seg { fill: none; stroke: var(--tone, var(--accent-mid)); stroke-width: 26; stroke-dasharray: 0 100; stroke-dashoffset: calc(-1 * var(--o)); transition: stroke-dasharray 1.4s var(--silk) 0.3s; }
-.slide.visible .dn-seg { stroke-dasharray: var(--p) 100; }
-.donut-center { position: absolute; inset: 22%; border-radius: 50%; background: var(--surface-2); box-shadow: var(--badge-shadow);
+.dn-seg { fill: none; stroke: var(--tone, var(--accent-mid)); stroke-width: 26; stroke-dasharray: var(--p) 100; stroke-dashoffset: calc(-1 * var(--o)); opacity: 0; transition: opacity 1s var(--silk) 0.3s; }
+.slide.visible .dn-seg { opacity: 1; }
+.donut-center { position: absolute; inset: 22%; border-radius: 50%; background: var(--surface-2); box-shadow: var(--shadow-md);
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; }
-.dc-big { font-size: 64px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-1); font-variant-numeric: tabular-nums; line-height: 1; }
-.dc-cap { font-size: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-top: 10px; }
+.dc-big { font-family: var(--font-serif); font-size: 60px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-1); font-variant-numeric: lining-nums tabular-nums; line-height: 1; }
+.dc-cap { font-size: var(--fs-label); font-weight: 600; color: var(--text-3); margin-top: 10px; }
 .donut-side { display: flex; flex-direction: column; gap: 52px; }
-.dc { position: relative; padding-bottom: 18px; border-bottom: 2.5px dashed rgba(var(--tone-rgb, var(--accent-rgb)),0.55); }
+.dc { position: relative; padding-bottom: 18px; border-bottom: 1px solid rgba(var(--tone-rgb, var(--accent-rgb)),0.45); }
 .dc::after { content: ''; position: absolute; bottom: -7px; right: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--tone, var(--accent)); }
 .donut-side.right .dc { text-align: right; } .donut-side.right .dc::after { right: auto; left: -6px; }
 .dc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
 .donut-side.right .dc-head { flex-direction: row-reverse; }
-.dc-k { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); }
-.dc-v { font-size: 44px; font-weight: 700; letter-spacing: -0.03em; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; }
+.dc-k { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); }
+.dc-v { font-family: var(--font-serif); font-size: 44px; font-weight: 700; letter-spacing: -0.01em; color: var(--tone-ink, var(--accent)); font-variant-numeric: lining-nums tabular-nums; }
 .dc-d { font-size: 20px; line-height: 1.45; color: var(--text-2); margin-top: 6px; }
 /* line chart: soft gridlines, one coloured line + tint per series, end-value bubbles, tinted icon legend on the right */
 .line-chart { display: grid; grid-template-columns: 1fr 420px; column-gap: 140px; align-items: center; }
-.lc-plot { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 340px auto; column-gap: 26px; row-gap: 22px; padding-top: 30px; }
-.lc-y { display: flex; flex-direction: column; justify-content: space-between; text-align: right; font-size: 17px; font-weight: 700; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.lc-plot { display: grid; grid-template-columns: auto 1fr; grid-template-rows: 420px auto; column-gap: 26px; row-gap: 22px; padding-top: 30px; }
+.lc-y { display: flex; flex-direction: column; justify-content: space-between; text-align: right; font-size: var(--fs-label); font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
 .lc-y span { line-height: 0; }
-.lc-area { position: relative; background: linear-gradient(rgba(var(--ink-rgb),0.09) 2px, transparent 2px) 0 0 / 100% 33.333%; border-bottom: 3px solid rgba(var(--ink-rgb),0.22); }
-.lc-area svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; clip-path: inset(-30px 100% -30px -30px); transition: clip-path 1.6s var(--silk) 0.3s; }
-.slide.visible .lc-area svg { clip-path: inset(-30px -30px -30px -30px); }
+.lc-area { position: relative; background: linear-gradient(rgba(var(--ink-rgb),0.09) 1px, transparent 1px) 0 0 / 100% 33.333%; border-bottom: 1px solid rgba(var(--ink-rgb),0.22); }
+.lc-area svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; opacity: 0; transform: translateY(14px); transition: opacity 1.2s var(--silk) 0.3s, transform 1.2s var(--silk) 0.3s; }
+.slide.visible .lc-area svg { opacity: 1; transform: none; }
 .lc-fill { fill: var(--tone, var(--accent)); fill-opacity: 0.07; }
-.lc-line { fill: none; stroke: var(--tone, var(--accent)); stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.lc-pts { fill: none; stroke: var(--tone, var(--accent)); stroke-width: 18; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.lc-end { position: absolute; left: var(--x); top: var(--y); width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: var(--surface-2);
-  border: 7px solid var(--tone, var(--accent)); box-shadow: var(--badge-shadow); opacity: 0; transition: opacity 0.5s ease 1.5s; }
-.lc-end b { position: absolute; left: calc(100% + 14px); top: 50%; transform: translateY(-50%); padding: 6px 16px; border-radius: 10px; white-space: nowrap;
-  background: var(--surface-2); border: 3px solid var(--tone, var(--accent)); box-shadow: var(--badge-shadow);
-  font-size: 24px; font-weight: 700; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; }
+.lc-line { fill: none; stroke: var(--tone, var(--accent)); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.lc-pts { fill: none; stroke: var(--tone, var(--accent)); stroke-width: 14; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.lc-end { position: absolute; left: var(--x); top: var(--y); width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: var(--tone, var(--accent));
+  box-shadow: 0 0 0 5px var(--surface-2); opacity: 0; transition: opacity 0.5s ease 1.5s; }
+.lc-end b { position: absolute; left: calc(100% + 14px); top: 50%; transform: translateY(-50%); padding: 6px 16px; border-radius: var(--radius); white-space: nowrap;
+  background: var(--surface-2); box-shadow: var(--shadow-md);
+  font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--tone-ink, var(--accent)); font-variant-numeric: lining-nums tabular-nums; }
 .slide.visible .lc-end { opacity: 1; }
 .lc-x { grid-column: 2; position: relative; height: 22px; }
-.lc-x span { position: absolute; left: var(--x); transform: translateX(-50%); font-size: 17px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.lc-x span { position: absolute; left: var(--x); transform: translateX(-50%); font-size: var(--fs-label); font-weight: 600; color: var(--text-3); }
 .lc-legend { display: flex; flex-direction: column; gap: 22px; }
 .lc-key { display: grid; grid-template-columns: auto 1fr auto; column-gap: 20px; align-items: center; padding: 22px 26px;
-  background: rgba(var(--tone-rgb, var(--accent-rgb)),0.08); border-left: 10px solid var(--tone, var(--accent)); border-radius: 0 14px 14px 0; }
-.lc-k { font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone-ink, var(--accent)); }
-.lc-d { font-size: 18px; line-height: 1.4; color: var(--text-2); margin-top: 4px; }
-.lc-v { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; }
-/* vertical meters: rounded rails with a coloured fill and an icon knob on top (template "comparison") */
+  background: rgba(var(--tone-rgb, var(--accent-rgb)),var(--tint)); border-radius: var(--radius); }
+.lc-k { font-size: var(--fs-label); font-weight: 600; color: var(--tone-ink, var(--accent)); }
+.lc-d { font-size: var(--fs-label); line-height: 1.4; color: var(--text-2); margin-top: 4px; }
+.lc-v { font-family: var(--font-serif); font-size: 48px; font-weight: 700; letter-spacing: -0.01em; color: var(--tone-ink, var(--accent)); font-variant-numeric: lining-nums tabular-nums; }
+/* vertical meters: rounded rails with a coloured fill and an icon knob on top */
 .meters { display: flex; justify-content: center; align-items: flex-end; gap: 64px; }
 .meter { display: flex; flex-direction: column; align-items: center; width: 170px; text-align: center; }
-.meter-val { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; color: var(--tone-ink, var(--accent)); font-variant-numeric: tabular-nums; }
-.meter-track { width: 44px; height: 400px; border-radius: 22px; background: var(--track); display: flex; align-items: flex-end; margin: 52px 0 26px; }
-.meter-fill { position: relative; width: 100%; height: 0; border-radius: 22px; background: var(--tone, var(--accent)); transition: height 1.3s var(--silk) 0.3s; }
-.slide.visible .meter-fill { height: var(--v); }
+.meter-val { font-family: var(--font-serif); font-size: 52px; font-weight: 700; letter-spacing: -0.01em; color: var(--tone-ink, var(--accent)); font-variant-numeric: lining-nums tabular-nums; }
+.meter-track { width: 48px; height: 440px; border-radius: 22px; background: rgba(var(--ink-rgb),0.06); display: flex; align-items: flex-end; margin: 52px 0 26px; }
+.meter-fill { position: relative; width: 100%; height: var(--v); border-radius: 22px; background: var(--tone, var(--accent)); opacity: 0; transform: translateY(36px); transition: opacity 1s var(--silk) 0.3s, transform 1.2s var(--silk) 0.3s; }
+.slide.visible .meter-fill { opacity: 1; transform: none; }
 .meter-knob { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); width: 66px; height: 66px; border-radius: 50%;
-  background: var(--tone, var(--accent)); color: #fff; border: 6px solid var(--surface-2); box-shadow: var(--badge-shadow); display: flex; align-items: center; justify-content: center; }
-.meter-k { font-size: 17px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); }
+  background: var(--tone, var(--accent)); color: var(--on-field); box-shadow: 0 0 0 5px var(--paper); display: flex; align-items: center; justify-content: center; }
+.meter-k { font-size: var(--fs-small); font-weight: 600; color: var(--text-2); }
 .meter-d { font-size: 19px; line-height: 1.45; color: var(--text-3); margin-top: 6px; }
 .yes { color: var(--c-mint-ink); font-weight: 700; } .no { color: var(--text-3); } .bad { color: var(--c-cinnabar-ink); font-weight: 700; }
 
@@ -1250,72 +1269,93 @@ table.data .num { text-align: right; }
 .phones { position: relative; height: 600px; perspective: 1800px; display: flex; align-items: center; justify-content: center; }
 .phone { position: absolute; width: 228px; transition: transform 0.7s var(--silk), opacity 0.7s var(--silk); cursor: pointer; }
 .phone-shell { background: var(--shell); border-radius: 40px; padding: 6px;
-  box-shadow: 0 0 0 1px rgba(150,166,184,0.5), 0 32px 72px rgba(var(--ink-rgb),0.18), inset 0 1px 0 rgba(255,255,255,0.6); }
-.phone-screen { background: var(--bg); border-radius: 34px; overflow: hidden; aspect-ratio: 9 / 19.5; }
+  box-shadow: 0 0 0 1px rgba(var(--ink-rgb),0.12), 0 24px 56px rgba(var(--ink-rgb),0.16); }
+.phone-screen { background: var(--paper); border-radius: 34px; overflow: hidden; aspect-ratio: 9 / 19.5; }
 .phone-screen img { width: 100%; height: 100%; object-fit: cover; }
 .phone-cap { text-align: center; margin-top: 16px; font-size: 20px; font-weight: 600; color: var(--text-2); opacity: 0; transition: opacity 0.4s; }
 .phone[data-pos="center"] .phone-cap { opacity: 1; }
 .phones-ctl { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 4px; }
-.round-btn { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-border); background: var(--surface-2); color: var(--accent);
+.round-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-ghost); color: var(--accent);
   display: flex; align-items: center; justify-content: center; font-size: 24px; transition: background-color 0.4s var(--silk), color 0.4s var(--silk), border-color 0.4s var(--silk); }
-.round-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.round-btn:hover { background: var(--accent); color: var(--on-field); }
 /* drawn mock screen (when no screenshot available) */
 .mock { height: 100%; display: flex; flex-direction: column; padding: 30px 18px 0; gap: 12px; }
 .mock-h { font-size: 19px; font-weight: 700; padding: 0 4px; }
-.mock-card { background: var(--surface-2); border-radius: 16px; border: 1px solid var(--border); padding: 16px; }
+.mock-card { background: var(--surface-2); border-radius: 12px; padding: 16px; }
 .mock-line { height: 9px; border-radius: 5px; background: var(--bg-alt); margin-top: 8px; }
 .mock-line.a { background: var(--accent); width: 45%; } .mock-line.s { width: 70%; }
-.mock-big { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
-.mock-nav { margin-top: auto; display: flex; justify-content: space-around; padding: 14px 0 20px; border-top: 1px solid var(--border); background: var(--surface-2); margin-left: -18px; margin-right: -18px; }
+.mock-big { font-family: var(--font-serif); font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
+.mock-nav { margin-top: auto; display: flex; justify-content: space-around; padding: 14px 0 20px; border-top: 1px solid var(--rule); background: var(--surface-2); margin-left: -18px; margin-right: -18px; }
 .mock-nav i { width: 24px; height: 24px; border-radius: 50%; background: var(--bg-alt); display: block; } .mock-nav i.on { background: var(--accent); }
 
 /* 7r. Dark CTA / closing banner */
-.slide.dark { background: var(--ink); color: #fff; }
-.slide.dark .title, .slide.dark .statement { color: #fff; }
-.slide.dark em { color: var(--accent-light); }
-.slide.dark .lead, .slide.dark .body { color: rgba(255,255,255,0.62); }
-.slide.dark .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
-.slide.dark { --glass: rgba(255,255,255,0.06); --glass-line: rgba(255,255,255,0.12); }
-/* on dark slides the hero badge, window, tiles and floating card become dark glass, not white */
-.slide.dark .badge { background: var(--glass); border-color: var(--glass-line); color: rgba(255,255,255,0.78); box-shadow: none; }
-.slide.dark .badge strong { color: var(--accent-light); }
-.slide.dark .badge-dot { background: var(--accent-mid); }
-.slide.dark .window { background: rgba(255,255,255,0.05); border-color: var(--glass-line); color: #fff; box-shadow: 0 36px 96px rgba(0,0,0,0.35); }
-.slide.dark .window-bar { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-.slide.dark .tag { color: var(--accent-light); background: rgba(var(--light-rgb),0.12); border-color: rgba(var(--light-rgb),0.28); }
-.slide.dark .bar { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.10); }
-.slide.dark .bar.on { background: var(--accent-mid); border-color: var(--accent-mid); }
-.slide.dark .mini-stat { background: var(--glass); border-color: rgba(255,255,255,0.08); }
-.slide.dark :is(.mini-val small, .mini-chg) { color: color-mix(in srgb, var(--tone, var(--accent-light)), #fff 40%); }
-.slide.dark .mini-label { color: rgba(255,255,255,0.55); }
-.slide.dark :is(.fv-item) { border-color: rgba(255,255,255,0.08); }
-.slide.dark .fv-item span:first-child { color: rgba(255,255,255,0.78); }
+.slide.dark { background: var(--field); color: var(--on-field); }
+.slide.dark .title, .slide.dark .statement { color: var(--on-field); }
+
+.slide.dark .lead, .slide.dark .body { color: rgba(var(--paper-rgb),0.75); }
+.slide.dark .label { color: rgba(var(--paper-rgb),0.72); }
+.slide.dark { --glass: rgba(var(--paper-rgb),0.06); --glass-line: rgba(var(--paper-rgb),0.12); }
+/* on dark slides the badge, window, tiles and floating card become soft translucent tiles */
+.slide.dark .badge { background: var(--glass); color: rgba(var(--paper-rgb),0.78); }
+.slide.dark .badge strong { color: var(--on-field); }
+.slide.dark .badge-dot { background: var(--accent-light); }
+.slide.dark .window { background: rgba(var(--paper-rgb),0.06); color: var(--on-field); box-shadow: 0 18px 48px rgba(var(--ink-rgb),0.35); }
+.slide.dark .tag { color: var(--on-field); background: rgba(var(--paper-rgb),0.12); }
+.slide.dark .bar { background: rgba(var(--paper-rgb),0.10); }
+.slide.dark .bar.on { background: var(--accent-light); }
+.slide.dark .mini-stat { background: var(--glass); }
+.slide.dark :is(.mini-val small, .mini-chg) { color: color-mix(in srgb, var(--tone, var(--accent-light)), var(--on-field) 40%); }
+.slide.dark .mini-label { color: rgba(var(--paper-rgb),0.62); }
+.slide.dark :is(.fv-item) { border-color: rgba(var(--paper-rgb),0.12); }
+.slide.dark .fv-item span:first-child { color: rgba(var(--paper-rgb),0.78); }
 .slide.dark .pill.blue  { background: rgba(var(--light-rgb),0.16); color: var(--accent-light); }
-.slide.dark .pill.warn  { background: rgba(var(--c-orange-rgb),0.18); color: color-mix(in srgb, var(--c-orange), #fff 40%); }
-.slide.dark .pill.grape { background: rgba(var(--c-grape-rgb),0.32); color: color-mix(in srgb, var(--c-grape), #fff 50%); }
-.slide.dark .pill.green { background: rgba(var(--c-mint-rgb),0.18); color: color-mix(in srgb, var(--c-mint), #fff 50%); }
-.slide.dark .float:not(.solid) { background: color-mix(in srgb, var(--ink), #fff 9%); border-color: var(--glass-line); color: #fff; box-shadow: 0 18px 48px rgba(0,0,0,0.4); }
-.slide.dark .float-text strong { color: #fff; } .slide.dark .float-text span { color: rgba(255,255,255,0.6); }
-.slide.dark .trust-item { color: rgba(255,255,255,0.7); } .slide.dark .trust-item svg { color: var(--accent-light); }
-.slide.dark .trust-divider { background: rgba(255,255,255,0.18); }
+.slide.dark .pill.warn  { background: rgba(var(--c-orange-rgb),0.18); color: color-mix(in srgb, var(--c-orange), var(--on-field) 40%); }
+.slide.dark .pill.grape { background: rgba(var(--c-grape-rgb),0.32); color: color-mix(in srgb, var(--c-grape), var(--on-field) 50%); }
+.slide.dark .pill.green { background: rgba(var(--c-mint-rgb),0.18); color: color-mix(in srgb, var(--c-mint), var(--on-field) 50%); }
+.slide.dark .float:not(.solid) { background: color-mix(in srgb, var(--field), var(--on-field) 12%); color: var(--on-field); box-shadow: 0 14px 36px rgba(var(--ink-rgb),0.4); }
+.slide.dark .float-text strong { color: var(--on-field); } .slide.dark .float-text span { color: rgba(var(--paper-rgb),0.6); }
+.slide.dark .trust-item { color: rgba(var(--paper-rgb),0.7); } .slide.dark .trust-item svg { color: var(--accent-light); }
+.slide.dark .trust-divider { background: rgba(var(--paper-rgb),0.2); }
 .slide.dark .orb-a { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.16) 0%, transparent 70%); }
 .slide.dark .orb-b { background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.08) 0%, transparent 70%); }
-.cta-box { background: var(--ink); border-radius: var(--radius-lg); padding: 110px; display: flex; align-items: center; justify-content: space-between; gap: 80px; position: relative; overflow: hidden; }
+.cta-box { background: var(--field); border-radius: var(--radius-lg); padding: 96px; display: flex; align-items: center; justify-content: space-between; gap: 80px; position: relative; overflow: hidden; }
 .cta-box::before { content: ''; position: absolute; top: -40%; right: -5%; width: 820px; height: 820px; border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(var(--light-rgb),0.17) 0%, transparent 70%); }
 .cta-box > * { position: relative; }
-.cta-box .title { color: #fff; } .cta-box em { color: var(--accent-light); }
-.cta-box .lead { color: rgba(255,255,255,0.62); }
-.cta-box .label { color: var(--accent-light); background: transparent; border-color: rgba(var(--light-rgb),0.3); }
+.cta-box .title { color: var(--on-field); }
+.cta-box .lead { color: rgba(var(--paper-rgb),0.75); }
+.cta-box .label { color: rgba(var(--paper-rgb),0.72); }
 .cta-actions { display: flex; flex-direction: column; gap: 18px; flex-shrink: 0; }
-.btn-ghost-dark { color: rgba(255,255,255,0.7); border: 1.5px solid rgba(255,255,255,0.14); justify-content: center; }
-.contact { display: flex; flex-direction: column; gap: 14px; font-size: 22px; color: rgba(255,255,255,0.6); }
-.contact b { color: #fff; font-weight: 600; }
+.btn-ghost-dark { color: var(--on-field); background: rgba(var(--paper-rgb),0.10); justify-content: center; }
+.contact { display: flex; flex-direction: column; gap: 14px; font-size: 22px; color: rgba(var(--paper-rgb),0.6); }
+.contact b { color: var(--on-field); font-weight: 600; }
+
+/* 7t. Title slide (`slide dark title-slide`): the whole slide is the base-colour field, like the closing slide.
+   Left about 6/12: title, one subtitle sentence, small muted meta line. Right: the deck's one strongest visual as soft tiles with a soft shadow. */
+.slide > .ts-field { position: absolute; top: 0; right: 0; bottom: 0; width: 46%; z-index: 0; background: var(--field);
+  display: flex; align-items: center; justify-content: center; padding: 120px 72px 90px 84px; }
+.title-slide > .ts-left { max-width: 50%; display: flex; flex-direction: column; }
+.title-slide .title.hero { font-size: 88px; }
+.ts-meta { font-size: var(--fs-label); color: var(--text-3); margin-top: 36px; }
+.ts-field .visual { width: 100%; }
+.ts-field .float.solid { background: var(--paper); }
+.ts-field .float.solid .fv { color: var(--c-orange-ink); }
+.ts-field .float.solid .fl { color: var(--text-2); }
+.slide.dark .ts-meta { color: rgba(var(--paper-rgb),0.62); }
+
+/* 7u. Section divider: the whole slide is the base colour. Big Playfair numeral hangs left of the title under a thin 1px rule;
+   on the right one short line in light text and a small muted range line; title and short line share a baseline. */
+.section-grid { display: grid; grid-template-columns: 1.7fr 5.3fr 5fr; column-gap: 40px; align-items: last baseline;
+  border-top: 1px solid rgba(var(--paper-rgb),0.28); padding-top: 44px; }
+.section-num { font-family: var(--font-serif); font-size: 120px; font-weight: 700; line-height: 1; color: var(--c-orange); font-variant-numeric: lining-nums tabular-nums; }
+.section-grid .title { font-size: 84px; line-height: 1.08; }
+.section-line { font-size: var(--fs-lead); line-height: 1.4; color: rgba(var(--paper-rgb),0.92); }
+.section-range { grid-column: 3; font-size: var(--fs-label); color: rgba(var(--paper-rgb),0.6); margin-top: 16px; }
 
 /* 7s. Image figure */
-.figure { border-radius: var(--radius-lg); overflow: hidden; border: 1.5px solid var(--border); box-shadow: var(--shadow-md); background: var(--surface-2); }
+.figure { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); background: var(--surface-2); }
 .figure img { width: 100%; height: 100%; object-fit: cover; }
-.caption { font-size: 18px; color: var(--text-3); margin-top: 16px; }
+.caption { font-size: var(--fs-label); color: var(--text-3); margin-top: 16px; }
 
 /* Speaker notes are never shown */
 .notes { display: none !important; }
@@ -1323,13 +1363,13 @@ table.data .num { text-align: right; }
 /* === 8. INLINE EDITING === */
 .edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
 .edit-toggle { position: fixed; top: 18px; left: 18px; z-index: 10001; width: 48px; height: 48px; border-radius: 50%;
-  background: #fff; color: var(--accent); border: 1.5px solid var(--accent-border); box-shadow: 0 6px 20px rgba(var(--ink-rgb),0.12);
+  background: var(--surface-2); color: var(--accent); box-shadow: var(--shadow-md);
   font-size: 20px; display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s, background 0.3s, color 0.3s; }
+  opacity: 0; pointer-events: none; transition: opacity 0.3s, background-color 0.3s, color 0.3s; }
 .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
-.edit-toggle.active { background: var(--accent); color: #fff; }
+.edit-toggle.active { background: var(--accent); color: var(--on-field); }
 .edit-toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px); z-index: 10002; opacity: 0; pointer-events: none;
-  background: var(--ink); color: #fff; font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: 100px; transition: opacity 0.4s var(--silk), transform 0.4s var(--silk); }
+  background: var(--ink); color: var(--on-field); font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: 100px; transition: opacity 0.4s var(--silk), transform 0.4s var(--silk); }
 .edit-toast.show { opacity: 1; transform: translate(-50%, 0); }
 body.editing [contenteditable="true"] { outline: 2px dashed rgba(var(--accent-rgb),0.35); outline-offset: 6px; border-radius: 6px; cursor: text; }
 body.editing [contenteditable="true"]:focus { outline-color: var(--accent); }
@@ -1337,20 +1377,23 @@ body.editing [contenteditable="true"]:focus { outline-color: var(--accent); }
 /* === 9. PRINT (one slide per page) & REDUCED MOTION === */
 @page { size: 1920px 1080px; margin: 0; }
 @media print {
-  html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+  html, body { width: 1920px; height: auto; overflow: visible; background: var(--paper); }
   .deck-viewport { position: static; overflow: visible; }
   .deck-stage { position: static; width: 1920px; height: auto; transform: none !important; overflow: visible; }
   .deck-stage::after, .deck-nav, .deck-dots, .edit-hotzone, .edit-toggle, .edit-toast, .phones-ctl { display: none !important; }
   .slide { position: relative; visibility: visible !important; opacity: 1 !important; break-after: page; page-break-after: always; }
   .slide:last-child { break-after: auto; page-break-after: auto; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .bar { height: var(--h) !important; } .fv-fill { width: var(--w) !important; }
-  .hbar-fill { width: var(--v) !important; } .meter-fill { height: var(--v) !important; } .dn-seg { stroke-dasharray: var(--p) 100 !important; }
-  .lc-area svg { clip-path: none !important; } .lc-end { opacity: 1 !important; transition: none !important; }
+  .bar, .fv-fill, .hbar-fill, .meter-fill { transform: none !important; opacity: 1 !important; } .dn-seg { opacity: 1 !important; }
+  .lc-area svg { opacity: 1 !important; transform: none !important; } .lc-end { opacity: 1 !important; transition: none !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+  .float, .ticker-track { animation: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  .bar, .fv-fill, .hbar-fill { transform: none; } .meter-fill, .dn-seg, .lc-area svg { opacity: 1; transform: none; }
+  .phone { transition: none; }
 }
 ```
 
@@ -1436,6 +1479,7 @@ Change the `deck-logo` text. Slides follow directly after the `deck-dots` nav.
     const dec = (el.dataset.count.split('.')[1] || '').length;
     const fmt = new Intl.NumberFormat(document.documentElement.lang || undefined, { minimumFractionDigits: dec, maximumFractionDigits: dec });
     const t0 = performance.now(), dur = 1800;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = fmt.format(target); return; }
     el.textContent = fmt.format(0);
     const step = now => {
       const p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 4);
@@ -1467,7 +1511,7 @@ Change the `deck-logo` text. Slides follow directly after the `deck-dots` nav.
   /* --- Keyboard --- */
   document.addEventListener('keydown', e => {
     if (e.target.isContentEditable) return;
-    if ((e.key === ' ' || e.key === 'Enter') && e.target.closest?.('button, a')) return; /* let a focused control handle its own key */
+    if ((e.key === ' ' || e.key === 'Enter') && e.target.closest?.('button, a, [role="button"]')) return; /* let a focused control handle its own key */
     if (e.key === 'e' || e.key === 'E') { toggleEdit(); return; }
     if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); return; }
     if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
@@ -1501,6 +1545,7 @@ Change the `deck-logo` text. Slides follow directly after the `deck-dots` nav.
     const cards = Array.from(wrap.querySelectorAll('.phone'));
     const cfg = { center: [0, 0, 1, 1], left1: [-1, 28, .82, 1], right1: [1, -28, .82, 1], left2: [-2, 45, .64, .55], right2: [2, -45, .64, .55], hidden: [0, 0, .4, 0] };
     const gap = 260;
+    cards.forEach(card => { card.tabIndex = 0; card.setAttribute('role', 'button'); card.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); card.click(); } }); });
     let c = Math.floor(cards.length / 2);
     function layout() {
       cards.forEach((card, i) => {
