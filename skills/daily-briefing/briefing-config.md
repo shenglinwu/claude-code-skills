@@ -28,6 +28,10 @@ locked redirect links, so its items rarely have enough content to summarize.
 
 - `hnrss.org/frontpage` lists links to other sites. Open the linked article for content.
 - `feed.infoq.com` gives only short blurbs. Open the linked article for content.
+- `ai-muninn.com/zh-TW/feed.xml` gives only short blurbs. Its article pages load with plain
+  `curl` and carry the full text. The feed is large (about 200 KB, every post ever), and
+  each `pubDate` is the date only, at 00:00 UTC. Compare by date, so a post from yesterday
+  is not dropped from the 24-hour window.
 
 Skip items whose page can't be read.
 
